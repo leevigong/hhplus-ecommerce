@@ -14,18 +14,13 @@
 sequenceDiagram
     actor User as 사용자
     participant UserPoint as 사용자 포인트
-    participant PointHistory as 포인트 내역
-
     User ->>+ UserPoint: 잔액 충전 요청(userId, amount)
-		Note over UserPoint: 사용자/충전 금액 유효성 검증
-		
-    alt 검증 실패 
+    Note over UserPoint: 사용자/충전 금액 유효성 검증
+
+    alt 검증 실패
         UserPoint -->> User: 충전 실패
     else 검증 성공
         UserPoint ->> UserPoint: 잔액 충전
-        UserPoint ->>+ PointHistory: 포인트 내역 저장 요청
-        PointHistory ->> PointHistory: 포인트 내역 저장
-        PointHistory -->>- UserPoint: 포인트 저장 내역 반환
         UserPoint -->>- User: 충전 성공 (잔액 + 충전금액)
     end
 ```
@@ -181,7 +176,7 @@ sequenceDiagram
   alt 검증 실패
     Coupon -->> User: 쿠폰 조회 실패
   else 검증 성공
-    Coupon -->>- User: 쿠폰 조회 성공 (만료된 쿠폰, 사용된 쿠폰은 보이지 않음)
+    Coupon -->>- User: 쿠폰 조회 성공
   end
 ```
 ## 5. 인기 판매 상품
@@ -189,7 +184,7 @@ sequenceDiagram
 ```mermaid
 sequenceDiagram
     actor User as 사용자
-    participant ProductSalesRank as 쿠폰
+    participant ProductSalesRank as 인기 상품
     
     User ->>+ ProductSalesRank: 인기 상품 조회 요청
     ProductSalesRank ->> ProductSalesRank: 인기 상품 조회
