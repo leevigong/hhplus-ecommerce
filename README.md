@@ -1,4 +1,16 @@
-## 프로젝트
+# E-Commerce 서비스
+
+## ⛳️ 마일스톤
+[E-Commerce 마일스톤 링크](https://github.com/users/leevigong/projects/4)
+
+
+## 🗂️ 설계
+#### [📋 요구사항 명세서 보기](docs/요구사항%20명세서.md)
+#### [🧵시퀀스 다이어그램 보기](/docs/SequenceDiagram.md)  
+
+#### [🗄️ ERD 보기](/docs/ERD.md)
+
+
 
 ## Getting Started
 
