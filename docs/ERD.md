@@ -11,15 +11,15 @@ erDiagram
         DATETIME updated_at "수정 일시"
     }
 
-    user_point {
+    user_balance {
         BIGINT user_id PK "사용자 ID"
         DECIMAL balance "현재 잔액"
         DATETIME created_at "생성 일시"
         DATETIME updated_at "수정 일시"
     }
 
-    point_history {
-        BIGINT id PK "포인트 내역 ID"
+    balance_history {
+        BIGINT id PK "잔액 내역 ID"
         BIGINT user_id FK "사용자 ID"
         ENUM transaction_type "타입 [CHARGE, USE]"
         DECIMAL amount "변동 금액"
@@ -90,7 +90,7 @@ erDiagram
         ENUM coupon_status "쿠폰 상태 [ACTIVE, INACTIVE]"
         INT max_issued_quantity "최대 발급 가능 수량"
         INT issued_quantity "현재까지 발급된 수량"
-        DATETIME expires_at "만료 일시"
+        DATETIME expired_at "만료 일시"
         DATETIME created_at "생성 일시"
         DATETIME updated_at "수정 일시"
     }
@@ -104,31 +104,29 @@ erDiagram
         DATETIME updated_at "수정(사용) 일시"
     }
 
-    user ||--|| user_point: owns_point
-    user ||--o{ point_history: has_point_history
+    user ||--|| user_balance: owns_balance
+    user ||--o{ balance_history: has_balance_history
     user ||--o{ payment: pay
     user ||--o{ order: places_order
     user ||--o{ user_coupon: owns_user_coupon
     order ||--o{ order_item: includes_items
     order ||--|| payment: has_payment
     product ||--o{ order_item: part_of_order
-    product ||--|| product_sales_rank: has_sales_rank
+    product ||--o{ product_sales_rank: has_sales_rank
     coupon ||--o{ user_coupon: issued_to_user
     user_coupon ||--|| order: used_in_order
 
 ```
 
-
-
 ---
 
 ## 엔티티 관계 정리
 
-#### 1. user <-> user_point (1:1)
-사용자는 하나의 포인트 계좌를 가진다.
+#### 1. user <-> user_balance (1:1)
+사용자는 하나의 잔액 계좌를 가진다.
 
-#### 2. user <-> point_history (1:N)
-사용자는 여러 개의 포인트 거래 내역을 가질 수 있다.
+#### 2. user <-> balance_history (1:N)
+사용자는 여러 개의 충전/사용 등의 잔액 내역을 가질 수 있다.
 
 #### 3. user <-> payment (1:N)
 사용자는 여러 개의 결제 정보를 가질 수 있다.
@@ -155,6 +153,6 @@ erDiagram
 #### 10. product <-> order_item (1:N)
 하나의 상품은 여러 주문 아이템에 포함될 수 있다.
 
-#### 11. product <-> product_sales_rank (1:1)
-하나의 상품은 하나의 판매 랭킹 정보를 가진다.  
-인기 상품 조회 시, 랭킹 정보와 함께 상품 정보를 조회하기 위해 1:1로 연결된다.
+#### 11. product <-> product_sales_rank (1:N)
+하나의 상품은 여러 판매 랭킹 정보를 가진다. (최근 3일 인기 상품, 최근 5일 인기 상품 등등)  
+인기 상품 조회 시, 랭킹 정보와 함께 상품 정보를 조회하기 위해 연결된다.
