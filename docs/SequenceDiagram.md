@@ -13,31 +13,31 @@
 ```mermaid
 sequenceDiagram
     actor User as 사용자
-    participant UserPoint as 사용자 포인트
-    User ->>+ UserPoint: 잔액 충전 요청(userId, amount)
-    Note over UserPoint: 사용자/충전 금액 유효성 검증
+    participant UserBalance as 사용자 잔액
+    User ->>+ UserBalance: 잔액 충전 요청(userId, amount)
+    Note over UserBalance: 사용자/충전 금액 유효성 검증
 
     alt 검증 실패
-        UserPoint -->> User: 충전 실패
+        UserBalance -->> User: 충전 실패
     else 검증 성공
-        UserPoint ->> UserPoint: 잔액 충전
-        UserPoint -->>- User: 충전 성공 (잔액 + 충전금액)
+        UserBalance ->> UserBalance: 잔액 충전
+        UserBalance -->>- User: 충전 성공 (잔액 + 충전금액)
     end
 ```
 ### 잔액 조회
 ```mermaid
 sequenceDiagram
     actor User as 사용자
-    participant UserPoint as 사용자 포인트
+    participant UserBalance as 사용자 잔액
 
-    User ->>+ UserPoint: 잔액 조회 요청(userId)
-		Note over UserPoint: 사용자 유효성 검증
+    User ->>+ UserBalance: 잔액 조회 요청(userId)
+		Note over UserBalance: 사용자 유효성 검증
 		
-    alt 검증 실패 
-        UserPoint -->> User: 조회 실패
+    alt 검증 실패
+        UserBalance -->> User: 조회 실패
     else 검증 성공
-        UserPoint ->> UserPoint: 잔액 데이터 조회
-        UserPoint -->>- User: 조회 성공 (보유 잔액)
+        UserBalance ->> UserBalance: 잔액 데이터 조회
+        UserBalance -->>- User: 조회 성공 (보유 잔액)
     end
 ```
 
@@ -115,7 +115,7 @@ sequenceDiagram
     actor User as 사용자
     participant Payment as 결제
     participant Coupon as 쿠폰
-    participant UserPoint as 사용자 포인트
+    participant UserBalance as 사용자 잔액
     participant Order as 주문
     participant DataPlatform as 데이터플랫폼
 
@@ -130,14 +130,14 @@ sequenceDiagram
     else 검증 성공
         Coupon -->>- Payment: 쿠폰 사용 성공 (할인 금액 반환)
 
-        Payment ->>+ UserPoint: 잔액 확인 요청(userId)
+        Payment ->>+ UserBalance: 잔액 확인 요청(userId)
 
         alt 잔액 부족
-            UserPoint -->> Payment: 잔액 부족 응답
+            UserBalance -->> Payment: 잔액 부족 응답
             Payment -->> User: 결제 실패 (잔액)
         else 잔액 충분
-            UserPoint ->> UserPoint: 잔액 차감 처리
-            UserPoint -->>- Payment: 잔액 차감 완료
+            UserBalance ->> UserBalance: 잔액 차감 처리
+            UserBalance -->>- Payment: 잔액 차감 완료
 
             Payment ->>+ Order: 주문 상태 업데이트 요청
             Order -->>- Payment: 주문 상태 업데이트 완료
