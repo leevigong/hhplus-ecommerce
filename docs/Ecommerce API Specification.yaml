@@ -1,0 +1,781 @@
+openapi: 3.0.3
+info:
+  title: E-commerce API
+  description: 이커머스 API 문서
+  version: v1.0.0
+servers:
+  - url: http://localhost:8080
+    description: Generated server url
+tags:
+  - name: 결제
+    description: 결제 처리 API
+  - name: 잔액
+    description: 잔액 조회/충전/내역조회 API
+  - name: 쿠폰
+    description: 쿠폰 조회/발급 API
+  - name: 상품
+    description: 상품 조회/인기상품 조회 API
+  - name: 주문
+    description: 주문 API
+paths:
+  /api/v1/balances/{userId}:
+    get:
+      tags:
+        - 잔액
+      summary: 사용자 잔액 조회
+      description: 사용자 현재 잔액을 조회합니다.
+      operationId: getBalance
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: 잔액 조회 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserBalanceResponse'
+              example:
+                userId: 1
+                userName: 이다은
+                amount: 10000
+        '404':
+          description: 사용자를 찾을 수 없음
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                errorCode: USER_NOT_FOUND
+                message: 해당 사용자를 찾을 수 없습니다.
+        '500':
+          description: 서버 오류
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                errorCode: INTERNAL_SERVER_ERROR
+                message: 서버 내부 오류가 발생했습니다.
+    put:
+      tags:
+        - 잔액
+      summary: 사용자 잔액 충전
+      description: 사용자 잔액을 충전합니다. 충전 성공 시 갱신된 포인트 정보가 반환됩니다. <br> 단, 충전 금액은 1 이상이어야 하며, 최대 한도(100,000)를 초과할 수 없습니다.
+      operationId: updateBalance
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChargeRequest'
+        required: true
+      responses:
+        '200':
+          description: 잔액 충전 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserBalanceResponse'
+              example:
+                userId: 1
+                userName: 이다은
+                balance: 6000
+        '400':
+          description: 잘못된 충전 요청 금액 (1보다 작거나 최대 한도 초과)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                errorCode: INVALID_AMOUNT
+                message: 충전 금액은 1 이상 100,000 이하만 가능합니다.
+        '404':
+          description: 사용자를 찾을 수 없음
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                errorCode: USER_NOT_FOUND
+                message: 해당 사용자를 찾을 수 없습니다.
+  /api/v1/payments:
+    post:
+      tags:
+        - 결제
+      summary: 결제 처리
+      description: |
+        주문에 대한 결제를 진행합니다.
+        사용자가 선택한 결제 방법을 이용하여 주문을 결제하며, 결제 성공 시 주문 상태를 PAID 상태로 변경합니다.
+
+        **프로세스**
+        1. orderId를 기반으로 주문 정보 조회
+        2. 사용자의 결제 수단 및 잔액 확인
+        3. 결제 진행 (카드, 카카오페이 등 외부 결제 시스템 연동 가능)
+        4. 결제 성공 시 주문 상태 PAID 상태로 업데이트 (PENDING → PAID)
+        5. 결제 실패 시 주문 상태 FAILED 상태로 변경 (PENDING → FAILED)
+      operationId: processPayment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentRequest'
+        required: true
+      responses:
+        '200':
+          description: 결제 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponse'
+              example:
+                paymentId: 3001
+                orderId: 123
+                userId: 1
+                paymentType: KAKAO_PAY
+                amount: 49900
+                receipt: re123-cei123-pt
+                createdAt: '2024-04-04T14:45:00'
+                orderStatus: PAID
+        '400':
+          description: 잘못된 요청 (입력값 오류, 유효성 검사 실패)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                errorCode: INVALID_PAYMENT_REQUEST
+                message: 결제 요청 데이터가 유효하지 않습니다.
+        '402':
+          description: 잔액 부족
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                errorCode: INSUFFICIENT_BALANCE
+                message: 사용자의 잔액이 부족합니다.
+        '404':
+          description: 주문을 찾을 수 없음
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                errorCode: ORDER_NOT_FOUND
+                message: 해당 주문을 찾을 수 없습니다.
+        '409':
+          description: 이미 결제된 주문
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                errorCode: ORDER_ALREADY_PAID
+                message: 해당 주문은 이미 결제되었습니다.
+        '500':
+          description: 서버 오류
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                errorCode: INTERNAL_SERVER_ERROR
+                message: 서버 내부 오류가 발생했습니다.
+  /api/v1/orders:
+    post:
+      tags:
+        - 주문
+      summary: 주문 생성 및 결제 요청
+      description: |-
+        상품 주문과 결제를 처리합니다. 주문 생성 후 결제를 시도하며, 결제 시도 시 주문은 PENDING 상태로 생성됩니다.
+
+        **프로세스**
+        1. 상품 재고 확인
+        2. 쿠폰 적용 및 할인 계산
+        3. 주문 정보 저장 (주문 PENDING 상태)
+      operationId: createOrder
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderCreateRequest'
+        required: true
+      responses:
+        '200':
+          description: 주문 생성 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+              example:
+                orderId: 12345
+                finalPrice: 49900
+                orderedAt: '2024-04-04T14:30:00'
+        '400':
+          description: 잘못된 주문 요청 (입력값 오류, 유효성 검사 실패)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                errorCode: INVALID_ORDER
+                message: 주문 요청 데이터가 유효하지 않습니다.
+        '402':
+          description: 잔액 부족
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                errorCode: INSUFFICIENT_BALANCE
+                message: 사용자의 잔액이 부족합니다.
+        '404':
+          description: 사용자를 찾을 수 없음
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                errorCode: USER_NOT_FOUND
+                message: 해당 사용자를 찾을 수 없습니다.
+        '409':
+          description: 재고 부족
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                SOLD_OUT:
+                  description: SOLD_OUT
+                  value:
+                    errorCode: SOLD_OUT
+                    message: 해당 상품이 품절되었습니다.
+                INSUFFICIENT_STOCK:
+                  description: INSUFFICIENT_STOCK
+                  value:
+                    errorCode: INSUFFICIENT_STOCK
+                    message: 선택한 상품의 재고가 부족합니다.
+        '500':
+          description: 서버 오류
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                errorCode: INTERNAL_SERVER_ERROR
+                message: 서버 내부 오류가 발생했습니다.
+  /api/v1/coupons/issue:
+    post:
+      tags:
+        - 쿠폰
+      summary: (선착순) 쿠폰 발급
+      description: (선착순) 쿠폰을 발급합니다.
+      operationId: issueCoupon
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCouponRequest'
+        required: true
+      responses:
+        '200':
+          description: 쿠폰 발급 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CouponIssueResponse'
+              example:
+                couponId: 1
+                couponCode: HANGHAE8888
+                couponStatus: AVAILABLE
+                discountType: FIXED
+                discountAmount: 1000
+                expiredAt: '2024-06-30T23:59:59'
+                createdAt: '2024-04-01T10:00:00'
+        '400':
+          description: 유효하지 않은 쿠폰
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                errorCode: INVALID_COUPON
+                message: 해당 쿠폰을 발급할 수 없습니다.
+        '404':
+          description: 사용자를 찾을 수 없음
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                errorCode: USER_NOT_FOUND
+                message: 해당 사용자를 찾을 수 없습니다.
+        '409':
+          description: 발급 가능한 쿠폰 수량 부족
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                errorCode: COUPON_OUT_OF_STOCK
+                message: 모든 쿠폰이 발급 완료되었습니다.
+  /api/v1/products/{productId}:
+    get:
+      tags:
+        - 상품
+      summary: 상품 조회
+      description: 특정 상품 정보를 조회합니다.
+      operationId: getProduct
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: 상품 조회 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+              example:
+                productId: 123
+                productName: 나이키 에어포스
+                price: 990000
+                stockQuantity: 50
+                category: SHOES
+        '404':
+          description: 상품을 찾을 수 없음
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                errorCode: PRODUCT_NOT_FOUND
+                message: 해당 상품을 찾을 수 없습니다.
+  /api/v1/products/popular:
+    get:
+      tags:
+        - 상품
+      summary: 인기 상품 조회
+      description: 특정 기간 동안 가장 많이 판매된 인기 상품 목록을 조회합니다.
+      operationId: getProductSalesRank
+      parameters:
+        - name: sortBy
+          in: query
+          required: false
+          schema:
+            type: string
+            default: THREE_DAYS
+      responses:
+        '200':
+          description: 인기 상품 조회 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductSalesRankResponse'
+              example:
+                - productId: 101
+                  salesCount: 150
+                  totalSalesPrice: 14850000
+                  rankingScope: THREE_DAYS
+                  rankPosition: 1
+                - productId: 102
+                  salesCount: 120
+                  totalSalesPrice: 10800000
+                  rankingScope: THREE_DAYS
+                  rankPosition: 2
+        '400':
+          description: 잘못된 요청 (유효하지 않은 랭킹 범위)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                errorCode: INVALID_SCOPE
+                message: 유효하지 않은 랭킹 범위입니다.
+        '500':
+          description: 서버 내부 오류
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                errorCode: INTERNAL_SERVER_ERROR
+                message: 서버 내부 오류가 발생했습니다.
+  /api/v1/coupons/{userId}:
+    get:
+      tags:
+        - 쿠폰
+      summary: 사용자 쿠폰 리스트 조회
+      description: |-
+        사용자의 쿠폰 목록을 조회합니다. 
+
+
+        discountType가 FIXED인 경우 usedAt는 null
+      operationId: getUserCoupons
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: 쿠폰 조회 성공
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserCouponResponse'
+              example:
+                - couponId: 1
+                  couponCode: HANGHAE8888
+                  couponStatus: AVAILABLE
+                  discountType: FIXED
+                  discountAmount: 1000
+                  createdAt: '2024-04-01T10:00:00'
+                  usedAt: null
+                  expiredAt: '2024-06-30T23:59:59'
+                - couponId: 2
+                  couponCode: SPARTA1000
+                  couponStatus: USED
+                  discountType: PERCENTAGE
+                  discountAmount: 20
+                  createdAt: '2024-03-20T12:00:00'
+                  usedAt: '2024-03-25T14:45:00'
+                  expiredAt: '2024-04-30T23:59:59'
+        '404':
+          description: 사용자를 찾을 수 없음
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                errorCode: USER_NOT_FOUND
+                message: 해당 사용자를 찾을 수 없습니다.
+  /api/v1/balances/{userId}/history:
+    get:
+      tags:
+        - 잔액
+      summary: 사용자 잔액 내역 조회
+      description: 특정 사용자의 잔액 변동 내역을 조회합니다.
+      operationId: getUserBalanceHistory
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: 사용자 잔액 내역 조회 성공
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserBalanceHistoryResponse'
+              example:
+                - userId: 1
+                  transactionType: CHARGE
+                  amount: 5000
+                  before_balance: 10000
+                  after_balance: 15000
+                  createdAt: '2024-04-03T12:34:56'
+                - userId: 1
+                  transactionType: PAYMENT
+                  amount: 2000
+                  before_balance: 15000
+                  after_balance: 13000
+                  createdAt: '2024-04-03T12:40:00'
+        '404':
+          description: 사용자를 찾을 수 없음
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                errorCode: USER_NOT_FOUND
+                message: 해당 사용자를 찾을 수 없습니다.
+        '500':
+          description: 서버 오류
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                errorCode: INTERNAL_SERVER_ERROR
+                message: 서버 내부 오류가 발생했습니다.
+components:
+  schemas:
+    ChargeRequest:
+      type: object
+      properties:
+        amount:
+          type: number
+          description: 충전할 금액 (1 이상 100,000 이하)
+          example: 1000
+    UserBalanceResponse:
+      type: object
+      properties:
+        userId:
+          type: integer
+          format: int64
+        userName:
+          type: string
+        balance:
+          type: number
+    ErrorResponse:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+    PaymentRequest:
+      type: object
+      properties:
+        orderId:
+          type: integer
+          format: int64
+          description: 주문 ID
+          example: 123
+        userId:
+          type: integer
+          format: int64
+          description: 사용자 ID
+          example: 1
+        paymentType:
+          type: string
+          description: 결제 유형 (CARD, KAKAO_PAY 등)
+          enum:
+            - CARD
+            - KAKAO_PAY
+            - TOSS
+          example: KAKAO_PAY
+        amount:
+          type: number
+          description: 결제 금액
+          example: 49900
+    PaymentResponse:
+      type: object
+      properties:
+        paymentId:
+          type: integer
+          format: int64
+        orderId:
+          type: integer
+          format: int64
+        userId:
+          type: integer
+          format: int64
+        paymentType:
+          type: string
+          enum:
+            - CARD
+            - KAKAO_PAY
+            - TOSS
+        amount:
+          type: number
+        receipt:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        orderStatus:
+          type: string
+          enum:
+            - PENDING
+            - PAID
+            - CANCELLED
+            - FAILED
+    OrderCreateRequest:
+      type: object
+      properties:
+        userId:
+          type: integer
+          format: int64
+          description: 사용자 ID
+          example: 1
+        orderProducts:
+          type: array
+          description: 주문 항목 목록
+          example:
+            - productId: 1
+              quantity: 2
+          items:
+            $ref: '#/components/schemas/OrderProductRequest'
+        userCouponId:
+          type: integer
+          format: int64
+          description: 사용자 쿠폰 ID
+          example: 1
+    OrderProductRequest:
+      type: object
+      properties:
+        productId:
+          type: integer
+          format: int64
+        quantity:
+          type: integer
+          format: int32
+    OrderResponse:
+      type: object
+      properties:
+        orderId:
+          type: integer
+          format: int64
+        finalPrice:
+          type: number
+        orderedAt:
+          type: string
+          format: date-time
+    UserCouponRequest:
+      type: object
+      properties:
+        couponId:
+          type: integer
+          format: int64
+          description: 쿠폰 ID
+          example: 123
+        userId:
+          type: integer
+          format: int64
+          description: 사용자 ID
+          example: 1
+    CouponIssueResponse:
+      type: object
+      properties:
+        couponId:
+          type: integer
+          format: int64
+        couponCode:
+          type: string
+        couponStatus:
+          type: string
+          enum:
+            - AVAILABLE
+            - USED
+            - EXPIRED
+        discountType:
+          type: string
+          enum:
+            - PERCENTAGE
+            - FIXED
+        discountAmount:
+          type: number
+        expiredAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+    ProductResponse:
+      type: object
+      properties:
+        productId:
+          type: integer
+          format: int64
+        productName:
+          type: string
+        price:
+          type: integer
+          format: int32
+        stockQuantity:
+          type: integer
+          format: int32
+        category:
+          type: string
+          enum:
+            - OUTER
+            - TOP
+            - BOTTOM
+            - SHOES
+    ProductSalesRankResponse:
+      type: object
+      properties:
+        productId:
+          type: integer
+          format: int64
+        salesCount:
+          type: integer
+          format: int32
+        totalSalesPrice:
+          type: integer
+          format: int32
+        rankingScope:
+          type: string
+          enum:
+            - THREE_DAYS
+            - WEEKLY
+        rankPosition:
+          type: integer
+          format: int32
+    UserCouponResponse:
+      type: object
+      description: 사용자 쿠폰 응답
+      properties:
+        couponId:
+          type: integer
+          format: int64
+        couponCode:
+          type: string
+        couponStatus:
+          type: string
+          enum:
+            - AVAILABLE
+            - USED
+            - EXPIRED
+        discountType:
+          type: string
+          enum:
+            - PERCENTAGE
+            - FIXED
+        discountAmount:
+          type: number
+        createdAt:
+          type: string
+          format: date-time
+        usedAt:
+          type: string
+          format: date-time
+        expiredAt:
+          type: string
+          format: date-time
+    UserBalanceHistoryResponse:
+      type: object
+      properties:
+        userId:
+          type: integer
+          format: int64
+        transactionType:
+          type: string
+          enum:
+            - CHARGE
+            - PAYMENT
+        amount:
+          type: number
+        before_balance:
+          type: number
+        after_balance:
+          type: number
+        createdAt:
+          type: string
+          format: date-time
