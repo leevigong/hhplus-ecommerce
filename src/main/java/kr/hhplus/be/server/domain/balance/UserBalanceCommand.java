@@ -19,4 +19,17 @@ public class UserBalanceCommand {
             return new Charge(userId, amount);
         }
     }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class Use {
+
+        private Long userId;
+        private long amount;
+
+        public static Charge of(Long userId, long amount) {
+            return new Charge(userId, amount);
+        }
+    }
 }

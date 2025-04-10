@@ -48,10 +48,10 @@ class UserBalanceServiceTest {
         when(userBalanceRepository.findByUserId(userId)).thenReturn(userBalance);
 
         // when
-        UserBalanceResponse.UserBalanceV1 response = userBalanceService.getUserBalance(userId);
+        UserBalanceInfo response = userBalanceService.getUserBalance(userId);
 
         // then
-        assertThat(response.getBalance()).isEqualTo(userBalance.getBalance());
+        assertThat(response.balance()).isEqualTo(userBalance.getBalance());
     }
 
     @Test
@@ -63,12 +63,12 @@ class UserBalanceServiceTest {
         UserBalanceCommand.Charge command = new UserBalanceCommand.Charge(userId, chargeAmount);
 
         // when
-        UserBalanceResponse.UserBalanceV1 response = userBalanceService.charge(command);
+        UserBalanceInfo response = userBalanceService.charge(command);
 
         // then
         long expectedBalance = initialBalance + chargeAmount;
         assertThat(userBalance.getBalance()).isEqualTo(expectedBalance);
-        assertThat(response.getBalance()).isEqualTo(expectedBalance);
+        assertThat(response.balance()).isEqualTo(expectedBalance);
 
         verify(userBalanceHistoryRepository, times(1))
                 .save(argThat(history ->
@@ -105,7 +105,7 @@ class UserBalanceServiceTest {
         when(userBalanceHistoryRepository.findByUserId(userId)).thenReturn(histories);
 
         // when
-        List<UserBalanceHistoryResponse.UserBalanceHistoryV1> responseList = userBalanceService.getUserBalanceHistory(userId);
+        List<UserBalanceHistoryInfo> responseList = userBalanceService.getUserBalanceHistory(userId);
 
         // then
         assertThat(responseList)

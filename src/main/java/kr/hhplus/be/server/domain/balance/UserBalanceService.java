@@ -1,7 +1,5 @@
 package kr.hhplus.be.server.domain.balance;
 
-import kr.hhplus.be.server.inferfaces.balance.dto.UserBalanceHistoryResponse;
-import kr.hhplus.be.server.inferfaces.balance.dto.UserBalanceResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,13 +20,13 @@ public class UserBalanceService {
     }
 
     @Transactional(readOnly = true)
-    public UserBalanceResponse.UserBalanceV1 getUserBalance(Long userId) {
+    public UserBalanceInfo getUserBalance(Long userId) {
         UserBalance userBalance = userBalanceRepository.findByUserId(userId);
 
-        return UserBalanceResponse.UserBalanceV1.from(userBalance);
+        return UserBalanceInfo.from(userBalance);
     }
 
-    public UserBalanceResponse.UserBalanceV1 charge(UserBalanceCommand.Charge command) {
+    public UserBalanceInfo charge(UserBalanceCommand.Charge command) {
         UserBalance userBalance = userBalanceRepository.findByUserId(command.getUserId());
 
         long beforePoint = userBalance.getBalance();
@@ -46,15 +44,36 @@ public class UserBalanceService {
         userBalanceHistoryRepository.save(history);
         userBalanceRepository.save(userBalance);
 
-        return UserBalanceResponse.UserBalanceV1.from(userBalance);
+        return UserBalanceInfo.from(userBalance);
+    }
+
+    public UserBalanceInfo use(UserBalanceCommand.Charge command) {
+        UserBalance userBalance = userBalanceRepository.findByUserId(command.getUserId());
+
+        long beforePoint = userBalance.getBalance();
+        UserBalance usedUserBalance = userBalance.use(command.getAmount());
+        long afterPoint = usedUserBalance.getBalance();
+
+        UserBalanceHistory history = UserBalanceHistory.of(
+                command.getUserId(),
+                TransactionType.USE,
+                command.getAmount(),
+                beforePoint,
+                afterPoint
+        );
+
+        userBalanceHistoryRepository.save(history);
+        userBalanceRepository.save(userBalance);
+
+        return UserBalanceInfo.from(userBalance);
     }
 
     @Transactional(readOnly = true)
-    public List<UserBalanceHistoryResponse.UserBalanceHistoryV1> getUserBalanceHistory(Long userId) {
+    public List<UserBalanceHistoryInfo> getUserBalanceHistory(Long userId) {
         List<UserBalanceHistory> histories = userBalanceHistoryRepository.findByUserId(userId);
 
         return histories.stream()
-                .map(history -> UserBalanceHistoryResponse.UserBalanceHistoryV1.from(history))
+                .map(history -> UserBalanceHistoryInfo.from(history))
                 .collect(Collectors.toList());
     }
 }
