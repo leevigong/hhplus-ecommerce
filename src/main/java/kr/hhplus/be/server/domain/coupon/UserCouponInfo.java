@@ -5,18 +5,20 @@ import java.time.LocalDateTime;
 public record UserCouponInfo(
         Long couponId,
         String couponCode,
-        UserCouponStatus couponStatus,
+        UserCouponStatus userCouponStatus,
         DiscountType discountType,
         long discountAmount,
+        LocalDateTime expiredAt,
         LocalDateTime createdAt
 ) {
     public static UserCouponInfo from(UserCoupon userCoupon) {
         return new UserCouponInfo(
-                userCoupon.getCoupon().getId(),
+                userCoupon.getId(),
                 userCoupon.getCoupon().getCouponCode(),
-                userCoupon.getCouponStatus(),
+                userCoupon.getUserCouponStatus(),
                 userCoupon.getCoupon().getDiscountType(),
                 userCoupon.getCoupon().getDiscountAmount(),
+                userCoupon.getCoupon().getExpiredAt(),
                 userCoupon.getCreatedAt()
         );
     }

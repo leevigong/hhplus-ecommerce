@@ -21,7 +21,7 @@ public record UserCouponResponse(
         return new UserCouponResponse(
                 userCouponInfo.couponId(),
                 userCouponInfo.couponCode(),
-                userCouponInfo.couponStatus(),
+                userCouponInfo.userCouponStatus(),
                 userCouponInfo.discountType(),
                 userCouponInfo.discountAmount(),
                 userCouponInfo.createdAt()

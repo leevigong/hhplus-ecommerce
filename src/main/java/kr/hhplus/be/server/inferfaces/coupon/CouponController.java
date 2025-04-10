@@ -1,17 +1,14 @@
 package kr.hhplus.be.server.inferfaces.coupon;
 
 import kr.hhplus.be.server.domain.coupon.CouponService;
-import kr.hhplus.be.server.domain.coupon.DiscountType;
+import kr.hhplus.be.server.domain.coupon.UserCouponCommand;
 import kr.hhplus.be.server.domain.coupon.UserCouponInfo;
-import kr.hhplus.be.server.domain.coupon.UserCouponStatus;
 import kr.hhplus.be.server.inferfaces.coupon.dto.CouponIssueResponse;
 import kr.hhplus.be.server.inferfaces.coupon.dto.UserCouponRequest;
 import kr.hhplus.be.server.inferfaces.coupon.dto.UserCouponResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -29,6 +26,7 @@ public class CouponController implements CouponControllerDocs {
             @PathVariable("userId") Long userId
     ) {
         List<UserCouponInfo> infos = couponService.getUserCoupons(userId);
+
         return ResponseEntity.ok(infos.stream()
                 .map(UserCouponResponse::from)
                 .toList());
@@ -38,10 +36,10 @@ public class CouponController implements CouponControllerDocs {
     public ResponseEntity<CouponIssueResponse> issueCoupon(
             @RequestBody UserCouponRequest request
     ) {
-        CouponIssueResponse response = new CouponIssueResponse(1L, "ABCDEFG123456", UserCouponStatus.AVAILABLE, DiscountType.PERCENTAGE, BigDecimal.valueOf(10),
-                LocalDateTime.now().withNano(0), LocalDateTime.now().withNano(0));
+        UserCouponCommand command = UserCouponCommand.of(request.couponId(), request.userId());
+        UserCouponInfo info = couponService.issueCoupon(command);
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(CouponIssueResponse.from(info));
     }
 
 }
