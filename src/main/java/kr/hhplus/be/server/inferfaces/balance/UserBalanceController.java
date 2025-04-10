@@ -7,6 +7,8 @@ import kr.hhplus.be.server.domain.balance.UserBalanceHistoryInfo;
 import kr.hhplus.be.server.domain.balance.UserBalanceInfo;
 import kr.hhplus.be.server.domain.balance.UserBalanceService;
 import kr.hhplus.be.server.inferfaces.balance.dto.ChargeRequest;
+import kr.hhplus.be.server.inferfaces.balance.dto.UserBalanceHistoryResponse;
+import kr.hhplus.be.server.inferfaces.balance.dto.UserBalanceResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,31 +25,33 @@ public class UserBalanceController implements UserBalanceControllerDocs {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<UserBalanceInfo> getBalance(
+    public ResponseEntity<UserBalanceResponse.UserBalanceV1> getBalance(
             @PathVariable("userId") Long userId
     ) {
-        UserBalanceInfo response = userBalanceService.getUserBalance(userId);
+        UserBalanceInfo info = userBalanceService.getUserBalance(userId);
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(UserBalanceResponse.UserBalanceV1.from(info));
     }
 
     @PutMapping("/{userId}")
-    public ResponseEntity<UserBalanceInfo> chargeBalance(
+    public ResponseEntity<UserBalanceResponse.UserBalanceV1> chargeBalance(
             @PathVariable("userId") Long userId,
             @RequestBody @Valid ChargeRequest request
     ) {
         UserBalanceCommand.Charge command = UserBalanceCommand.Charge.of(userId, request.amount());
-        UserBalanceInfo response = userBalanceService.charge(command);
+        UserBalanceInfo info = userBalanceService.charge(command);
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(UserBalanceResponse.UserBalanceV1.from(info));
     }
 
     @GetMapping("/{userId}/history")
-    public ResponseEntity<List<UserBalanceHistoryInfo>> getUserBalanceHistory(
+    public ResponseEntity<List<UserBalanceHistoryResponse.UserBalanceHistoryV1>> getUserBalanceHistory(
             @PathVariable("userId") Long userId
     ) {
-        List<UserBalanceHistoryInfo> responses = userBalanceService.getUserBalanceHistory(userId);
+        List<UserBalanceHistoryInfo> infos = userBalanceService.getUserBalanceHistory(userId);
 
-        return ResponseEntity.ok(responses);
+        return ResponseEntity.ok(infos.stream()
+                .map(UserBalanceHistoryResponse.UserBalanceHistoryV1::from)
+                .toList());
     }
 }

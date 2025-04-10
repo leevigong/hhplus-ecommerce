@@ -1,7 +1,5 @@
 package kr.hhplus.be.server.domain.balance;
 
-import kr.hhplus.be.server.inferfaces.balance.dto.UserBalanceHistoryResponse;
-
 import java.time.LocalDateTime;
 
 public record UserBalanceHistoryInfo(
@@ -11,7 +9,7 @@ public record UserBalanceHistoryInfo(
         long beforeBalance,
         long afterBalance,
         LocalDateTime createdAt
-){
+) {
     public static UserBalanceHistoryInfo from(UserBalanceHistory userBalanceHistory) {
         return new UserBalanceHistoryInfo(
                 userBalanceHistory.getUserId(),

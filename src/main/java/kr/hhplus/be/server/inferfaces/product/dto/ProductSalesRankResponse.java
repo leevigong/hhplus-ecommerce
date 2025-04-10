@@ -1,6 +1,6 @@
 package kr.hhplus.be.server.inferfaces.product.dto;
 
-import kr.hhplus.be.server.domain.product.ProductSalesRank;
+import kr.hhplus.be.server.domain.product.ProductSalesRankInfo;
 import kr.hhplus.be.server.domain.product.enums.RankingScope;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,12 +18,14 @@ public class ProductSalesRankResponse {
         private RankingScope rankingScope;
         private int rankPosition;
 
-        public static ProductSalesRankV1 from(ProductSalesRank productSalesRank) {
-            return new ProductSalesRankV1(productSalesRank.getProduct().getId(),
-                    productSalesRank.getTotalSalesCount(),
-                    productSalesRank.getTotalSalesPrice(),
-                    productSalesRank.getRankingScope(),
-                    productSalesRank.getRankPosition());
+        public static ProductSalesRankV1 from(ProductSalesRankInfo productSalesRankInfo) {
+            return new ProductSalesRankV1(
+                    productSalesRankInfo.productId(),
+                    productSalesRankInfo.totalSalesCount(),
+                    productSalesRankInfo.totalSalesPrice(),
+                    productSalesRankInfo.rankingScope(),
+                    productSalesRankInfo.rankPosition()
+            );
         }
     }
 }

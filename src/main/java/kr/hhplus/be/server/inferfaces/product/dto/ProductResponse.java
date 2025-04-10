@@ -1,6 +1,6 @@
 package kr.hhplus.be.server.inferfaces.product.dto;
 
-import kr.hhplus.be.server.domain.product.Product;
+import kr.hhplus.be.server.domain.product.ProductInfo;
 import kr.hhplus.be.server.domain.product.enums.Category;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,12 +19,14 @@ public class ProductResponse {
         private int stockQuantity;
         private Category category;
 
-        public static ProductV1 from(Product product) {
-            return new ProductV1(product.getId(),
-                    product.getName(),
-                    product.getPrice(),
-                    product.getStockQuantity(),
-                    product.getCategory());
+        public static ProductV1 from(ProductInfo productInfo) {
+            return new ProductV1(
+                    productInfo.productId(),
+                    productInfo.productName(),
+                    productInfo.price(),
+                    productInfo.stockQuantity(),
+                    productInfo.category()
+            );
         }
     }
 }

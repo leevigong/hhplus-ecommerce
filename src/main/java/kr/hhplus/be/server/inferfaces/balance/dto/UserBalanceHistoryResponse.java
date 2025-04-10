@@ -1,7 +1,7 @@
 package kr.hhplus.be.server.inferfaces.balance.dto;
 
 import kr.hhplus.be.server.domain.balance.TransactionType;
-import kr.hhplus.be.server.domain.balance.UserBalanceHistory;
+import kr.hhplus.be.server.domain.balance.UserBalanceHistoryInfo;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,13 +22,15 @@ public class UserBalanceHistoryResponse {
         private long afterBalance;
         private LocalDateTime createdAt;
 
-        public static UserBalanceHistoryV1 from(UserBalanceHistory userBalanceHistory) {
-            return new UserBalanceHistoryV1(userBalanceHistory.getUserId(),
-                    userBalanceHistory.getTransactionType(),
-                    userBalanceHistory.getAmount(),
-                    userBalanceHistory.getBeforeBalance(),
-                    userBalanceHistory.getAfterBalance(),
-                    userBalanceHistory.getCreatedAt());
+        public static UserBalanceHistoryV1 from(UserBalanceHistoryInfo userBalanceHistoryInfo) {
+            return new UserBalanceHistoryV1(
+                    userBalanceHistoryInfo.userId(),
+                    userBalanceHistoryInfo.transactionType(),
+                    userBalanceHistoryInfo.amount(),
+                    userBalanceHistoryInfo.beforeBalance(),
+                    userBalanceHistoryInfo.afterBalance(),
+                    userBalanceHistoryInfo.createdAt()
+            );
         }
 
     }

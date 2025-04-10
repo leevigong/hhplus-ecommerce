@@ -10,8 +10,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import kr.hhplus.be.server.domain.balance.UserBalanceHistoryInfo;
-import kr.hhplus.be.server.domain.balance.UserBalanceInfo;
 import kr.hhplus.be.server.global.exception.ErrorResponse;
 import kr.hhplus.be.server.inferfaces.balance.dto.ChargeRequest;
 import kr.hhplus.be.server.inferfaces.balance.dto.UserBalanceHistoryResponse;
@@ -64,7 +62,7 @@ public interface UserBalanceControllerDocs {
                                 """)
                     ))
     })
-    ResponseEntity<UserBalanceInfo> getBalance(
+    ResponseEntity<UserBalanceResponse.UserBalanceV1> getBalance(
             @PathVariable("userId") Long userId
     );
 
@@ -107,7 +105,7 @@ public interface UserBalanceControllerDocs {
                                 """)
                     ))
     })
-    ResponseEntity<UserBalanceInfo> chargeBalance(
+    ResponseEntity<UserBalanceResponse.UserBalanceV1> chargeBalance(
             @PathVariable("userId") Long userId,
             @RequestBody @Valid ChargeRequest request
     );
@@ -163,7 +161,7 @@ public interface UserBalanceControllerDocs {
                                 """)
                     ))
     })
-    ResponseEntity<List<UserBalanceHistoryInfo>> getUserBalanceHistory(
+    ResponseEntity<List<UserBalanceHistoryResponse.UserBalanceHistoryV1>> getUserBalanceHistory(
             @PathVariable("userId") Long userId
     );
 }

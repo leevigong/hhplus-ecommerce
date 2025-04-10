@@ -3,6 +3,8 @@ package kr.hhplus.be.server.inferfaces.product;
 import kr.hhplus.be.server.domain.product.ProductInfo;
 import kr.hhplus.be.server.domain.product.ProductSalesRankInfo;
 import kr.hhplus.be.server.domain.product.ProductService;
+import kr.hhplus.be.server.inferfaces.product.dto.ProductResponse;
+import kr.hhplus.be.server.inferfaces.product.dto.ProductSalesRankResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,19 +21,22 @@ public class ProductController implements ProductControllerDocs {
     }
 
     @GetMapping("/{productId}")
-    public ResponseEntity<ProductInfo> getProduct(
+    public ResponseEntity<ProductResponse.ProductV1> getProduct(
             @PathVariable("productId") Long productId
     ) {
-        ProductInfo response = productService.getProductById(productId);
+        ProductInfo info = productService.getProductById(productId);
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(ProductResponse.ProductV1.from(info));
     }
 
     @GetMapping("/popular")
-    public ResponseEntity<List<ProductSalesRankInfo>> getProductSalesRank(
+    public ResponseEntity<List<ProductSalesRankResponse.ProductSalesRankV1>> getProductSalesRank(
             @RequestParam(value = "rankingScope", required = false, defaultValue = "THREE_DAYS") String rankingScope
     ) {
-        List<ProductSalesRankInfo> responses = productService.getProductSalesRank(rankingScope);
-        return ResponseEntity.ok(responses);
+        List<ProductSalesRankInfo> infos = productService.getProductSalesRank(rankingScope);
+
+        return ResponseEntity.ok(infos.stream()
+                .map(ProductSalesRankResponse.ProductSalesRankV1::from)
+                .toList());
     }
 }
