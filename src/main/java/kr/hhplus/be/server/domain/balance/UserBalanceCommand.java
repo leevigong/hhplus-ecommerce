@@ -1,22 +1,19 @@
 package kr.hhplus.be.server.domain.balance;
 
-import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor
 public class UserBalanceCommand {
 
     @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class Charge {
 
-        private final Long userId;
-        private final long amount;
-
-        private Charge(Long userId, long amount) {
-            this.userId = userId;
-            this.amount = amount;
-        }
+        private Long userId;
+        private long amount;
 
         public static Charge of(Long userId, long amount) {
             return new Charge(userId, amount);
