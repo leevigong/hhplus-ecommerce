@@ -20,7 +20,15 @@ public enum ApiErrorCode {
     INSUFFICIENT_BALANCE(HttpStatus.BAD_REQUEST, "잔액이 부족합니다."),
 
     // UserBalanceHistory
-    NEGATIVE_BALANCE_HISTORY_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "음수일 수 없습니다.");
+    NEGATIVE_BALANCE_HISTORY_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "음수일 수 없습니다."),
+
+    // Product
+    INSUFFICIENT_STOCK(HttpStatus.BAD_REQUEST, "재고가 부족합니다."),
+    INVALID_STOCK_INCREASE_AMOUNT(HttpStatus.BAD_REQUEST, "증가 수량은 0 이상이어야 합니다."),
+    INVALID_PRODUCT_PRICE(HttpStatus.BAD_REQUEST, "상품 가격은 0보다 커야 합니다."),
+    MISSING_PRODUCT_CATEGORY(HttpStatus.BAD_REQUEST, "카테고리는 필수입니다."),
+    INVALID_RANKING_SCOPE(HttpStatus.BAD_REQUEST, "유효하지 않은 랭킹 기준(범위)입니다.");
+
 
     ;
 
