@@ -1,5 +1,7 @@
 package kr.hhplus.be.server.inferfaces.order;
 
+import kr.hhplus.be.server.application.order.OrderFacade;
+import kr.hhplus.be.server.application.order.OrderResult;
 import kr.hhplus.be.server.inferfaces.order.dto.OrderCreateRequest;
 import kr.hhplus.be.server.inferfaces.order.dto.OrderResponse;
 import org.springframework.http.ResponseEntity;
@@ -8,19 +10,22 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-
 @RestController
 @RequestMapping("/api/v1/orders")
 public class OrderController implements OrderControllerDocs {
 
+    private final OrderFacade orderFacade;
+
+    public OrderController(OrderFacade orderFacade) {
+        this.orderFacade = orderFacade;
+    }
+
     @PostMapping
     public ResponseEntity<OrderResponse> createOrder(
             @RequestBody OrderCreateRequest request
-    ){
-        OrderResponse response = new OrderResponse(1L, BigDecimal.valueOf(5000), LocalDateTime.now().withNano(0));
+    ) {
+        OrderResult result = orderFacade.order(request.toCriteria());
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(OrderResponse.from(result));
     }
 }
