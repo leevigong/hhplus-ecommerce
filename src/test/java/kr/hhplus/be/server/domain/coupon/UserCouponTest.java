@@ -46,47 +46,47 @@ class UserCouponTest {
     void 쿠폰_사용_성공() {
         UserCoupon userCoupon = UserCoupon.builder()
                 .coupon(validCoupon)
-                .user(user)
-                .couponStatus(UserCouponStatus.AVAILABLE)
+                .userId(user.getId())
+                .userCouponStatus(UserCouponStatus.AVAILABLE)
                 .build();
 
         userCoupon.use();
 
-        assertThat(userCoupon.getCouponStatus()).isEqualTo(UserCouponStatus.USED);
+        assertThat(userCoupon.getUserCouponStatus()).isEqualTo(UserCouponStatus.USED);
     }
 
     @Test
     void 만료된_쿠폰_사용시_예외() {
         UserCoupon userCoupon = UserCoupon.builder()
                 .coupon(expiredCoupon)
-                .user(user)
-                .couponStatus(UserCouponStatus.AVAILABLE)
+                .userId(user.getId())
+                .userCouponStatus(UserCouponStatus.AVAILABLE)
                 .build();
 
         assertThatThrownBy(userCoupon::use)
                 .isInstanceOf(ApiException.class)
-                .hasMessage(ApiErrorCode.COUPON_NOT_AVAILABLE_TO_ISSUE.getMessage());
+                .hasMessage(ApiErrorCode.USER_COUPON_EXPIRED.getMessage());
     }
 
     @Test
     void 사용한_쿠폰_취소_성공() {
         UserCoupon userCoupon = UserCoupon.builder()
                 .coupon(validCoupon)
-                .user(user)
-                .couponStatus(UserCouponStatus.USED)
+                .userId(user.getId())
+                .userCouponStatus(UserCouponStatus.USED)
                 .build();
 
         userCoupon.cancel();
 
-        assertThat(userCoupon.getCouponStatus()).isEqualTo(UserCouponStatus.AVAILABLE);
+        assertThat(userCoupon.getUserCouponStatus()).isEqualTo(UserCouponStatus.AVAILABLE);
     }
 
     @Test
     void 사용하지_않은_쿠폰_취소시_예외() {
         UserCoupon userCoupon = UserCoupon.builder()
                 .coupon(validCoupon)
-                .user(user)
-                .couponStatus(UserCouponStatus.AVAILABLE)
+                .userId(user.getId())
+                .userCouponStatus(UserCouponStatus.AVAILABLE)
                 .build();
 
         assertThatThrownBy(userCoupon::cancel)
@@ -97,11 +97,11 @@ class UserCouponTest {
     void 만료된_쿠폰_취소시_예외() {
         UserCoupon userCoupon = UserCoupon.builder()
                 .coupon(expiredCoupon)
-                .user(user)
-                .couponStatus(UserCouponStatus.USED)
+                .userId(user.getId())
+                .userCouponStatus(UserCouponStatus.AVAILABLE)
                 .build();
 
         assertThatThrownBy(userCoupon::cancel)
-                .hasMessage(ApiErrorCode.COUPON_EXPIRED.getMessage());
+                .hasMessage(ApiErrorCode.USER_COUPON_EXPIRED.getMessage());
     }
 }

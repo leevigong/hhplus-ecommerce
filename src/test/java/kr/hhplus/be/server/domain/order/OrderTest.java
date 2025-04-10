@@ -3,12 +3,10 @@ package kr.hhplus.be.server.domain.order;
 import kr.hhplus.be.server.domain.coupon.*;
 import kr.hhplus.be.server.domain.user.User;
 import kr.hhplus.be.server.global.exception.ApiErrorCode;
-import kr.hhplus.be.server.global.exception.ApiException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import java.time.LocalDateTime;
 
@@ -39,14 +37,14 @@ class OrderTest {
 
         userCoupon = UserCoupon.builder()
                 .coupon(coupon)
-                .user(user)
-                .couponStatus(UserCouponStatus.AVAILABLE)
+                .userId(user.getId())
+                .userCouponStatus(UserCouponStatus.AVAILABLE)
                 .build();
 
         expiredUserCoupon = UserCoupon.builder()
                 .coupon(coupon)
-                .user(user)
-                .couponStatus(UserCouponStatus.EXPIRED)
+                .userId(user.getId())
+                .userCouponStatus(UserCouponStatus.EXPIRED)
                 .build();
 
         order = Order.builder()
@@ -65,7 +63,7 @@ class OrderTest {
         assertThat(order.getDiscountAmount()).isEqualTo(1000);
         assertThat(order.getFinalPrice()).isEqualTo(4000);
         assertThat(order.getUserCoupon()).isNotNull();
-        assertThat(order.getUserCoupon().getCouponStatus()).isEqualTo(UserCouponStatus.USED);
+        assertThat(order.getUserCoupon().getUserCouponStatus()).isEqualTo(UserCouponStatus.USED);
     }
 
     @Test
@@ -80,7 +78,7 @@ class OrderTest {
         order.cancelOrder();
 
         assertThat(order.getOrderStatus()).isEqualTo(OrderStatus.CANCELED);
-        assertThat(userCoupon.getCouponStatus()).isEqualTo(UserCouponStatus.AVAILABLE);
+        assertThat(userCoupon.getUserCouponStatus()).isEqualTo(UserCouponStatus.AVAILABLE);
     }
 
     @ParameterizedTest
