@@ -55,7 +55,7 @@ class UserBalanceServiceTest {
     }
 
     @Test
-    void 충전_성공() {
+    void 잔액_충전_성공() {
         // given
         long chargeAmount = 500L;
 
@@ -83,7 +83,7 @@ class UserBalanceServiceTest {
     }
 
     @Test
-    void 충전_실패_최소_충전_금액_만족하지_않음() {
+    void 잔액_충전_실패_최소_충전_금액_만족하지_않음() {
         // given
         long chargeAmount = 50L;
         UserBalance userBalance = UserBalance.of(user, initialBalance);
@@ -94,6 +94,35 @@ class UserBalanceServiceTest {
         assertThatThrownBy(() -> userBalanceService.charge(command))
                 .hasMessage(ApiErrorCode.INVALID_CHARGE_MIN_AMOUNT.getMessage());
     }
+
+    @Test
+    void 잔액_사용_성공() {
+        // given
+        long useAmount = 50L;
+        UserBalanceCommand.Charge command = new UserBalanceCommand.Charge(userId, useAmount);
+
+        when(userBalanceRepository.findByUserId(userId)).thenReturn(userBalance);
+
+        // when
+        UserBalanceInfo response = userBalanceService.use(command);
+
+        // then
+        long expectedBalance = initialBalance - useAmount; // 100 - 50 = 50
+        assertThat(userBalance.getBalance()).isEqualTo(expectedBalance);
+        assertThat(response.balance()).isEqualTo(expectedBalance);
+
+        verify(userBalanceHistoryRepository, times(1))
+                .save(argThat(history ->
+                        history.getUserId().equals(userId) &&
+                                history.getAmount() == useAmount &&
+                                history.getBeforeBalance() == initialBalance &&
+                                history.getAfterBalance() == expectedBalance &&
+                                history.getTransactionType() == TransactionType.USE
+                ));
+
+        verify(userBalanceRepository, times(1)).save(userBalance);
+    }
+
 
     @Test
     void 잔액_내역_저장_성공() {
