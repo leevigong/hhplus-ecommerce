@@ -7,6 +7,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import kr.hhplus.be.server.domain.product.ProductInfo;
+import kr.hhplus.be.server.domain.product.ProductSalesRankInfo;
 import kr.hhplus.be.server.global.exception.ErrorResponse;
 import kr.hhplus.be.server.inferfaces.product.dto.ProductResponse;
 import kr.hhplus.be.server.inferfaces.product.dto.ProductSalesRankResponse;
@@ -57,7 +59,7 @@ public interface ProductControllerDocs {
             )
     })
     @GetMapping("/api/products/{productId}")
-    public ResponseEntity<ProductResponse.ProductV1> getProduct(
+    public ResponseEntity<ProductInfo> getProduct(
             @PathVariable("productId") Long productId
     );
 
@@ -117,7 +119,7 @@ public interface ProductControllerDocs {
             )
     })
     @GetMapping("/api/products/sales-rank")
-    public ResponseEntity<List<ProductSalesRankResponse.ProductSalesRankV1>> getProductSalesRank(
+    public ResponseEntity<List<ProductSalesRankInfo>> getProductSalesRank(
             @RequestParam(value = "sortBy", required = false, defaultValue = "THREE_DAYS") String sortBy
     );
 

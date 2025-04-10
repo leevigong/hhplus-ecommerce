@@ -26,10 +26,10 @@ class ProductServiceTest {
         when(productRepository.findById(1L)).thenReturn(product);
 
         // when
-        ProductResponse.ProductV1 response = getProductService.getProductById(1L);
+        ProductInfo response = getProductService.getProductById(1L);
 
         // then
-        assertEquals("상의", response.getProductName());
-        assertEquals(10000, response.getPrice());
+        assertEquals("상의", response.productName());
+        assertEquals(10000, response.price());
     }
 }
