@@ -1,13 +1,20 @@
 package kr.hhplus.be.server.domain.product;
 
+import kr.hhplus.be.server.domain.order.OrderCommand;
 import kr.hhplus.be.server.domain.product.enums.Category;
+import kr.hhplus.be.server.global.exception.ApiErrorCode;
 import kr.hhplus.be.server.inferfaces.product.dto.ProductResponse;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
@@ -19,10 +26,16 @@ class ProductServiceTest {
     @InjectMocks
     private ProductService getProductService;
 
+    private Product product;
+
+    @BeforeEach
+    void setUp() {
+        product = new Product(1L, "상의", 10000, 10, Category.TOP);
+    }
+
     @Test
     void 상품_아이디로_상품_조회_성공() {
         // given
-        Product product = new Product(1L, "상의", 10000, 10, Category.TOP);
         when(productRepository.findById(1L)).thenReturn(product);
 
         // when
@@ -31,5 +44,29 @@ class ProductServiceTest {
         // then
         assertEquals("상의", response.productName());
         assertEquals(10000, response.price());
+    }
+
+    @Test
+    void 재고_검증_성공() {
+        // given
+        OrderCommand.OrderItem orderItem = new OrderCommand.OrderItem(100L, 5);
+        List<OrderCommand.OrderItem> orderItems = List.of(orderItem);
+        when(productRepository.findById(100L)).thenReturn(product);
+
+        // when & then
+        assertThatCode(() -> getProductService.validateProducts(orderItems))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    void 재고_검증_실패() {
+        // given
+        OrderCommand.OrderItem orderItem = new OrderCommand.OrderItem(100L, 15);
+        List<OrderCommand.OrderItem> orderItems = List.of(orderItem);
+        when(productRepository.findById(100L)).thenReturn(product);
+
+        // when & then
+        assertThatThrownBy(() -> getProductService.validateProducts(orderItems))
+                .hasMessage(ApiErrorCode.INSUFFICIENT_STOCK.getMessage());
     }
 }

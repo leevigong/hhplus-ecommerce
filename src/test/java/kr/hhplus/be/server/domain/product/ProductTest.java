@@ -74,4 +74,17 @@ class ProductTest {
                 .isInstanceOf(ApiException.class)
                 .hasMessage(ApiErrorCode.INVALID_PRODUCT_PRICE.getMessage());
     }
+
+    @Test
+    void 재고수량_검증_성공() {
+        assertThatCode(() -> product.validateStockQuantity(5))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    void 재고수량_검증_실패() {
+        assertThatThrownBy(() -> product.validateStockQuantity(15))
+                .isInstanceOf(ApiException.class)
+                .hasMessage(ApiErrorCode.INSUFFICIENT_STOCK.getMessage());
+    }
 }
