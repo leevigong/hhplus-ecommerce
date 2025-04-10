@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.domain.product;
 
+import kr.hhplus.be.server.domain.order.OrderCommand;
 import kr.hhplus.be.server.domain.product.enums.RankingScope;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +31,16 @@ public class ProductService {
         return productSalesRanks.stream()
                 .map(rank -> ProductSalesRankInfo.from(rank))
                 .collect(Collectors.toList());
+    }
+
+    public void validateProducts(List<OrderCommand.OrderItem> orderItems) {
+        for (OrderCommand.OrderItem orderItem : orderItems) {
+            // 상품을 조회
+            Product product = productRepository.findById(orderItem.getProductId());
+
+            // 재고 및 상품 상태 확인
+            product.validateStockQuantity(orderItem.getQuantity());
+        }
     }
 
 }

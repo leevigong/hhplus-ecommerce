@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.domain.product;
 
 import jakarta.persistence.*;
+import kr.hhplus.be.server.domain.coupon.UserCouponStatus;
 import kr.hhplus.be.server.domain.product.enums.Category;
 import kr.hhplus.be.server.global.entity.BaseEntity;
 import kr.hhplus.be.server.global.exception.ApiErrorCode;
@@ -9,7 +10,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
 
 @Entity
 @Getter
@@ -32,9 +32,8 @@ public class Product extends BaseEntity {
     private Category category;
 
     public void subStock(int quantity) {
-        if (quantity > this.stockQuantity) {
-            throw new ApiException(ApiErrorCode.INSUFFICIENT_STOCK);
-        }
+        validateStockQuantity(quantity);
+
         this.stockQuantity -= quantity;
     }
 
@@ -50,4 +49,11 @@ public class Product extends BaseEntity {
             throw new ApiException(ApiErrorCode.INVALID_PRODUCT_PRICE);
         }
     }
+
+    public void validateStockQuantity(int quantity) {
+        if (this.stockQuantity < quantity) {
+            throw new ApiException(ApiErrorCode.INSUFFICIENT_STOCK);
+        }
+    }
+
 }
