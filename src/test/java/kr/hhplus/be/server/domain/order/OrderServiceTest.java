@@ -57,7 +57,6 @@ public class OrderServiceTest {
                 .build();
     }
 
-
     @Test
     void 주문_생성_성공() {
         // given
@@ -98,7 +97,7 @@ public class OrderServiceTest {
         UserCoupon userCoupon = UserCoupon.builder()
                 .id(userCouponId)
                 .coupon(coupon)
-                .couponStatus(UserCouponStatus.AVAILABLE)
+                .userCouponStatus(UserCouponStatus.AVAILABLE)
                 .build();
         when(userCouponRepository.findByCouponId(userCouponId)).thenReturn(userCoupon);
 
