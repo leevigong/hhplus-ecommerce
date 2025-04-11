@@ -1,19 +1,18 @@
 package kr.hhplus.be.server.inferfaces.payment.dto;
 
-import kr.hhplus.be.server.domain.order.OrderStatus;
-import kr.hhplus.be.server.domain.payment.PaymentType;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import kr.hhplus.be.server.domain.payment.PaymentInfo;
 
 public record PaymentResponse(
         Long paymentId,
         Long orderId,
-        Long userId,
-        PaymentType paymentType,
-        BigDecimal amount,
-        String receipt,
-        LocalDateTime createdAt,
-        OrderStatus orderStatus
+        long amount
 ) {
+
+    public static PaymentResponse from(PaymentInfo paymentInfo) {
+        return new PaymentResponse(
+                paymentInfo.paymentId(),
+                paymentInfo.orderId(),
+                paymentInfo.amount()
+        );
+    }
 }

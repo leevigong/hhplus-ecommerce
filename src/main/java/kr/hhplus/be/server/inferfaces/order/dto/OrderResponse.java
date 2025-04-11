@@ -1,11 +1,16 @@
 package kr.hhplus.be.server.inferfaces.order.dto;
 
-import java.math.BigDecimal;
+import kr.hhplus.be.server.application.order.OrderResult;
+
 import java.time.LocalDateTime;
 
 public record OrderResponse(
         long orderId,
-        BigDecimal finalPrice,
+        long finalPrice,
         LocalDateTime orderedAt
 ) {
+
+    public static OrderResponse from(OrderResult result) {
+        return new OrderResponse(result.orderId(), result.finalPrice(), result.createdAt());
+    }
 }

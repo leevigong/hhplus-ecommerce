@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import kr.hhplus.be.server.global.ErrorResponse;
+import kr.hhplus.be.server.global.exception.ErrorResponse;
 import kr.hhplus.be.server.inferfaces.order.dto.OrderCreateRequest;
 import kr.hhplus.be.server.inferfaces.order.dto.OrderResponse;
 import org.springframework.http.MediaType;

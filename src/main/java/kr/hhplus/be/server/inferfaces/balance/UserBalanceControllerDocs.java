@@ -10,7 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import kr.hhplus.be.server.global.ErrorResponse;
+import kr.hhplus.be.server.global.exception.ErrorResponse;
 import kr.hhplus.be.server.inferfaces.balance.dto.ChargeRequest;
 import kr.hhplus.be.server.inferfaces.balance.dto.UserBalanceHistoryResponse;
 import kr.hhplus.be.server.inferfaces.balance.dto.UserBalanceResponse;
@@ -22,7 +22,7 @@ import java.util.List;
 
 @Tag(name = "잔액", description = "잔액 조회/충전/내역조회 API")
 @RequestMapping("/api/v1/balance")
-public interface BalanceControllerDocs {
+public interface UserBalanceControllerDocs {
 
     @Operation(summary = "사용자 잔액 조회",
             description = "사용자 현재 잔액을 조회합니다.")
@@ -30,7 +30,7 @@ public interface BalanceControllerDocs {
             @ApiResponse(responseCode = "200", description = "잔액 조회 성공",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = UserBalanceResponse.class),
+                            schema = @Schema(implementation = UserBalanceResponse.UserBalanceV1.class),
                             examples = @ExampleObject(value = """
                                 {
                                     "userId": 1,
@@ -62,7 +62,7 @@ public interface BalanceControllerDocs {
                                 """)
                     ))
     })
-    ResponseEntity<UserBalanceResponse> getBalance(
+    ResponseEntity<UserBalanceResponse.UserBalanceV1> getBalance(
             @PathVariable("userId") Long userId
     );
 
@@ -73,7 +73,7 @@ public interface BalanceControllerDocs {
             @ApiResponse(responseCode = "200", description = "잔액 충전 성공",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = UserBalanceResponse.class),
+                            schema = @Schema(implementation = UserBalanceResponse.UserBalanceV1.class),
                             examples = @ExampleObject(value = """
                                 {
                                     "userId": 1,
@@ -105,7 +105,7 @@ public interface BalanceControllerDocs {
                                 """)
                     ))
     })
-    ResponseEntity<UserBalanceResponse> updateBalance(
+    ResponseEntity<UserBalanceResponse.UserBalanceV1> chargeBalance(
             @PathVariable("userId") Long userId,
             @RequestBody @Valid ChargeRequest request
     );
@@ -161,7 +161,7 @@ public interface BalanceControllerDocs {
                                 """)
                     ))
     })
-    ResponseEntity<List<UserBalanceHistoryResponse>> getUserBalanceHistory(
+    ResponseEntity<List<UserBalanceHistoryResponse.UserBalanceHistoryV1>> getUserBalanceHistory(
             @PathVariable("userId") Long userId
     );
 }
