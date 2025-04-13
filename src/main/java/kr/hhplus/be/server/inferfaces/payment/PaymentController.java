@@ -1,7 +1,6 @@
 package kr.hhplus.be.server.inferfaces.payment;
 
 import kr.hhplus.be.server.domain.order.OrderStatus;
-import kr.hhplus.be.server.domain.payment.PaymentType;
 import kr.hhplus.be.server.inferfaces.payment.dto.PaymentRequest;
 import kr.hhplus.be.server.inferfaces.payment.dto.PaymentResponse;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +20,7 @@ public class PaymentController implements PaymentControllerDocs {
     public ResponseEntity<PaymentResponse> processPayment(
             @RequestBody PaymentRequest request
     ) {
-        PaymentResponse response = new PaymentResponse(3001L, 123L, 1L, PaymentType.KAKAO_PAY, BigDecimal.valueOf(49900), "re123-cei123-pt", LocalDateTime.now().withNano(0), OrderStatus.PAID);
+        PaymentResponse response = new PaymentResponse(3001L, 123L, 1L, BigDecimal.valueOf(49900), "re123-cei123-pt", LocalDateTime.now().withNano(0), OrderStatus.PAID);
 
         return ResponseEntity.ok(response);
     }
