@@ -62,13 +62,18 @@ public class Order extends BaseEntity {
             throw new ApiException(ApiErrorCode.INVALID_COUPON_STATUS);
         }
 
+        // 최종 가격 계산 메서드 호출 (내부에서 쿠폰 사용 및 할인 적용)
+        this.finalPrice = calculateFinalPrice(userCoupon, this.totalPrice);
+        this.userCoupon = userCoupon;
+    }
+
+    private long calculateFinalPrice(UserCoupon userCoupon, long totalPrice) {
         userCoupon.use();
 
-        long discount = userCoupon.getCoupon().calculateDiscount(this.totalPrice);
-        this.discountAmount = Math.min(discount, this.totalPrice);
-        this.finalPrice = this.totalPrice - this.discountAmount;
+        long discount = userCoupon.getCoupon().calculateDiscount(totalPrice);
+        this.discountAmount = discount;
 
-        this.userCoupon = userCoupon;
+        return totalPrice - discount;
     }
 
     public void cancelCoupon() {

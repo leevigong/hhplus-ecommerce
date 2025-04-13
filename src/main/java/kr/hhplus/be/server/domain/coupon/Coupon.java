@@ -71,12 +71,17 @@ public class Coupon extends BaseEntity {
     }
 
     public long calculateDiscount(long totalPrice) {
+        long discount;
+
         if (this.discountType == DiscountType.FIXED) {
-            return Math.min(this.discountAmount, totalPrice);
+            discount = this.discountAmount;
         } else if (this.discountType == DiscountType.PERCENTAGE) {
-            return (totalPrice * this.discountAmount) / 100;
+            discount = (totalPrice * this.discountAmount) / 100;
+        } else {
+            throw new ApiException(ApiErrorCode.INVALID_DISCOUNT_AMOUNT);
         }
-        throw new ApiException(ApiErrorCode.INVALID_DISCOUNT_AMOUNT);
+
+        return Math.min(discount, totalPrice);
     }
 
 }
