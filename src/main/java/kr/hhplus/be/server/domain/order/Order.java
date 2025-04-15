@@ -48,8 +48,10 @@ public class Order extends BaseEntity {
                 .build();
     }
 
-    public long calculateTotalPrice(List<OrderItem> orderItems) {
-        return orderItems.stream().mapToLong(OrderItem::getTotalPrice).sum();
+    public void calculateTotalPrice(List<OrderItem> orderItems) {
+        this.totalPrice = orderItems.stream()
+                .mapToLong(item -> item.getTotalPrice())
+                .sum();
     }
 
     public void applyCoupon(UserCoupon userCoupon) {
