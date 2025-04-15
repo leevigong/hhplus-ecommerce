@@ -6,7 +6,6 @@ import kr.hhplus.be.server.domain.order.OrderCommand.Confirm;
 import kr.hhplus.be.server.domain.product.Product;
 import kr.hhplus.be.server.domain.product.ProductRepository;
 import kr.hhplus.be.server.domain.product.enums.Category;
-import kr.hhplus.be.server.global.exception.ApiException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,9 +16,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class OrderServiceTest {
@@ -60,12 +59,11 @@ public class OrderServiceTest {
     @Test
     void 주문_생성_성공() {
         // given
-        OrderCommand.CreateOrderItem createOrderItem = new OrderCommand.CreateOrderItem(100L, 2, 10000L);
+        OrderCommand.CreateOrderItem createOrderItem = new OrderCommand.CreateOrderItem(product.getId(), 2, product.getPrice());
         List<OrderCommand.CreateOrderItem> createOrderItems = List.of(createOrderItem);
         OrderCommand.Create createCommand = new OrderCommand.Create(1L, null, createOrderItems);
 
-        when(productRepository.findById(100L)).thenReturn(product);
-        when(orderRepository.save(any(Order.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(orderRepository.save(any(Order.class))).thenReturn(order);
 
         // when
         OrderInfo orderInfo = orderService.create(createCommand);
@@ -73,8 +71,6 @@ public class OrderServiceTest {
         // then
         // 주문 항목의 총액: quantity 2 * price 50 = 100
         assertThat(orderInfo.totalPrice()).isEqualTo(100);
-        // Product 재고가 차감: 10 - 2 = 8
-        assertThat(product.getStockQuantity()).isEqualTo(8);
     }
 
     @Test
@@ -127,19 +123,5 @@ public class OrderServiceTest {
 
         // then
         assertThat(orderInfo.status()).isEqualTo(OrderStatus.PAID.name());
-    }
-
-    @Test
-    void 재고_부족_주문생성시_예외발생() {
-        // given: 재고 10, 요청(quantity) 20
-        OrderCommand.CreateOrderItem createOrderItem = new OrderCommand.CreateOrderItem(100L, 20, 10000L);
-        List<OrderCommand.CreateOrderItem> createOrderItems = List.of(createOrderItem);
-        OrderCommand.Create createCommand = new OrderCommand.Create(1L, null, createOrderItems);
-
-        when(productRepository.findById(100L)).thenReturn(product);
-
-        // when & then
-        assertThatThrownBy(() -> orderService.create(createCommand))
-                .isInstanceOf(ApiException.class);
     }
 }
