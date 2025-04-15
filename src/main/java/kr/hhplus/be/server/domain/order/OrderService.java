@@ -26,15 +26,7 @@ public class OrderService {
     }
 
     public OrderInfo create(OrderCommand.Create createCommand) {
-        List<OrderItem> orderItems = createCommand.getCreateOrderItems().stream()
-                .map(dto -> {
-                    return OrderItem.builder()
-                            .productId(dto.getProductId())
-                            .quantity(dto.getQuantity())
-                            .price(dto.getPrice())
-                            .build();
-                })
-                .collect(Collectors.toList());
+        List<OrderItem> orderItems = createCommand.toOrderItems();
 
         // 주문 생성
         Order order = Order.createOrder(createCommand.getUserId(), orderItems);
