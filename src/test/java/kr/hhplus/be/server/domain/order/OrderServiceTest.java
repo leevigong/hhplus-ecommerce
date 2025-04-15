@@ -60,15 +60,15 @@ public class OrderServiceTest {
     @Test
     void 주문_생성_성공() {
         // given
-        OrderCommand.OrderItem orderItem = new OrderCommand.OrderItem(100L, 2);
-        List<OrderCommand.OrderItem> orderItems = List.of(orderItem);
-        OrderCommand.Order orderCommand = new OrderCommand.Order(1L, null, orderItems);
+        OrderCommand.CreateOrderItem createOrderItem = new OrderCommand.CreateOrderItem(100L, 2, 10000L);
+        List<OrderCommand.CreateOrderItem> createOrderItems = List.of(createOrderItem);
+        OrderCommand.Create createCommand = new OrderCommand.Create(1L, null, createOrderItems);
 
         when(productRepository.findById(100L)).thenReturn(product);
         when(orderRepository.save(any(Order.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // when
-        OrderInfo orderInfo = orderService.create(orderCommand);
+        OrderInfo orderInfo = orderService.create(createCommand);
 
         // then
         // 주문 항목의 총액: quantity 2 * price 50 = 100
@@ -132,14 +132,14 @@ public class OrderServiceTest {
     @Test
     void 재고_부족_주문생성시_예외발생() {
         // given: 재고 10, 요청(quantity) 20
-        OrderCommand.OrderItem orderItem = new OrderCommand.OrderItem(100L, 20);
-        List<OrderCommand.OrderItem> orderItems = List.of(orderItem);
-        OrderCommand.Order orderCommand = new OrderCommand.Order(1L, null, orderItems);
+        OrderCommand.CreateOrderItem createOrderItem = new OrderCommand.CreateOrderItem(100L, 20, 10000L);
+        List<OrderCommand.CreateOrderItem> createOrderItems = List.of(createOrderItem);
+        OrderCommand.Create createCommand = new OrderCommand.Create(1L, null, createOrderItems);
 
         when(productRepository.findById(100L)).thenReturn(product);
 
         // when & then
-        assertThatThrownBy(() -> orderService.create(orderCommand))
+        assertThatThrownBy(() -> orderService.create(createCommand))
                 .isInstanceOf(ApiException.class);
     }
 }
