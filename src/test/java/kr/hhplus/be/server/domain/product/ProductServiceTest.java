@@ -3,6 +3,7 @@ package kr.hhplus.be.server.domain.product;
 import kr.hhplus.be.server.domain.order.OrderCommand;
 import kr.hhplus.be.server.domain.product.enums.Category;
 import kr.hhplus.be.server.global.exception.ApiErrorCode;
+import kr.hhplus.be.server.global.exception.ApiException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -48,24 +49,24 @@ class ProductServiceTest {
     @Test
     void 재고_검증_성공() {
         // given
-        OrderCommand.CreateOrderItem createOrderItem = new OrderCommand.CreateOrderItem(100L, 5);
+        OrderCommand.CreateOrderItem createOrderItem = new OrderCommand.CreateOrderItem(100L, 5, 2000L);
         List<OrderCommand.CreateOrderItem> createOrderItems = List.of(createOrderItem);
         when(productRepository.findById(100L)).thenReturn(product);
 
         // when & then
-        assertThatCode(() -> getProductService.validateProducts(createOrderItems))
+        assertThatCode(() -> getProductService.validateAndSubStockProducts(createOrderItems))
                 .doesNotThrowAnyException();
     }
 
     @Test
     void 재고_검증_실패() {
         // given
-        OrderCommand.CreateOrderItem createOrderItem = new OrderCommand.CreateOrderItem(100L, 15);
+        OrderCommand.CreateOrderItem createOrderItem = new OrderCommand.CreateOrderItem(100L, 15, 2000L);
         List<OrderCommand.CreateOrderItem> createOrderItems = List.of(createOrderItem);
         when(productRepository.findById(100L)).thenReturn(product);
 
         // when & then
-        assertThatThrownBy(() -> getProductService.validateProducts(createOrderItems))
+        assertThatThrownBy(() -> getProductService.validateAndSubStockProducts(createOrderItems))
                 .hasMessage(ApiErrorCode.INSUFFICIENT_STOCK.getMessage());
     }
 }
