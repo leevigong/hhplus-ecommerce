@@ -2,13 +2,12 @@ package kr.hhplus.be.server.domain.order;
 
 import kr.hhplus.be.server.domain.coupon.UserCoupon;
 import kr.hhplus.be.server.domain.coupon.UserCouponRepository;
-import kr.hhplus.be.server.domain.product.Product;
 import kr.hhplus.be.server.domain.product.ProductRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -26,24 +25,22 @@ public class OrderService {
         this.userCouponRepository = userCouponRepository;
     }
 
-    public OrderInfo create(OrderCommand.Order orderCommand) {
-        // 주문 항목 생성 및 상품 재고 체크/차감
-        List<OrderItem> orderItems = new ArrayList<>();
-        orderCommand.getOrderItems().forEach(op -> {
-            Product product = productRepository.findById(op.getProductId());
-
-            product.subStock(op.getQuantity());
-
-            OrderItem orderItem = OrderItem.builder()
-                    .product(product)
-                    .quantity(op.getQuantity())
-                    .price(product.getPrice())
-                    .build();
-            orderItems.add(orderItem);
-        });
+    public OrderInfo create(OrderCommand.Create createCommand) {
+        List<OrderItem> orderItems = createCommand.getCreateOrderItems().stream()
+                .map(dto -> {
+                    return OrderItem.builder()
+                            .productId(dto.getProductId())
+                            .quantity(dto.getQuantity())
+                            .price(dto.getPrice())
+                            .build();
+                })
+                .collect(Collectors.toList());
 
         // 주문 생성
-        Order order = Order.createOrder(orderCommand.getUserId(), orderItems);
+        Order order = Order.createOrder(createCommand.getUserId(), orderItems);
+
+        // 총 결제 금액 계산
+        order.calculateTotalPrice(orderItems);
         orderRepository.save(order);
 
         return OrderInfo.from(order);

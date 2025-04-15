@@ -3,31 +3,29 @@ package kr.hhplus.be.server.application.order;
 import kr.hhplus.be.server.domain.order.OrderCommand;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class OrderCriteria {
 
-    public record Order(Long userId, List<OrderItem> orderItems, Long couponIssueId) {
-
-        public OrderCommand.Order toCommand() {
-            return new OrderCommand.Order(
+    public record Create(
+            Long userId,
+            List<OrderItem> orderItems,
+            Long couponIssueId
+    ) {
+        public OrderCommand.Create toCommand() {
+            return new OrderCommand.Create(
                     this.userId,
                     this.couponIssueId,
                     this.orderItems().stream()
-                            .map(item -> new OrderCommand.OrderItem(item.productId(), item.quantity()))
+                            .map(item -> new OrderCommand.CreateOrderItem(item.productId(), item.quantity(), item.price))
                             .toList()
             );
         }
-
-        public static Order fromCommand(OrderCommand.Order command) {
-            List<OrderItem> items = command.getOrderItems().stream()
-                    .map(item -> new OrderItem(item.getProductId(), item.getQuantity()))
-                    .collect(Collectors.toList());
-
-            return new Order(command.getUserId(), items, command.getUserCouponId());
-        }
     }
 
-    public record OrderItem(Long productId, int quantity) {
+    public record OrderItem(
+            Long productId,
+            int quantity,
+            long price
+    ) {
     }
 }

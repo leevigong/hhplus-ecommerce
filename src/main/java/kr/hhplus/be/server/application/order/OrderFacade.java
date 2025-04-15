@@ -1,11 +1,9 @@
 package kr.hhplus.be.server.application.order;
 
-import kr.hhplus.be.server.domain.balance.UserBalanceCommand;
 import kr.hhplus.be.server.domain.balance.UserBalanceService;
 import kr.hhplus.be.server.domain.order.OrderCommand;
 import kr.hhplus.be.server.domain.order.OrderInfo;
 import kr.hhplus.be.server.domain.order.OrderService;
-import kr.hhplus.be.server.domain.payment.PaymentCommand;
 import kr.hhplus.be.server.domain.payment.PaymentService;
 import kr.hhplus.be.server.domain.product.ProductService;
 import org.springframework.stereotype.Component;
@@ -31,29 +29,19 @@ public class OrderFacade {
     }
 
     @Transactional
-    public OrderResult order(OrderCriteria.Order criteria) {
-        OrderCommand.Order orderCommand = criteria.toCommand();
+    public OrderResult order(OrderCriteria.Create criteria) {
 
-        productService.validateProducts(orderCommand.getOrderItems());
+        OrderCommand.Create createCommand = criteria.toCommand();
+        // product 검증 및 재고 감소
+        productService.validateAndSubStockProducts(createCommand.getCreateOrderItems());
 
-        OrderInfo orderInfo = orderService.create(orderCommand);
+        // order 생성, orderItem 저장
+        OrderInfo orderInfo = orderService.create(createCommand);
 
+        // 쿠폰 적용
         if (criteria.couponIssueId() != null) {
-            orderInfo = orderService.applyCoupon(
-                    OrderCommand.ApplyCoupon.of(orderInfo.orderId(), criteria.couponIssueId())
-            );
+            orderInfo = orderService.applyCoupon(OrderCommand.ApplyCoupon.of(orderInfo.orderId(), criteria.couponIssueId()));
         }
-
-        PaymentCommand.Pay paymentCommand = PaymentCommand.Pay.of(
-                criteria.userId(),
-                orderInfo.orderId(),
-                orderInfo.finalPrice()
-        );
-        paymentService.pay(paymentCommand);
-
-        userBalanceService.use(UserBalanceCommand.Use.of(criteria.userId(), orderInfo.finalPrice()));
-
-        orderInfo = orderService.confirmOrder(OrderCommand.Confirm.from(orderInfo.orderId()));
 
         return OrderResult.from(orderInfo);
     }

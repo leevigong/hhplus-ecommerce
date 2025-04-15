@@ -7,21 +7,22 @@ import java.util.stream.Collectors;
 
 public record OrderCreateRequest(
         Long userId,
-        List<OrderProductRequest> orderProducts,
+        List<OrderItemRequest> orderItems,
         Long userCouponId
 ) {
 
-    public OrderCriteria.Order toCriteria() {
-        List<OrderCriteria.OrderItem> items = this.orderProducts.stream()
-                .map(p -> new OrderCriteria.OrderItem(p.productId(), p.quantity()))
+    public OrderCriteria.Create toCriteria() {
+        List<OrderCriteria.OrderItem> items = this.orderItems.stream()
+                .map(item -> new OrderCriteria.OrderItem(item.productId(), item.quantity(), item.price()))
                 .collect(Collectors.toList());
 
-        return new OrderCriteria.Order(this.userId, items, this.userCouponId);
+        return new OrderCriteria.Create(this.userId, items, this.userCouponId);
     }
 
-    public record OrderProductRequest(
+    public record OrderItemRequest(
             Long productId,
-            int quantity
+            int quantity,
+            long price
     ) {
     }
 }

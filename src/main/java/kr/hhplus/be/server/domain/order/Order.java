@@ -37,21 +37,19 @@ public class Order extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> orderItems;
 
     public static Order createOrder(Long userId, List<OrderItem> orderItems) {
-        Order order = Order.builder()
+        return Order.builder()
                 .userId(userId)
                 .orderItems(orderItems)
                 .orderStatus(OrderStatus.PENDING)
                 .build();
-        order.calculateTotalPrice();
-        return order;
     }
 
-    public void calculateTotalPrice() {
-        this.totalPrice = orderItems.stream().mapToLong(OrderItem::getTotalPrice).sum();
+    public long calculateTotalPrice(List<OrderItem> orderItems) {
+        return orderItems.stream().mapToLong(OrderItem::getTotalPrice).sum();
     }
 
     public void applyCoupon(UserCoupon userCoupon) {

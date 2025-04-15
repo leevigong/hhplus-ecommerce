@@ -10,18 +10,19 @@ public class OrderCommand {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class Order {
+    public static class Create {
         private Long userId;
         private Long userCouponId;
-        private List<OrderItem> orderItems;
+        private List<CreateOrderItem> createOrderItems;
     }
 
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class OrderItem {
+    public static class CreateOrderItem {
         private Long productId;
         private int quantity;
+        private long price;
     }
 
     public record Confirm(Long orderId) {

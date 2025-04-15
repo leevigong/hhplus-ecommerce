@@ -33,13 +33,16 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
-    public void validateProducts(List<OrderCommand.OrderItem> orderItems) {
-        for (OrderCommand.OrderItem orderItem : orderItems) {
+    public void validateAndSubStockProducts(List<OrderCommand.CreateOrderItem> createOrderItems) {
+        for (OrderCommand.CreateOrderItem orderItem : createOrderItems) {
             // 상품을 조회
             Product product = productRepository.findById(orderItem.getProductId());
 
             // 재고 및 상품 상태 확인
             product.validateStockQuantity(orderItem.getQuantity());
+
+            // 재고 차감
+            product.subStock(orderItem.getQuantity());
         }
     }
 
