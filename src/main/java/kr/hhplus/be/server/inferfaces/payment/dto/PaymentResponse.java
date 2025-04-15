@@ -9,8 +9,7 @@ public record PaymentResponse(
         Long paymentId,
         Long orderId,
         Long userId,
-        BigDecimal amount,
-        String receipt,
+        long amount,
         LocalDateTime createdAt,
         OrderStatus orderStatus
 ) {
