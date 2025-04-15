@@ -2,26 +2,21 @@ package kr.hhplus.be.server.domain.order;
 
 import kr.hhplus.be.server.domain.coupon.UserCoupon;
 import kr.hhplus.be.server.domain.coupon.UserCouponRepository;
-import kr.hhplus.be.server.domain.product.ProductRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
 public class OrderService {
 
     private final OrderRepository orderRepository;
-    private final ProductRepository productRepository;
     private final UserCouponRepository userCouponRepository;
 
     public OrderService(OrderRepository orderRepository,
-                        ProductRepository productRepository,
                         UserCouponRepository userCouponRepository) {
         this.orderRepository = orderRepository;
-        this.productRepository = productRepository;
         this.userCouponRepository = userCouponRepository;
     }
 
