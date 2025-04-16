@@ -5,7 +5,7 @@ import kr.hhplus.be.server.domain.product.enums.RankingScope;
 public record ProductSalesRankInfo(
         Long productId,
         int totalSalesCount,
-        int totalSalesPrice,
+        long totalSalesPrice,
         RankingScope rankingScope,
         int rankPosition
 ) {

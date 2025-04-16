@@ -25,11 +25,21 @@ public class ProductSalesRank extends BaseEntity {
 
     private int totalSalesCount; // 기간내 총 판매 수량
 
-    private int totalSalesPrice; // 기간내 총 판매 금액
+    private long totalSalesPrice; // 기간내 총 판매 금액
 
     @Enumerated(EnumType.STRING)
     private RankingScope rankingScope; // 랭킹 기간(범위)
 
     private int rankPosition; // 랭킹 순위
+
+    public static ProductSalesRank create(Product product, int totalSalesCount, int totalSalesPrice, RankingScope rankingScope, int rankPosition) {
+        return ProductSalesRank.builder()
+                .product(product)
+                .totalSalesCount(totalSalesCount)
+                .totalSalesPrice(totalSalesPrice)
+                .rankingScope(rankingScope)
+                .rankPosition(rankPosition)
+                .build();
+    }
 
 }

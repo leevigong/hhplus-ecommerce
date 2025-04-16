@@ -30,10 +30,28 @@ public class Product extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Category category;
 
-    public void subStock(int quantity) {
-        validateStockQuantity(quantity);
+    public static Product create(String name, int price, int stockQuantity, Category category) {
+        validateName(name);
+        validatePrice(price);
 
-        this.stockQuantity -= quantity;
+        return Product.builder()
+                .name(name)
+                .price(price)
+                .stockQuantity(stockQuantity)
+                .category(category)
+                .build();
+    }
+
+    private static void validateName(String name) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("상품 이름은 필수입니다.");
+        }
+    }
+
+    public static void validatePrice(int price) {
+        if (price <= 0) {
+            throw new ApiException(ApiErrorCode.INVALID_PRODUCT_PRICE);
+        }
     }
 
     public void addStock(int quantity) {
@@ -43,10 +61,10 @@ public class Product extends BaseEntity {
         this.stockQuantity += quantity;
     }
 
-    public void validatePrice() {
-        if (price <= 0) {
-            throw new ApiException(ApiErrorCode.INVALID_PRODUCT_PRICE);
-        }
+    public void subStock(int quantity) {
+        validateStockQuantity(quantity);
+
+        this.stockQuantity -= quantity;
     }
 
     public void validateStockQuantity(int quantity) {
