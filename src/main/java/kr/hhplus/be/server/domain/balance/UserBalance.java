@@ -12,11 +12,12 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
+@Table(name = "user_balance")
 public class UserBalance extends BaseEntity {
 
-    private final static long USE_MIN_AMOUNT = 1;
-    private final static long CHARGE_MIN_AMOUNT = 100;
-    private final static long CHARGE_MAX_AMOUNT = 1_000_000;
+    public final static long USE_MIN_AMOUNT = 1;
+    public final static long CHARGE_MIN_AMOUNT = 100;
+    public final static long CHARGE_MAX_AMOUNT = 1_000_000;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
