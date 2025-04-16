@@ -75,7 +75,7 @@ public class OrderServiceTest {
     void 주문_확정_성공() {
         // given
         Long orderId = 1L;
-        when(orderRepository.findById(orderId)).thenReturn(order);
+        when(orderRepository.getById(orderId)).thenReturn(order);
 
         Confirm confirmCommand = Confirm.from(orderId);
 
