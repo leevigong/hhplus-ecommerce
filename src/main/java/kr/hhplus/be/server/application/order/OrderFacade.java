@@ -1,10 +1,9 @@
 package kr.hhplus.be.server.application.order;
 
-import kr.hhplus.be.server.domain.balance.UserBalanceService;
+import kr.hhplus.be.server.domain.coupon.UserCouponService;
 import kr.hhplus.be.server.domain.order.OrderCommand;
 import kr.hhplus.be.server.domain.order.OrderInfo;
 import kr.hhplus.be.server.domain.order.OrderService;
-import kr.hhplus.be.server.domain.payment.PaymentService;
 import kr.hhplus.be.server.domain.product.ProductService;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,18 +13,15 @@ import org.springframework.transaction.annotation.Transactional;
 public class OrderFacade {
 
     private final OrderService orderService;
-    private final PaymentService paymentService;
     private final ProductService productService;
-    private final UserBalanceService userBalanceService;
+    private final UserCouponService userCouponService;
 
     public OrderFacade(OrderService orderService,
-                       PaymentService paymentService,
                        ProductService productService,
-                       UserBalanceService userBalanceService) {
+                       UserCouponService userCouponService) {
         this.orderService = orderService;
-        this.paymentService = paymentService;
         this.productService = productService;
-        this.userBalanceService = userBalanceService;
+        this.userCouponService = userCouponService;
     }
 
     @Transactional
@@ -40,7 +36,7 @@ public class OrderFacade {
 
         // 쿠폰 적용
         if (criteria.couponIssueId() != null) {
-            orderInfo = orderService.applyCoupon(OrderCommand.ApplyCoupon.of(orderInfo.orderId(), criteria.couponIssueId()));
+            userCouponService.applyCoupon(OrderCommand.ApplyCoupon.of(orderInfo.orderId(), criteria.couponIssueId()));
         }
 
         return OrderResult.from(orderInfo);

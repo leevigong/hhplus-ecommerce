@@ -1,6 +1,5 @@
 package kr.hhplus.be.server.domain.order;
 
-import kr.hhplus.be.server.domain.coupon.UserCoupon;
 import kr.hhplus.be.server.domain.coupon.UserCouponRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,16 +28,6 @@ public class OrderService {
         // 총 결제 금액 계산
         order.calculateTotalPrice(orderItems);
         orderRepository.save(order);
-
-        return OrderInfo.from(order);
-    }
-
-    public OrderInfo applyCoupon(OrderCommand.ApplyCoupon command) {
-        Order order = orderRepository.findById(command.orderId());
-
-        UserCoupon userCoupon = userCouponRepository.findByCouponId(command.userCouponId());
-
-        order.applyCoupon(userCoupon);
 
         return OrderInfo.from(order);
     }
