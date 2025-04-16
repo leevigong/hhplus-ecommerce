@@ -43,7 +43,7 @@ class UserBalanceServiceTest {
     @Test
     void 잔액_조회_성공() {
         //given
-        when(userBalanceRepository.findByUserId(userId)).thenReturn(userBalance);
+        when(userBalanceRepository.getByUserId(userId)).thenReturn(userBalance);
 
         // when
         UserBalanceInfo response = userBalanceService.getUserBalance(userId);
@@ -57,7 +57,7 @@ class UserBalanceServiceTest {
         // given
         long chargeAmount = 500L;
 
-        when(userBalanceRepository.findByUserId(userId)).thenReturn(userBalance);
+        when(userBalanceRepository.getByUserId(userId)).thenReturn(userBalance);
         UserBalanceCommand.Charge command = new UserBalanceCommand.Charge(userId, chargeAmount);
 
         // when
@@ -85,7 +85,7 @@ class UserBalanceServiceTest {
         // given
         long chargeAmount = 50L;
         UserBalance userBalance = UserBalance.of(user, initialBalance);
-        when(userBalanceRepository.findByUserId(userId)).thenReturn(userBalance);
+        when(userBalanceRepository.getByUserId(userId)).thenReturn(userBalance);
         UserBalanceCommand.Charge command = new UserBalanceCommand.Charge(userId, chargeAmount);
 
         // when & then
@@ -97,9 +97,9 @@ class UserBalanceServiceTest {
     void 잔액_사용_성공() {
         // given
         long useAmount = 50L;
-        UserBalanceCommand.Charge command = new UserBalanceCommand.Charge(userId, useAmount);
+        UserBalanceCommand.Use command = new UserBalanceCommand.Use(userId, useAmount);
 
-        when(userBalanceRepository.findByUserId(userId)).thenReturn(userBalance);
+        when(userBalanceRepository.getByUserId(userId)).thenReturn(userBalance);
 
         // when
         UserBalanceInfo response = userBalanceService.use(command);
@@ -129,7 +129,7 @@ class UserBalanceServiceTest {
         UserBalanceHistory history2 = UserBalanceHistory.of(userId, TransactionType.CHARGE, 30L, 150L, 180L);
         List<UserBalanceHistory> histories = Arrays.asList(history1, history2);
 
-        when(userBalanceHistoryRepository.findByUserId(userId)).thenReturn(histories);
+        when(userBalanceHistoryRepository.findAllByUserId(userId)).thenReturn(histories);
 
         // when
         List<UserBalanceHistoryInfo> responseList = userBalanceService.getUserBalanceHistory(userId);
