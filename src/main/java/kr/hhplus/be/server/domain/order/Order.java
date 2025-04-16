@@ -17,6 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Table(name = "`order`")
 public class Order extends BaseEntity {
 
     @Id
@@ -26,6 +27,7 @@ public class Order extends BaseEntity {
     private Long userId;
 
     @ManyToOne
+    @JoinColumn(name = "user_coupon_id")
     private UserCoupon userCoupon;
 
     private long totalPrice;
@@ -45,6 +47,9 @@ public class Order extends BaseEntity {
                 .userId(userId)
                 .orderItems(orderItems)
                 .orderStatus(OrderStatus.PENDING)
+                .totalPrice(0)
+                .discountAmount(0)
+                .finalPrice(0)
                 .build();
     }
 
@@ -55,14 +60,16 @@ public class Order extends BaseEntity {
     }
 
     public void applyCoupon(UserCoupon userCoupon) {
-        if (this.userCoupon != null) {
+        if (userCoupon == null) {
+            throw new ApiException(ApiErrorCode.INVALID_COUPON_STATUS);
+        }
+        if (this.userCoupon != null || userCoupon.isUsed()) {
             throw new ApiException(ApiErrorCode.ALREADY_COUPON_APPLIED);
         }
-        if (userCoupon == null || !userCoupon.isUsable()) {
+        if (!userCoupon.isUsable()) {
             throw new ApiException(ApiErrorCode.INVALID_COUPON_STATUS);
         }
 
-        // 최종 가격 계산 메서드 호출 (내부에서 쿠폰 사용 및 할인 적용)
         this.finalPrice = calculateFinalPrice(userCoupon, this.totalPrice);
         this.userCoupon = userCoupon;
     }

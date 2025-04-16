@@ -1,6 +1,5 @@
 package kr.hhplus.be.server.domain.order;
 
-import kr.hhplus.be.server.domain.coupon.UserCouponRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,12 +10,9 @@ import java.util.List;
 public class OrderService {
 
     private final OrderRepository orderRepository;
-    private final UserCouponRepository userCouponRepository;
 
-    public OrderService(OrderRepository orderRepository,
-                        UserCouponRepository userCouponRepository) {
+    public OrderService(OrderRepository orderRepository) {
         this.orderRepository = orderRepository;
-        this.userCouponRepository = userCouponRepository;
     }
 
     public OrderInfo create(OrderCommand.Create createCommand) {
@@ -33,7 +29,7 @@ public class OrderService {
     }
 
     public OrderInfo confirmOrder(OrderCommand.Confirm command) {
-        Order order = orderRepository.findById(command.orderId());
+        Order order = orderRepository.getById(command.orderId());
         order.confirmOrder();
 
         return OrderInfo.from(order);
