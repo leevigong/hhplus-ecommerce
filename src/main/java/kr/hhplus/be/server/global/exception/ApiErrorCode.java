@@ -32,6 +32,8 @@ public enum ApiErrorCode {
     INVALID_RANKING_SCOPE(HttpStatus.BAD_REQUEST, "유효하지 않은 랭킹 기준(범위)입니다."),
 
     // Coupon
+    NOT_FOUND_COUPON(HttpStatus.BAD_REQUEST, "해당 쿠폰을 찾을 수 없습니다."),
+    NOT_FOUND_USER_COUPON(HttpStatus.BAD_REQUEST, "해당 유저 쿠폰을 찾을 수 없습니다."),
     COUPON_NOT_AVAILABLE_TO_ISSUE(HttpStatus.BAD_REQUEST, "해당 쿠폰은 더 이상 발급할 수 없습니다."),
     INVALID_COUPON_STATUS(HttpStatus.BAD_REQUEST, "잘못된 쿠폰 상태입니다."),
     COUPON_EXPIRED(HttpStatus.BAD_REQUEST, "쿠폰이 만료되어 복구할 수 없습니다."),
