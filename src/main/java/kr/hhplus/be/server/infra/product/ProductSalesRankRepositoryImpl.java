@@ -10,9 +10,14 @@ import java.util.List;
 @Repository
 public class ProductSalesRankRepositoryImpl implements ProductSalesRankRepository {
 
+    private final ProductSalesRankJpaRepository productSalesRankJpaRepository;
+
+    public ProductSalesRankRepositoryImpl(ProductSalesRankJpaRepository productSalesRankJpaRepository) {
+        this.productSalesRankJpaRepository = productSalesRankJpaRepository;
+    }
 
     @Override
     public List<ProductSalesRank> findByRankingScope(RankingScope rankingScope) {
-        return List.of();
+        return productSalesRankJpaRepository.findByRankingScope(rankingScope);
     }
 }

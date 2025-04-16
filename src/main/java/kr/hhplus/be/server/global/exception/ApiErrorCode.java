@@ -23,6 +23,8 @@ public enum ApiErrorCode {
     NEGATIVE_BALANCE_HISTORY_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "음수일 수 없습니다."),
 
     // Product
+    NOT_FOUND_PRODUCT(HttpStatus.BAD_REQUEST, "해당 상품을 찾을 수 없습니다."),
+    INVALID_PRODUCT_NAME(HttpStatus.BAD_REQUEST, "상품 이름은 필수입니다."),
     INSUFFICIENT_STOCK(HttpStatus.BAD_REQUEST, "재고가 부족합니다."),
     INVALID_STOCK_INCREASE_AMOUNT(HttpStatus.BAD_REQUEST, "증가 수량은 0 이상이어야 합니다."),
     INVALID_PRODUCT_PRICE(HttpStatus.BAD_REQUEST, "상품 가격은 0보다 커야 합니다."),
