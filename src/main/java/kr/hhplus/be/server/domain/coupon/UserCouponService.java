@@ -21,8 +21,8 @@ public class UserCouponService {
     }
 
     public OrderInfo applyCoupon(OrderCommand.ApplyCoupon command) {
-        Order order = orderRepository.findById(command.orderId());
-        UserCoupon userCoupon = userCouponRepository.findByCouponId(command.userCouponId());
+        Order order = orderRepository.getById(command.orderId());
+        UserCoupon userCoupon = userCouponRepository.findById(command.userCouponId());
         order.applyCoupon(userCoupon);
         return OrderInfo.from(order);
     }

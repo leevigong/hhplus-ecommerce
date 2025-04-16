@@ -29,6 +29,13 @@ public class UserCoupon extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private UserCouponStatus userCouponStatus;
 
+    public static UserCoupon create(Coupon coupon, Long userId, UserCouponStatus userCouponStatus) {
+        return UserCoupon.builder()
+                .coupon(coupon)
+                .userId(userId)
+                .userCouponStatus(userCouponStatus)
+                .build();
+    }
 
     public void use() {
         if (!isUsable()) {
@@ -52,5 +59,9 @@ public class UserCoupon extends BaseEntity {
     public boolean isUsable() {
         return this.userCouponStatus == UserCouponStatus.AVAILABLE &&
                 coupon.getExpiredAt().isAfter(LocalDateTime.now());
+    }
+
+    public boolean isUsed() {
+        return this.userCouponStatus == UserCouponStatus.USED;
     }
 }

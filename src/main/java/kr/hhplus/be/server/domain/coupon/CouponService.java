@@ -29,7 +29,7 @@ public class CouponService {
     }
 
     public UserCouponInfo issueCoupon(UserCouponCommand command) {
-        Coupon coupon = couponRepository.findById(command.couponId());
+        Coupon coupon = couponRepository.getById(command.couponId());
 
         coupon.issue();
         couponRepository.save(coupon);

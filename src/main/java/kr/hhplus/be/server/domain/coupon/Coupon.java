@@ -38,13 +38,15 @@ public class Coupon extends BaseEntity {
 
     private LocalDateTime expiredAt;
 
-    public static Coupon create(String couponCode, DiscountType discountType, long discountAmount, int maxIssuedQuantity) {
+    public static Coupon create(String couponCode, DiscountType discountType, long discountAmount, int maxIssuedQuantity, CouponStatus couponStatus,LocalDateTime expiredAt) {
         return Coupon.builder()
                 .couponCode(couponCode)
                 .discountType(discountType)
                 .discountAmount(discountAmount)
                 .maxIssuedQuantity(maxIssuedQuantity)
-                .couponStatus(CouponStatus.ACTIVE)
+                .issuedQuantity(0)
+                .couponStatus(couponStatus)
+                .expiredAt(expiredAt)
                 .build();
     }
 
