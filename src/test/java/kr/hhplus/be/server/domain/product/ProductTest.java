@@ -56,7 +56,7 @@ class ProductTest {
 
     @Test
     void 상품_가격이_0보다_크면_검증을_성공() {
-        assertThatCode(() -> product.validatePrice())
+        assertThatCode(() -> Product.validatePrice(1))
                 .doesNotThrowAnyException();
     }
 
@@ -70,7 +70,7 @@ class ProductTest {
                 .category(Category.TOP)
                 .build();
 
-        assertThatThrownBy(() -> product.validatePrice())
+        assertThatThrownBy(() -> Product.validatePrice(0))
                 .isInstanceOf(ApiException.class)
                 .hasMessage(ApiErrorCode.INVALID_PRODUCT_PRICE.getMessage());
     }
