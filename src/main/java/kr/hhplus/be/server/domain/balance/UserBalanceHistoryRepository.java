@@ -6,5 +6,5 @@ public interface UserBalanceHistoryRepository {
 
     UserBalanceHistory save(UserBalanceHistory userBalanceHistory);
 
-    List<UserBalanceHistory> findByUserId(Long userId);
+    List<UserBalanceHistory> findAllByUserId(Long userId);
 }

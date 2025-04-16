@@ -9,13 +9,19 @@ import java.util.List;
 @Repository
 public class UserBalanceHistoryRepositoryImpl implements UserBalanceHistoryRepository {
 
+    private final UserBalanceHistoryJpaRepository userBalanceHistoryJpaRepository;
+
+    public UserBalanceHistoryRepositoryImpl(UserBalanceHistoryJpaRepository userBalanceHistoryJpaRepository) {
+        this.userBalanceHistoryJpaRepository = userBalanceHistoryJpaRepository;
+    }
+
     @Override
-    public List<UserBalanceHistory> findByUserId(Long userId) {
-        return List.of();
+    public List<UserBalanceHistory> findAllByUserId(Long userId) {
+        return userBalanceHistoryJpaRepository.findAllByUserId(userId);
     }
 
     @Override
     public UserBalanceHistory save(UserBalanceHistory userBalanceHistory) {
-        return null;
+        return userBalanceHistoryJpaRepository.save(userBalanceHistory);
     }
 }
