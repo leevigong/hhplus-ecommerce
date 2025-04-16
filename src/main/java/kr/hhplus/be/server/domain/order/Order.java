@@ -37,21 +37,21 @@ public class Order extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> orderItems;
 
     public static Order createOrder(Long userId, List<OrderItem> orderItems) {
-        Order order = Order.builder()
+        return Order.builder()
                 .userId(userId)
                 .orderItems(orderItems)
                 .orderStatus(OrderStatus.PENDING)
                 .build();
-        order.calculateTotalPrice();
-        return order;
     }
 
-    public void calculateTotalPrice() {
-        this.totalPrice = orderItems.stream().mapToLong(OrderItem::getTotalPrice).sum();
+    public void calculateTotalPrice(List<OrderItem> orderItems) {
+        this.totalPrice = orderItems.stream()
+                .mapToLong(item -> item.getTotalPrice())
+                .sum();
     }
 
     public void applyCoupon(UserCoupon userCoupon) {
@@ -62,13 +62,18 @@ public class Order extends BaseEntity {
             throw new ApiException(ApiErrorCode.INVALID_COUPON_STATUS);
         }
 
+        // 최종 가격 계산 메서드 호출 (내부에서 쿠폰 사용 및 할인 적용)
+        this.finalPrice = calculateFinalPrice(userCoupon, this.totalPrice);
+        this.userCoupon = userCoupon;
+    }
+
+    private long calculateFinalPrice(UserCoupon userCoupon, long totalPrice) {
         userCoupon.use();
 
-        long discount = userCoupon.getCoupon().calculateDiscount(this.totalPrice);
-        this.discountAmount = Math.min(discount, this.totalPrice);
-        this.finalPrice = this.totalPrice - this.discountAmount;
+        long discount = userCoupon.getCoupon().calculateDiscount(totalPrice);
+        this.discountAmount = discount;
 
-        this.userCoupon = userCoupon;
+        return totalPrice - discount;
     }
 
     public void cancelCoupon() {

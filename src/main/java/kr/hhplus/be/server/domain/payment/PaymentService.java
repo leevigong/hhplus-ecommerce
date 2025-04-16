@@ -13,10 +13,9 @@ public class PaymentService {
         this.paymentRepository = paymentRepository;
     }
 
-    public PaymentInfo pay(PaymentCommand.Pay command) {
-        Payment payment = Payment.create(command.orderId(), command.amount());
+    public PaymentInfo create(PaymentCommand command) {
+        Payment payment = paymentRepository.save(Payment.create(command.orderId(), command.amount()));
 
-        payment = paymentRepository.save(payment);
         return PaymentInfo.from(payment);
     }
 }

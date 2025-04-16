@@ -1,7 +1,6 @@
 package kr.hhplus.be.server.domain.order;
 
 import jakarta.persistence.*;
-import kr.hhplus.be.server.domain.product.Product;
 import kr.hhplus.be.server.global.entity.BaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,10 +19,10 @@ public class OrderItem extends BaseEntity {
     private Long id;
 
     @ManyToOne
+    @JoinColumn(name = "order_id")
     private Order order;
 
-    @ManyToOne
-    private Product product;
+    private Long productId;
 
     private int quantity;
 

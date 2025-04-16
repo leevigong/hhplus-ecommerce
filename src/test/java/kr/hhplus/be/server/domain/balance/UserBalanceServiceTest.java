@@ -2,8 +2,6 @@ package kr.hhplus.be.server.domain.balance;
 
 import kr.hhplus.be.server.domain.user.User;
 import kr.hhplus.be.server.global.exception.ApiErrorCode;
-import kr.hhplus.be.server.inferfaces.balance.dto.UserBalanceHistoryResponse;
-import kr.hhplus.be.server.inferfaces.balance.dto.UserBalanceResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
