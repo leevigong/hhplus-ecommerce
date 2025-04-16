@@ -43,7 +43,7 @@ class UserCouponServiceTest {
         // given
         Long orderId = 1L;
         Long userCouponId = 1L;
-        when(orderRepository.findById(orderId)).thenReturn(order);
+        when(orderRepository.getById(orderId)).thenReturn(order);
 
         Coupon coupon = Coupon.builder()
                 .couponCode("TEST")
@@ -60,7 +60,7 @@ class UserCouponServiceTest {
                 .coupon(coupon)
                 .userCouponStatus(UserCouponStatus.AVAILABLE)
                 .build();
-        when(userCouponRepository.findByCouponId(userCouponId)).thenReturn(userCoupon);
+        when(userCouponRepository.findById(userCouponId)).thenReturn(userCoupon);
 
         OrderCommand.ApplyCoupon applyCouponCommand = OrderCommand.ApplyCoupon.of(orderId, userCouponId);
 
