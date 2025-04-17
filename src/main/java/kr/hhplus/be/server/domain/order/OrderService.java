@@ -18,11 +18,9 @@ public class OrderService {
     public OrderInfo create(OrderCommand.Create createCommand) {
         List<OrderItem> orderItems = createCommand.toOrderItems();
 
-        // 주문 생성
+        // 주문 생성(가격 계산까지)
         Order order = Order.createOrder(createCommand.getUserId(), orderItems);
 
-        // 총 결제 금액 계산
-        order.calculateTotalPrice(orderItems);
         orderRepository.save(order);
 
         return OrderInfo.from(order);

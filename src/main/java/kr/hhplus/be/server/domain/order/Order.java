@@ -5,16 +5,14 @@ import kr.hhplus.be.server.domain.coupon.UserCoupon;
 import kr.hhplus.be.server.global.entity.BaseEntity;
 import kr.hhplus.be.server.global.exception.ApiErrorCode;
 import kr.hhplus.be.server.global.exception.ApiException;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
 @Table(name = "`order`")
@@ -26,10 +24,8 @@ public class Order extends BaseEntity {
 
     private Long userId;
 
-    @OneToOne
-    @JoinColumn(name = "user_coupon_id",
-            foreignKey = @ForeignKey(name = "fk_order_user_coupon"),
-            unique = true) // 한 주문에 하나의 쿠폰만 연결되도록 DB 레벨에서 설정
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_coupon_id", foreignKey = @ForeignKey(name = "fk_order_user_coupon"), unique = true)
     private UserCoupon userCoupon;
 
     private long totalPrice;
@@ -42,20 +38,27 @@ public class Order extends BaseEntity {
     private OrderStatus orderStatus;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<OrderItem> orderItems;
+    @Builder.Default
+    private List<OrderItem> orderItems = new ArrayList<>();
 
-    public static Order createOrder(Long userId, List<OrderItem> orderItems) {
-        return Order.builder()
-                .userId(userId)
-                .orderItems(orderItems)
-                .orderStatus(OrderStatus.PENDING)
-                .totalPrice(0)
-                .discountAmount(0)
-                .finalPrice(0)
-                .build();
+    public static Order createOrder(Long userId, List<OrderItem> items) {
+        Order order = new Order();
+        order.userId = userId;
+        order.orderStatus = OrderStatus.PENDING;
+
+        items.forEach(order::addItem);
+        order.calculateTotalPrice();
+
+        order.finalPrice = order.totalPrice;
+        return order;
     }
 
-    public void calculateTotalPrice(List<OrderItem> orderItems) {
+    public void addItem(OrderItem item) {
+        this.orderItems.add(item);
+        item.setOrder(this);
+    }
+
+    private void calculateTotalPrice() {
         this.totalPrice = orderItems.stream()
                 .mapToLong(item -> item.getTotalPrice())
                 .sum();

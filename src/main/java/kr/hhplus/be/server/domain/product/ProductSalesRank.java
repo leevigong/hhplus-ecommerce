@@ -3,24 +3,23 @@ package kr.hhplus.be.server.domain.product;
 import jakarta.persistence.*;
 import kr.hhplus.be.server.domain.product.enums.RankingScope;
 import kr.hhplus.be.server.global.entity.BaseEntity;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
+@Table(name = "product_sales_rank")
 public class ProductSalesRank extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id")
     private Product product;
 
     private int totalSalesCount; // 기간내 총 판매 수량
@@ -41,5 +40,4 @@ public class ProductSalesRank extends BaseEntity {
                 .rankPosition(rankPosition)
                 .build();
     }
-
 }

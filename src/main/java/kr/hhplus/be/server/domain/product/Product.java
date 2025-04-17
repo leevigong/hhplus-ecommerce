@@ -5,16 +5,14 @@ import kr.hhplus.be.server.domain.product.enums.Category;
 import kr.hhplus.be.server.global.entity.BaseEntity;
 import kr.hhplus.be.server.global.exception.ApiErrorCode;
 import kr.hhplus.be.server.global.exception.ApiException;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
+@Table(name = "product")
 public class Product extends BaseEntity {
 
     @Id

@@ -11,6 +11,7 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
+@Table(name = "user_balance_history")
 public class UserBalanceHistory extends BaseEntity {
 
     @Id
