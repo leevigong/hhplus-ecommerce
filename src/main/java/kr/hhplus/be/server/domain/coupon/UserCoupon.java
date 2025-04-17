@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.domain.coupon;
 
 import jakarta.persistence.*;
+import kr.hhplus.be.server.domain.coupon.enums.UserCouponStatus;
 import kr.hhplus.be.server.global.entity.BaseEntity;
 import kr.hhplus.be.server.global.exception.ApiErrorCode;
 import kr.hhplus.be.server.global.exception.ApiException;

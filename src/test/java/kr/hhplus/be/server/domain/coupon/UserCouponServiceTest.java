@@ -1,6 +1,10 @@
 package kr.hhplus.be.server.domain.coupon;
 
+import kr.hhplus.be.server.domain.coupon.enums.CouponStatus;
+import kr.hhplus.be.server.domain.coupon.enums.DiscountType;
+import kr.hhplus.be.server.domain.coupon.enums.UserCouponStatus;
 import kr.hhplus.be.server.domain.order.*;
+import kr.hhplus.be.server.domain.order.enums.OrderStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -1,5 +1,7 @@
 package kr.hhplus.be.server.domain.balance;
 
+import kr.hhplus.be.server.domain.balance.enums.TransactionType;
+
 import java.time.LocalDateTime;
 
 public record UserBalanceHistoryInfo(

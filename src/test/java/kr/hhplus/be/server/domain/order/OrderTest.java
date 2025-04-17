@@ -1,6 +1,10 @@
 package kr.hhplus.be.server.domain.order;
 
 import kr.hhplus.be.server.domain.coupon.*;
+import kr.hhplus.be.server.domain.coupon.enums.CouponStatus;
+import kr.hhplus.be.server.domain.coupon.enums.DiscountType;
+import kr.hhplus.be.server.domain.coupon.enums.UserCouponStatus;
+import kr.hhplus.be.server.domain.order.enums.OrderStatus;
 import kr.hhplus.be.server.domain.user.User;
 import kr.hhplus.be.server.global.exception.ApiErrorCode;
 import org.junit.jupiter.api.BeforeEach;

@@ -1,9 +1,9 @@
 package kr.hhplus.be.server.interfaces.coupon.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import kr.hhplus.be.server.domain.coupon.DiscountType;
+import kr.hhplus.be.server.domain.coupon.enums.DiscountType;
 import kr.hhplus.be.server.domain.coupon.UserCouponInfo;
-import kr.hhplus.be.server.domain.coupon.UserCouponStatus;
+import kr.hhplus.be.server.domain.coupon.enums.UserCouponStatus;
 
 import java.time.LocalDateTime;
 
