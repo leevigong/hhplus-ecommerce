@@ -33,9 +33,6 @@ public class ProductService {
             // 상품을 조회
             Product product = productRepository.getById(orderItem.getProductId());
 
-            // 재고 및 상품 상태 확인
-            product.validateStockQuantity(orderItem.getQuantity());
-
             // 재고 차감
             product.subStock(orderItem.getQuantity());
         }
