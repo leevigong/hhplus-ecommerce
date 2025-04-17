@@ -62,7 +62,7 @@ class ProductServiceItTest {
         assertThatThrownBy(() -> productService.validateAndSubStockProducts(createOrderItems))
                 .hasMessage(ApiErrorCode.INSUFFICIENT_STOCK.getMessage());
 
-        Product product = productRepository.getById(1L);
+        Product product = productRepository.getById(productId);
         assertThat(product.getStockQuantity()).isEqualTo(10);
     }
 }
