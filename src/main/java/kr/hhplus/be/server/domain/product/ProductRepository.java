@@ -6,5 +6,4 @@ public interface ProductRepository {
 
     Product save(Product product);
 
-    void deleteAll();
 }
