@@ -46,6 +46,7 @@ public enum ApiErrorCode {
     INVALID_ORDER_STATUS(HttpStatus.BAD_REQUEST, "잘못된 주문 상태입니다."),
 
     // Payment
+    NOT_FOUND_PAYMENT(HttpStatus.BAD_REQUEST, "해당 결제를 찾을 수 없습니다."),
     INVALID_PAYMENT_AMOUNT(HttpStatus.BAD_REQUEST, "결제 금액은 음수일 수 없습니다."),
     ;
 
