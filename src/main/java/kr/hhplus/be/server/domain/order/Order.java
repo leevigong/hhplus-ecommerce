@@ -26,8 +26,10 @@ public class Order extends BaseEntity {
 
     private Long userId;
 
-    @ManyToOne
-    @JoinColumn(name = "user_coupon_id")
+    @OneToOne
+    @JoinColumn(name = "user_coupon_id",
+            foreignKey = @ForeignKey(name = "fk_order_user_coupon"),
+            unique = true) // 한 주문에 하나의 쿠폰만 연결되도록 DB 레벨에서 설정
     private UserCoupon userCoupon;
 
     private long totalPrice;
@@ -61,14 +63,13 @@ public class Order extends BaseEntity {
 
     public void applyCoupon(UserCoupon userCoupon) {
         if (userCoupon == null) {
-            throw new ApiException(ApiErrorCode.INVALID_COUPON_STATUS);
+            throw new ApiException(ApiErrorCode.NOT_FOUND_USER_COUPON);
         }
-        if (this.userCoupon != null || userCoupon.isUsed()) {
+        if (this.userCoupon != null) { // 주문에 이미 쿠폰이 붙어 있으면
             throw new ApiException(ApiErrorCode.ALREADY_COUPON_APPLIED);
         }
-        if (!userCoupon.isUsable()) {
-            throw new ApiException(ApiErrorCode.INVALID_COUPON_STATUS);
-        }
+
+        userCoupon.validateAvailable();
 
         this.finalPrice = calculateFinalPrice(userCoupon, this.totalPrice);
         this.userCoupon = userCoupon;

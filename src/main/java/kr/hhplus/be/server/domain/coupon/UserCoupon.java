@@ -22,6 +22,7 @@ public class UserCoupon extends BaseEntity {
     private Long id;
 
     @OneToOne
+    @JoinColumn(name = "coupon_id", foreignKey = @ForeignKey(name = "fk_user_coupon_coupon"))
     private Coupon coupon;
 
     private Long userId;
@@ -63,5 +64,14 @@ public class UserCoupon extends BaseEntity {
 
     public boolean isUsed() {
         return this.userCouponStatus == UserCouponStatus.USED;
+    }
+
+    public void validateAvailable() {
+        if (isUsed()) {
+            throw new ApiException(ApiErrorCode.ALREADY_COUPON_APPLIED);
+        }
+        if (!isUsable()) {
+            throw new ApiException(ApiErrorCode.USER_COUPON_EXPIRED);
+        }
     }
 }

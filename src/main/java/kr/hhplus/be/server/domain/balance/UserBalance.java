@@ -24,7 +24,7 @@ public class UserBalance extends BaseEntity {
     private Long id;
 
     @OneToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "fk_user_balance_user"))
     private User user;
 
     private long balance;

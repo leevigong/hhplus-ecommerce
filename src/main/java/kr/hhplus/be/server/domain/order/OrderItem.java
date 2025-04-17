@@ -19,7 +19,7 @@ public class OrderItem extends BaseEntity {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "order_id")
+    @JoinColumn(name = "order_id", foreignKey = @ForeignKey(name = "fk_order_item_order"))
     private Order order;
 
     private Long productId;
@@ -30,6 +30,10 @@ public class OrderItem extends BaseEntity {
 
     public long getTotalPrice() {
         return price * quantity;
+    }
+
+    public void updateOrder(Order order) {
+        this.order = order;
     }
 
 }
