@@ -69,7 +69,7 @@ class OrderTest {
     @Test
     void 만료된_쿠폰_적용시_예외() {
         assertThatThrownBy(() -> order.applyCoupon(expiredUserCoupon))
-                .hasMessage(ApiErrorCode.INVALID_COUPON_STATUS.getMessage());
+                .hasMessage(ApiErrorCode.USER_COUPON_EXPIRED.getMessage());
     }
 
     @Test
