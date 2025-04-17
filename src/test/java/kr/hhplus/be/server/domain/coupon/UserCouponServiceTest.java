@@ -64,7 +64,7 @@ class UserCouponServiceTest {
                 .coupon(coupon)
                 .userCouponStatus(UserCouponStatus.AVAILABLE)
                 .build();
-        when(userCouponRepository.findById(userCouponId)).thenReturn(userCoupon);
+        when(userCouponRepository.getById(userCouponId)).thenReturn(userCoupon);
 
         OrderCommand.ApplyCoupon applyCouponCommand = OrderCommand.ApplyCoupon.of(orderId, userCouponId);
 

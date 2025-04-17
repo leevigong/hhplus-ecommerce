@@ -81,7 +81,7 @@ class UserCouponServiceItTest {
         OrderInfo orderInfo = userCouponService.applyCoupon(applyCouponCommand);
 
         // then
-        UserCoupon userCouponResult = userCouponRepository.findById(userCoupon.getId());
+        UserCoupon userCouponResult = userCouponRepository.getById(userCoupon.getId());
         assertThat(userCouponResult.getUserCouponStatus()).isEqualTo(UserCouponStatus.USED);
 
         Order orderResult = orderRepository.getById(order.getId());
@@ -104,7 +104,7 @@ class UserCouponServiceItTest {
         assertThatThrownBy(() -> userCouponService.applyCoupon(applyCouponCommand))
                 .hasMessage(ApiErrorCode.ALREADY_COUPON_APPLIED.getMessage());
 
-        UserCoupon userCouponResult = userCouponRepository.findById(userCoupon.getId());
+        UserCoupon userCouponResult = userCouponRepository.getById(userCoupon.getId());
         assertThat(userCouponResult.getUserCouponStatus()).isEqualTo(UserCouponStatus.USED);
 
         // 결제 실패로 order 업데이트 되지않음

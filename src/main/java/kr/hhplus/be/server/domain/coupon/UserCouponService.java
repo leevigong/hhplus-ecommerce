@@ -22,7 +22,7 @@ public class UserCouponService {
 
     public OrderInfo applyCoupon(OrderCommand.ApplyCoupon command) {
         Order order = orderRepository.getById(command.orderId());
-        UserCoupon userCoupon = userCouponRepository.findById(command.userCouponId());
+        UserCoupon userCoupon = userCouponRepository.getById(command.userCouponId());
         order.applyCoupon(userCoupon);
         return OrderInfo.from(order);
     }

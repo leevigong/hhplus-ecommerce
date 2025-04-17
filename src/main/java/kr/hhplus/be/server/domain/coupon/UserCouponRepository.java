@@ -4,7 +4,7 @@ import java.util.List;
 
 public interface UserCouponRepository {
 
-    UserCoupon findById(Long userCouponId);
+    UserCoupon getById(Long userCouponId);
 
     List<UserCoupon> findByUserId(Long userId);
 

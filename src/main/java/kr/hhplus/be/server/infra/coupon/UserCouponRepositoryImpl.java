@@ -18,7 +18,7 @@ public class UserCouponRepositoryImpl implements UserCouponRepository {
     }
 
     @Override
-    public UserCoupon findById(Long userCouponId) {
+    public UserCoupon getById(Long userCouponId) {
         return userCouponJpaRepository.findById(userCouponId)
                 .orElseThrow(() -> new ApiException(ApiErrorCode.NOT_FOUND_USER_COUPON));
     }

@@ -48,7 +48,7 @@ class CouponServiceItTest {
         UserCouponInfo userCouponInfo = couponService.issueCoupon(command);
 
         // then
-        UserCoupon userCoupon = userCouponRepository.findById(userCouponInfo.userCouponId());
+        UserCoupon userCoupon = userCouponRepository.getById(userCouponInfo.userCouponId());
         assertThat(userCoupon.getCoupon().getId()).isEqualTo(activeCoupon.getId());
         assertThat(userCoupon.getUserCouponStatus()).isEqualTo(UserCouponStatus.AVAILABLE);
     }
