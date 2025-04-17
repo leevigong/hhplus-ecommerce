@@ -1,8 +1,12 @@
 package kr.hhplus.be.server.domain.coupon;
 
+import kr.hhplus.be.server.domain.coupon.enums.DiscountType;
+import kr.hhplus.be.server.domain.coupon.enums.UserCouponStatus;
+
 import java.time.LocalDateTime;
 
 public record UserCouponInfo(
+        Long userCouponId,
         Long couponId,
         String couponCode,
         UserCouponStatus userCouponStatus,
@@ -14,6 +18,7 @@ public record UserCouponInfo(
     public static UserCouponInfo from(UserCoupon userCoupon) {
         return new UserCouponInfo(
                 userCoupon.getId(),
+                userCoupon.getCoupon().getId(),
                 userCoupon.getCoupon().getCouponCode(),
                 userCoupon.getUserCouponStatus(),
                 userCoupon.getCoupon().getDiscountType(),

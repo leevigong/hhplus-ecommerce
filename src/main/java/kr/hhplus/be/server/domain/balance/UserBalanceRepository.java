@@ -4,6 +4,6 @@ public interface UserBalanceRepository {
 
     UserBalance save(UserBalance userBalance);
 
-    UserBalance findByUserId(Long userId);
+    UserBalance getByUserId(Long userId);
 
 }

@@ -1,6 +1,10 @@
 package kr.hhplus.be.server.domain.coupon;
 
+import kr.hhplus.be.server.domain.coupon.enums.CouponStatus;
+import kr.hhplus.be.server.domain.coupon.enums.DiscountType;
+import kr.hhplus.be.server.domain.coupon.enums.UserCouponStatus;
 import kr.hhplus.be.server.domain.order.*;
+import kr.hhplus.be.server.domain.order.enums.OrderStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -43,7 +47,7 @@ class UserCouponServiceTest {
         // given
         Long orderId = 1L;
         Long userCouponId = 1L;
-        when(orderRepository.findById(orderId)).thenReturn(order);
+        when(orderRepository.getById(orderId)).thenReturn(order);
 
         Coupon coupon = Coupon.builder()
                 .couponCode("TEST")
@@ -60,7 +64,7 @@ class UserCouponServiceTest {
                 .coupon(coupon)
                 .userCouponStatus(UserCouponStatus.AVAILABLE)
                 .build();
-        when(userCouponRepository.findByCouponId(userCouponId)).thenReturn(userCoupon);
+        when(userCouponRepository.getById(userCouponId)).thenReturn(userCoupon);
 
         OrderCommand.ApplyCoupon applyCouponCommand = OrderCommand.ApplyCoupon.of(orderId, userCouponId);
 

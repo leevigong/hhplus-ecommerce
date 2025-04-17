@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.domain.coupon;
 
+import kr.hhplus.be.server.domain.coupon.enums.UserCouponStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,7 +30,7 @@ public class CouponService {
     }
 
     public UserCouponInfo issueCoupon(UserCouponCommand command) {
-        Coupon coupon = couponRepository.findById(command.couponId());
+        Coupon coupon = couponRepository.getById(command.couponId());
 
         coupon.issue();
         couponRepository.save(coupon);

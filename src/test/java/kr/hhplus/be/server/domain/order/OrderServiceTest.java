@@ -2,6 +2,7 @@ package kr.hhplus.be.server.domain.order;
 
 import kr.hhplus.be.server.domain.coupon.UserCouponRepository;
 import kr.hhplus.be.server.domain.order.OrderCommand.Confirm;
+import kr.hhplus.be.server.domain.order.enums.OrderStatus;
 import kr.hhplus.be.server.domain.product.Product;
 import kr.hhplus.be.server.domain.product.ProductRepository;
 import kr.hhplus.be.server.domain.product.enums.Category;
@@ -75,7 +76,7 @@ public class OrderServiceTest {
     void 주문_확정_성공() {
         // given
         Long orderId = 1L;
-        when(orderRepository.findById(orderId)).thenReturn(order);
+        when(orderRepository.getById(orderId)).thenReturn(order);
 
         Confirm confirmCommand = Confirm.from(orderId);
 

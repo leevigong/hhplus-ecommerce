@@ -1,6 +1,5 @@
 package kr.hhplus.be.server.domain.order;
 
-import kr.hhplus.be.server.domain.coupon.UserCouponRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,29 +10,24 @@ import java.util.List;
 public class OrderService {
 
     private final OrderRepository orderRepository;
-    private final UserCouponRepository userCouponRepository;
 
-    public OrderService(OrderRepository orderRepository,
-                        UserCouponRepository userCouponRepository) {
+    public OrderService(OrderRepository orderRepository) {
         this.orderRepository = orderRepository;
-        this.userCouponRepository = userCouponRepository;
     }
 
     public OrderInfo create(OrderCommand.Create createCommand) {
         List<OrderItem> orderItems = createCommand.toOrderItems();
 
-        // 주문 생성
+        // 주문 생성(가격 계산까지)
         Order order = Order.createOrder(createCommand.getUserId(), orderItems);
 
-        // 총 결제 금액 계산
-        order.calculateTotalPrice(orderItems);
         orderRepository.save(order);
 
         return OrderInfo.from(order);
     }
 
     public OrderInfo confirmOrder(OrderCommand.Confirm command) {
-        Order order = orderRepository.findById(command.orderId());
+        Order order = orderRepository.getById(command.orderId());
         order.confirmOrder();
 
         return OrderInfo.from(order);

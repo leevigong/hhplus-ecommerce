@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.domain.balance;
 
+import kr.hhplus.be.server.domain.balance.enums.TransactionType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,13 +22,13 @@ public class UserBalanceService {
 
     @Transactional(readOnly = true)
     public UserBalanceInfo getUserBalance(Long userId) {
-        UserBalance userBalance = userBalanceRepository.findByUserId(userId);
+        UserBalance userBalance = userBalanceRepository.getByUserId(userId);
 
         return UserBalanceInfo.from(userBalance);
     }
 
     public UserBalanceInfo charge(UserBalanceCommand.Charge command) {
-        UserBalance userBalance = userBalanceRepository.findByUserId(command.getUserId());
+        UserBalance userBalance = userBalanceRepository.getByUserId(command.getUserId());
 
         long beforePoint = userBalance.getBalance();
         UserBalance chargedUserBalance = userBalance.charge(command.getAmount());
@@ -47,8 +48,8 @@ public class UserBalanceService {
         return UserBalanceInfo.from(userBalance);
     }
 
-    public UserBalanceInfo use(UserBalanceCommand.Charge command) {
-        UserBalance userBalance = userBalanceRepository.findByUserId(command.getUserId());
+    public UserBalanceInfo use(UserBalanceCommand.Use command) {
+        UserBalance userBalance = userBalanceRepository.getByUserId(command.getUserId());
 
         long beforePoint = userBalance.getBalance();
         UserBalance usedUserBalance = userBalance.use(command.getAmount());
@@ -70,7 +71,7 @@ public class UserBalanceService {
 
     @Transactional(readOnly = true)
     public List<UserBalanceHistoryInfo> getUserBalanceHistory(Long userId) {
-        List<UserBalanceHistory> histories = userBalanceHistoryRepository.findByUserId(userId);
+        List<UserBalanceHistory> histories = userBalanceHistoryRepository.findAllByUserId(userId);
 
         return histories.stream()
                 .map(history -> UserBalanceHistoryInfo.from(history))

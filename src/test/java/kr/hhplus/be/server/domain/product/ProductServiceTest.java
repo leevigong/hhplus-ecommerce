@@ -3,7 +3,6 @@ package kr.hhplus.be.server.domain.product;
 import kr.hhplus.be.server.domain.order.OrderCommand;
 import kr.hhplus.be.server.domain.product.enums.Category;
 import kr.hhplus.be.server.global.exception.ApiErrorCode;
-import kr.hhplus.be.server.global.exception.ApiException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,7 +14,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -36,7 +35,7 @@ class ProductServiceTest {
     @Test
     void 상품_아이디로_상품_조회_성공() {
         // given
-        when(productRepository.findById(1L)).thenReturn(product);
+        when(productRepository.getById(1L)).thenReturn(product);
 
         // when
         ProductInfo response = getProductService.getProductById(1L);
@@ -51,7 +50,7 @@ class ProductServiceTest {
         // given
         OrderCommand.CreateOrderItem createOrderItem = new OrderCommand.CreateOrderItem(100L, 5, 2000L);
         List<OrderCommand.CreateOrderItem> createOrderItems = List.of(createOrderItem);
-        when(productRepository.findById(100L)).thenReturn(product);
+        when(productRepository.getById(100L)).thenReturn(product);
 
         // when & then
         assertThatCode(() -> getProductService.validateAndSubStockProducts(createOrderItems))
@@ -63,7 +62,7 @@ class ProductServiceTest {
         // given
         OrderCommand.CreateOrderItem createOrderItem = new OrderCommand.CreateOrderItem(100L, 15, 2000L);
         List<OrderCommand.CreateOrderItem> createOrderItems = List.of(createOrderItem);
-        when(productRepository.findById(100L)).thenReturn(product);
+        when(productRepository.getById(100L)).thenReturn(product);
 
         // when & then
         assertThatThrownBy(() -> getProductService.validateAndSubStockProducts(createOrderItems))

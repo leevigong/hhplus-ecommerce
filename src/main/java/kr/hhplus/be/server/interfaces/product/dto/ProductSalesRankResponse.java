@@ -14,7 +14,7 @@ public class ProductSalesRankResponse {
     public static class ProductSalesRankV1 {
         private Long productId;
         private int totalSalesCount;
-        private int totalSalesPrice;
+        private long totalSalesPrice;
         private RankingScope rankingScope;
         private int rankPosition;
 

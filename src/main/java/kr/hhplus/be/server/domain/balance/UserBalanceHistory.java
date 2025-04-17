@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.domain.balance;
 
 import jakarta.persistence.*;
+import kr.hhplus.be.server.domain.balance.enums.TransactionType;
 import kr.hhplus.be.server.global.entity.BaseEntity;
 import kr.hhplus.be.server.global.exception.ApiErrorCode;
 import kr.hhplus.be.server.global.exception.ApiException;
@@ -11,6 +12,7 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
+@Table(name = "user_balance_history")
 public class UserBalanceHistory extends BaseEntity {
 
     @Id

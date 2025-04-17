@@ -1,5 +1,8 @@
 package kr.hhplus.be.server.domain.coupon;
 
+import kr.hhplus.be.server.domain.coupon.enums.CouponStatus;
+import kr.hhplus.be.server.domain.coupon.enums.DiscountType;
+import kr.hhplus.be.server.domain.coupon.enums.UserCouponStatus;
 import kr.hhplus.be.server.global.exception.ApiErrorCode;
 import kr.hhplus.be.server.global.exception.ApiException;
 import org.junit.jupiter.api.BeforeEach;
@@ -103,7 +106,7 @@ public class CouponServiceTest {
         Long userId = 100L;
         UserCouponCommand command = new UserCouponCommand(couponId, userId);
 
-        when(couponRepository.findById(couponId)).thenReturn(coupon);
+        when(couponRepository.getById(couponId)).thenReturn(coupon);
         when(userCouponRepository.save(any(UserCoupon.class))).thenReturn(userCoupon);
 
         // when
@@ -122,7 +125,7 @@ public class CouponServiceTest {
         Long couponId = expiredCoupon.getId();
         UserCouponCommand command = new UserCouponCommand(couponId, userId);
 
-        when(couponRepository.findById(couponId)).thenReturn(expiredCoupon);
+        when(couponRepository.getById(couponId)).thenReturn(expiredCoupon);
 
         // when & then
         assertThatThrownBy(() -> couponService.issueCoupon(command))
@@ -136,7 +139,7 @@ public class CouponServiceTest {
         Long couponId = soldOutCoupon.getId();
         UserCouponCommand command = new UserCouponCommand(couponId, userId);
 
-        when(couponRepository.findById(couponId)).thenReturn(soldOutCoupon);
+        when(couponRepository.getById(couponId)).thenReturn(soldOutCoupon);
 
         // when & then
         assertThatThrownBy(() -> couponService.issueCoupon(command))

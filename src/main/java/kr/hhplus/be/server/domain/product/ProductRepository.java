@@ -2,5 +2,8 @@ package kr.hhplus.be.server.domain.product;
 
 public interface ProductRepository {
 
-    Product findById(Long id);
+    Product getById(Long id);
+
+    Product save(Product product);
+
 }

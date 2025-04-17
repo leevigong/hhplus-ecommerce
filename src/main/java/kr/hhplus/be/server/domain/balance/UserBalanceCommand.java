@@ -28,8 +28,8 @@ public class UserBalanceCommand {
         private Long userId;
         private long amount;
 
-        public static Charge of(Long userId, long amount) {
-            return new Charge(userId, amount);
+        public static Use of(Long userId, long amount) {
+            return new Use(userId, amount);
         }
     }
 }

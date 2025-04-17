@@ -1,6 +1,6 @@
 package kr.hhplus.be.server.interfaces.payment.dto;
 
-import kr.hhplus.be.server.domain.order.OrderStatus;
+import kr.hhplus.be.server.domain.order.enums.OrderStatus;
 
 import java.time.LocalDateTime;
 

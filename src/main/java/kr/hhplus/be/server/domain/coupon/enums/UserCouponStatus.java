@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.domain.coupon;
+package kr.hhplus.be.server.domain.coupon.enums;
 
 public enum UserCouponStatus {
     AVAILABLE,  // 사용 가능

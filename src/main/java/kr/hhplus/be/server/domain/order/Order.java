@@ -2,21 +2,21 @@ package kr.hhplus.be.server.domain.order;
 
 import jakarta.persistence.*;
 import kr.hhplus.be.server.domain.coupon.UserCoupon;
+import kr.hhplus.be.server.domain.order.enums.OrderStatus;
 import kr.hhplus.be.server.global.entity.BaseEntity;
 import kr.hhplus.be.server.global.exception.ApiErrorCode;
 import kr.hhplus.be.server.global.exception.ApiException;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
+@Table(name = "`order`")
 public class Order extends BaseEntity {
 
     @Id
@@ -25,7 +25,8 @@ public class Order extends BaseEntity {
 
     private Long userId;
 
-    @ManyToOne
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_coupon_id", foreignKey = @ForeignKey(name = "fk_order_user_coupon"), unique = true)
     private UserCoupon userCoupon;
 
     private long totalPrice;
@@ -38,31 +39,42 @@ public class Order extends BaseEntity {
     private OrderStatus orderStatus;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<OrderItem> orderItems;
+    @Builder.Default
+    private List<OrderItem> orderItems = new ArrayList<>();
 
-    public static Order createOrder(Long userId, List<OrderItem> orderItems) {
-        return Order.builder()
-                .userId(userId)
-                .orderItems(orderItems)
-                .orderStatus(OrderStatus.PENDING)
-                .build();
+    public static Order createOrder(Long userId, List<OrderItem> items) {
+        Order order = new Order();
+        order.userId = userId;
+        order.orderStatus = OrderStatus.PENDING;
+
+        items.forEach(order::addItem);
+        order.calculateTotalPrice();
+
+        order.finalPrice = order.totalPrice;
+        return order;
     }
 
-    public void calculateTotalPrice(List<OrderItem> orderItems) {
+    public void addItem(OrderItem item) {
+        this.orderItems.add(item);
+        item.setOrder(this);
+    }
+
+    private void calculateTotalPrice() {
         this.totalPrice = orderItems.stream()
                 .mapToLong(item -> item.getTotalPrice())
                 .sum();
     }
 
     public void applyCoupon(UserCoupon userCoupon) {
-        if (this.userCoupon != null) {
+        if (userCoupon == null) {
+            throw new ApiException(ApiErrorCode.NOT_FOUND_USER_COUPON);
+        }
+        if (this.userCoupon != null) { // 주문에 이미 쿠폰이 붙어 있으면
             throw new ApiException(ApiErrorCode.ALREADY_COUPON_APPLIED);
         }
-        if (userCoupon == null || !userCoupon.isUsable()) {
-            throw new ApiException(ApiErrorCode.INVALID_COUPON_STATUS);
-        }
 
-        // 최종 가격 계산 메서드 호출 (내부에서 쿠폰 사용 및 할인 적용)
+        userCoupon.validateAvailable();
+
         this.finalPrice = calculateFinalPrice(userCoupon, this.totalPrice);
         this.userCoupon = userCoupon;
     }

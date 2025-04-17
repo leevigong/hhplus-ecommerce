@@ -1,21 +1,21 @@
 package kr.hhplus.be.server.domain.coupon;
 
 import jakarta.persistence.*;
+import kr.hhplus.be.server.domain.coupon.enums.CouponStatus;
+import kr.hhplus.be.server.domain.coupon.enums.DiscountType;
 import kr.hhplus.be.server.global.entity.BaseEntity;
 import kr.hhplus.be.server.global.exception.ApiErrorCode;
 import kr.hhplus.be.server.global.exception.ApiException;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
+@Table(name = "coupon")
 public class Coupon extends BaseEntity {
 
     @Id
@@ -38,13 +38,15 @@ public class Coupon extends BaseEntity {
 
     private LocalDateTime expiredAt;
 
-    public static Coupon create(String couponCode, DiscountType discountType, long discountAmount, int maxIssuedQuantity) {
+    public static Coupon create(String couponCode, DiscountType discountType, long discountAmount, int maxIssuedQuantity, CouponStatus couponStatus,LocalDateTime expiredAt) {
         return Coupon.builder()
                 .couponCode(couponCode)
                 .discountType(discountType)
                 .discountAmount(discountAmount)
                 .maxIssuedQuantity(maxIssuedQuantity)
-                .couponStatus(CouponStatus.ACTIVE)
+                .issuedQuantity(0)
+                .couponStatus(couponStatus)
+                .expiredAt(expiredAt)
                 .build();
     }
 

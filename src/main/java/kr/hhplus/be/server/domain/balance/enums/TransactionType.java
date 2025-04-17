@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.domain.balance;
+package kr.hhplus.be.server.domain.balance.enums;
 
 public enum TransactionType {
     CHARGE,  // 충전
