@@ -24,7 +24,7 @@ class UserBalanceTest {
 
     @Test
     void 잔액이_음수면_예외가_발생한다() {
-        assertThatThrownBy(() -> UserBalance.of(user, -1))
+        assertThatThrownBy(() -> UserBalance.create(user, -1))
                 .isInstanceOf(ApiException.class)
                 .hasMessage(ApiErrorCode.NEGATIVE_BALANCE_NOT_ALLOWED.getMessage());
     }
@@ -34,7 +34,7 @@ class UserBalanceTest {
 
         @BeforeEach
         void setUp() {
-            userBalance = UserBalance.of(user, 0);
+            userBalance = UserBalance.create(user, 0);
         }
 
         @ParameterizedTest
@@ -68,7 +68,7 @@ class UserBalanceTest {
 
         @BeforeEach
         void setUp() {
-            userBalance = UserBalance.of(user, 100);
+            userBalance = UserBalance.create(user, 100);
         }
 
         @ParameterizedTest

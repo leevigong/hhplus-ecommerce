@@ -38,7 +38,7 @@ class UserBalanceServiceItTest {
     @BeforeEach
     void setUp() {
         User user = userRepository.save(User.of("닉네임1"));
-        userBalanceRepository.save(UserBalance.of(user, 1000L));
+        userBalanceRepository.save(UserBalance.create(user, 1000L));
         userId = user.getId();
     }
 

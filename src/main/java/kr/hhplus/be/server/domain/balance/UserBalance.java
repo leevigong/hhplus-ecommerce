@@ -10,8 +10,6 @@ import lombok.*;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-@Builder
 @Table(name = "user_balance")
 public class UserBalance extends BaseEntity {
 
@@ -29,14 +27,14 @@ public class UserBalance extends BaseEntity {
 
     private long balance;
 
-    public static UserBalance init(User user) {
-        return UserBalance.builder()
-                .user(user)
-                .balance(0)
-                .build();
+    @Builder
+    private UserBalance(Long id, User user, long balance) {
+        this.id = id;
+        this.user = user;
+        this.balance = balance;
     }
 
-    public static UserBalance of(User user, long balance) {
+    public static UserBalance create(User user, long balance) {
         if (balance < 0) {
             throw new ApiException(ApiErrorCode.NEGATIVE_BALANCE_NOT_ALLOWED);
         }

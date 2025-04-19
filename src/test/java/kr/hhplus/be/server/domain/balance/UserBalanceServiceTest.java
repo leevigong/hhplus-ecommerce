@@ -38,7 +38,7 @@ class UserBalanceServiceTest {
         userId = 1L;
         initialBalance = 100L;
         user = new User(userId, "testUser");
-        userBalance = UserBalance.of(user, initialBalance);
+        userBalance = UserBalance.create(user, initialBalance);
     }
 
     @Test
@@ -85,7 +85,7 @@ class UserBalanceServiceTest {
     void 잔액_충전_실패_최소_충전_금액_만족하지_않음() {
         // given
         long chargeAmount = 50L;
-        UserBalance userBalance = UserBalance.of(user, initialBalance);
+        UserBalance userBalance = UserBalance.create(user, initialBalance);
         when(userBalanceRepository.getByUserId(userId)).thenReturn(userBalance);
         UserBalanceCommand.Charge command = new UserBalanceCommand.Charge(userId, chargeAmount);
 
