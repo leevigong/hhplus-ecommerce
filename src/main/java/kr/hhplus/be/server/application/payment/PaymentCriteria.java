@@ -8,6 +8,10 @@ public record PaymentCriteria(
         long finalPrice
 ) {
 
+    public static PaymentCriteria of(Long userId, Long orderId, long finalPrice) {
+        return new PaymentCriteria(userId, orderId, finalPrice);
+    }
+
     public PaymentCommand toPaymentCommand() {
         return PaymentCommand.of(
                 userId(),

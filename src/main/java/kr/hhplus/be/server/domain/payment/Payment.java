@@ -9,8 +9,6 @@ import lombok.*;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-@Builder
 @Table(name = "payment")
 public class Payment extends BaseEntity {
 
@@ -22,7 +20,8 @@ public class Payment extends BaseEntity {
 
     private long amount;
 
-    private Payment(Long orderId, long amount) {
+    @Builder
+    private Payment (Long orderId, long amount) {
         validatePaymentAmount(amount);
 
         this.orderId = orderId;
@@ -30,7 +29,10 @@ public class Payment extends BaseEntity {
     }
 
     public static Payment create(Long orderId, long amount) {
-        return new Payment(orderId, amount);
+        return Payment.builder()
+                .orderId(orderId)
+                .amount(amount)
+                .build();
     }
 
     private void validatePaymentAmount(long amount) {

@@ -15,12 +15,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import kr.hhplus.be.server.domain.order.OrderItem;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
-@Transactional
+@Testcontainers
 class UserCouponServiceItTest {
 
     @Autowired
@@ -46,26 +49,17 @@ class UserCouponServiceItTest {
     }
 
     // Order 생성 및 저장 (userCoupon 없이)
-    private Order createOrder(Long userId, long totalPrice, long discountAmount, long finalPrice, OrderStatus orderStatus) {
-        return orderRepository.save(Order.builder()
-                .userId(userId)
-                .totalPrice(totalPrice)
-                .discountAmount(discountAmount)
-                .finalPrice(finalPrice)
-                .orderStatus(orderStatus)
-                .build());
+    private Order createOrder(Long userId, long totalPrice, OrderStatus orderStatus) {
+        List<OrderItem> items = List.of(OrderItem.create(1L, 1, totalPrice));
+        Order order = Order.create(userId, items);
+        return orderRepository.save(order);
     }
 
     // Order 생성 및 저장 (userCoupon 적용)
-    private Order createOrder(Long userId, long totalPrice, long discountAmount, long finalPrice, OrderStatus orderStatus, UserCoupon userCoupon) {
-        return orderRepository.save(Order.builder()
-                .userId(userId)
-                .totalPrice(totalPrice)
-                .discountAmount(discountAmount)
-                .finalPrice(finalPrice)
-                .orderStatus(orderStatus)
-                .userCoupon(userCoupon)
-                .build());
+    private Order createOrderWithCoupon(Long userId, long totalPrice, UserCoupon userCoupon, OrderStatus orderStatus) {
+        List<OrderItem> items = List.of(OrderItem.create(1L, 1, totalPrice));
+        Order order = Order.createWithCoupon(userId, items, userCoupon);
+        return orderRepository.save(order);
     }
 
     @Test
@@ -73,7 +67,7 @@ class UserCouponServiceItTest {
         // given
         Coupon coupon = createCoupon("TEST123", 10, 100, CouponStatus.ACTIVE, LocalDateTime.now().plusDays(1));
         UserCoupon userCoupon = createUserCoupon(coupon, userId, UserCouponStatus.AVAILABLE);
-        Order order = createOrder(userId, 100, 0, 100, OrderStatus.PENDING);
+        Order order = createOrder(userId, 100, OrderStatus.PENDING);
 
         OrderCommand.ApplyCoupon applyCouponCommand = OrderCommand.ApplyCoupon.of(order.getId(), userCoupon.getId());
 
@@ -87,31 +81,30 @@ class UserCouponServiceItTest {
         Order orderResult = orderRepository.getById(order.getId());
         assertThat(orderResult.getOrderStatus()).isEqualTo(OrderStatus.PENDING); // 결제 전 상태
         assertThat(orderResult.getTotalPrice()).isEqualTo(100);
-        assertThat(orderResult.getDiscountAmount()).isEqualTo(10);
+        assertThat(orderResult.getDiscountPrice()).isEqualTo(10);
         assertThat(orderResult.getFinalPrice()).isEqualTo(90);
     }
 
     @Test
     void 쿠폰_적용_실패_이미_적용된_쿠폰() {
         // given
-        Coupon coupon = createCoupon("TEST123", 10, 100, CouponStatus.ACTIVE, LocalDateTime.now().plusDays(1));
-        UserCoupon userCoupon = createUserCoupon(coupon, userId, UserCouponStatus.USED);
-        Order order = createOrder(userId, 100, 0, 100, OrderStatus.PENDING, userCoupon);
+        Coupon coupon1 = createCoupon("TEST123", 10, 100, CouponStatus.ACTIVE, LocalDateTime.now().plusDays(1));
+        Coupon coupon2 = createCoupon("NEWTEST123", 10, 100, CouponStatus.ACTIVE, LocalDateTime.now().plusDays(1));
+        UserCoupon userCoupon1 = createUserCoupon(coupon1, userId, UserCouponStatus.AVAILABLE);
+        UserCoupon userCoupon2 = createUserCoupon(coupon2, userId, UserCouponStatus.AVAILABLE);
+        Order order = createOrderWithCoupon(userId, 100, userCoupon1, OrderStatus.PENDING);
 
-        OrderCommand.ApplyCoupon applyCouponCommand = OrderCommand.ApplyCoupon.of(order.getId(), userCoupon.getId());
+        OrderCommand.ApplyCoupon applyCouponCommand = OrderCommand.ApplyCoupon.of(order.getId(), userCoupon2.getId());
 
         // when & then
         assertThatThrownBy(() -> userCouponService.applyCoupon(applyCouponCommand))
                 .hasMessage(ApiErrorCode.ALREADY_COUPON_APPLIED.getMessage());
 
-        UserCoupon userCouponResult = userCouponRepository.getById(userCoupon.getId());
-        assertThat(userCouponResult.getUserCouponStatus()).isEqualTo(UserCouponStatus.USED);
-
         // 결제 실패로 order 업데이트 되지않음
         Order orderResult = orderRepository.getById(order.getId());
         assertThat(orderResult.getOrderStatus()).isEqualTo(order.getOrderStatus());
         assertThat(orderResult.getTotalPrice()).isEqualTo(order.getTotalPrice());
-        assertThat(orderResult.getDiscountAmount()).isEqualTo(order.getDiscountAmount());
+        assertThat(orderResult.getDiscountPrice()).isEqualTo(order.getDiscountPrice());
         assertThat(orderResult.getFinalPrice()).isEqualTo(order.getFinalPrice());
     }
 }

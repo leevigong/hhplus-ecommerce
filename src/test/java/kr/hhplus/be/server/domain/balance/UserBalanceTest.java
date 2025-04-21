@@ -19,7 +19,7 @@ class UserBalanceTest {
 
     @BeforeEach
     void setUp() {
-        user = new User(1L, "testUser");
+        user = User.create("testUser");
     }
 
     @Test

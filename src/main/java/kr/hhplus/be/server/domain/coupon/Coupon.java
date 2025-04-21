@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 @Table(name = "coupon")
 public class Coupon extends BaseEntity {
@@ -38,7 +38,7 @@ public class Coupon extends BaseEntity {
 
     private LocalDateTime expiredAt;
 
-    public static Coupon create(String couponCode, DiscountType discountType, long discountAmount, int maxIssuedQuantity, CouponStatus couponStatus,LocalDateTime expiredAt) {
+    public static Coupon create(String couponCode, DiscountType discountType, long discountAmount, int maxIssuedQuantity, CouponStatus couponStatus, LocalDateTime expiredAt) {
         return Coupon.builder()
                 .couponCode(couponCode)
                 .discountType(discountType)

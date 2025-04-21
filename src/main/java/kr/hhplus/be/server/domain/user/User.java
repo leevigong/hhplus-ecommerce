@@ -22,13 +22,14 @@ public class User extends BaseEntity {
     private String nickname;
 
     @Builder
-    public User(Long id, String nickname) {
+    private User(Long id, String nickname) {
         validateNickname(nickname);
+
         this.id = id;
         this.nickname = nickname;
     }
 
-    public static User of(String nickname) {
+    public static User create(String nickname) {
         return User.builder()
                 .nickname(nickname)
                 .build();

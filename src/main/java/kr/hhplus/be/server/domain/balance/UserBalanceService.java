@@ -34,7 +34,7 @@ public class UserBalanceService {
         UserBalance chargedUserBalance = userBalance.charge(command.getAmount());
         long afterPoint = chargedUserBalance.getBalance();
 
-        UserBalanceHistory history = UserBalanceHistory.of(
+        UserBalanceHistory history = UserBalanceHistory.create(
                 command.getUserId(),
                 TransactionType.CHARGE,
                 command.getAmount(),
@@ -55,7 +55,7 @@ public class UserBalanceService {
         UserBalance usedUserBalance = userBalance.use(command.getAmount());
         long afterPoint = usedUserBalance.getBalance();
 
-        UserBalanceHistory history = UserBalanceHistory.of(
+        UserBalanceHistory history = UserBalanceHistory.create(
                 command.getUserId(),
                 TransactionType.USE,
                 command.getAmount(),

@@ -15,7 +15,7 @@ class UserTest {
     void 닉네임_검증_성공() {
         String nickname = "이다은";
 
-        User user = User.of(nickname);
+        User user = User.create(nickname);
 
         assertThat(user.getNickname()).isEqualTo(nickname);
     }
@@ -25,7 +25,7 @@ class UserTest {
     @ValueSource(strings = {"   "})
     void null이나_공백_닉네임_검증_실패(String nickname) {
 
-        assertThatThrownBy(() -> User.of(nickname))
+        assertThatThrownBy(() -> User.create(nickname))
                 .hasMessage(ApiErrorCode.INVALID_NICKNAME.getMessage());
     }
 }

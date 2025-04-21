@@ -35,9 +35,8 @@ class UserBalanceServiceTest {
 
     @BeforeEach
     void setUp() {
-        userId = 1L;
         initialBalance = 100L;
-        user = new User(userId, "testUser");
+        user = User.create("testUser");
         userBalance = UserBalance.create(user, initialBalance);
     }
 
@@ -71,7 +70,6 @@ class UserBalanceServiceTest {
 
         verify(userBalanceHistoryRepository, times(1))
                 .save(argThat(history ->
-                        history.getUserId().equals(userId) &&
                                 history.getAmount() == chargeAmount &&
                                 history.getBeforeBalance() == initialBalance &&
                                 history.getAfterBalance() == expectedBalance &&
@@ -112,7 +110,6 @@ class UserBalanceServiceTest {
 
         verify(userBalanceHistoryRepository, times(1))
                 .save(argThat(history ->
-                        history.getUserId().equals(userId) &&
                                 history.getAmount() == useAmount &&
                                 history.getBeforeBalance() == initialBalance &&
                                 history.getAfterBalance() == expectedBalance &&
@@ -126,8 +123,8 @@ class UserBalanceServiceTest {
     @Test
     void 잔액_내역_저장_성공() {
         // given
-        UserBalanceHistory history1 = UserBalanceHistory.of(userId, TransactionType.CHARGE, 50L, 100L, 150L);
-        UserBalanceHistory history2 = UserBalanceHistory.of(userId, TransactionType.CHARGE, 30L, 150L, 180L);
+        UserBalanceHistory history1 = UserBalanceHistory.create(userId, TransactionType.CHARGE, 50L, 100L, 150L);
+        UserBalanceHistory history2 = UserBalanceHistory.create(userId, TransactionType.CHARGE, 30L, 150L, 180L);
         List<UserBalanceHistory> histories = Arrays.asList(history1, history2);
 
         when(userBalanceHistoryRepository.findAllByUserId(userId)).thenReturn(histories);

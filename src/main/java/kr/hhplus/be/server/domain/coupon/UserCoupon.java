@@ -5,17 +5,14 @@ import kr.hhplus.be.server.domain.coupon.enums.UserCouponStatus;
 import kr.hhplus.be.server.global.entity.BaseEntity;
 import kr.hhplus.be.server.global.exception.ApiErrorCode;
 import kr.hhplus.be.server.global.exception.ApiException;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 @Table(name = "user_coupon")
 public class UserCoupon extends BaseEntity {

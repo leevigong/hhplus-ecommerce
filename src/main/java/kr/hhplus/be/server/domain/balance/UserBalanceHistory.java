@@ -10,7 +10,7 @@ import lombok.*;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 @Table(name = "user_balance_history")
 public class UserBalanceHistory extends BaseEntity {
@@ -30,7 +30,7 @@ public class UserBalanceHistory extends BaseEntity {
 
     private long afterBalance;
 
-    public static UserBalanceHistory of(Long userId, TransactionType transactionType, long amount, long beforeBalance, long afterBalance) {
+    public static UserBalanceHistory create(Long userId, TransactionType transactionType, long amount, long beforeBalance, long afterBalance) {
         if (amount < 0) {
             throw new ApiException(ApiErrorCode.NEGATIVE_BALANCE_HISTORY_NOT_ALLOWED);
         }

@@ -42,6 +42,8 @@ public enum ApiErrorCode {
     USER_COUPON_EXPIRED(HttpStatus.BAD_REQUEST, "쿠폰이 만료되어 사용할 수 없습니다."),
 
     // Order
+    INVALID_USER(HttpStatus.BAD_REQUEST, "유효하지 않은 유저입니다."),
+    EMPTY_ORDER_ITEMS(HttpStatus.BAD_REQUEST, "주문 항목은 최소 하나 이상이어야 합니다."),
     NOT_FOUND_ORDER(HttpStatus.BAD_REQUEST, "해당 주문을 찾을 수 없습니다."),
     INVALID_ORDER_STATUS(HttpStatus.BAD_REQUEST, "잘못된 주문 상태입니다."),
 

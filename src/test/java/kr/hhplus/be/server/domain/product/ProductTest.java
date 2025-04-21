@@ -16,13 +16,7 @@ class ProductTest {
 
     @BeforeEach
     void setUp() {
-        product = Product.builder()
-                .id(1L)
-                .name("Sample Product")
-                .price(100)
-                .stockQuantity(10)
-                .category(Category.TOP)
-                .build();
+        product = Product.create("Sample Product", 100, 10, Category.TOP);
     }
 
     @Test
@@ -56,21 +50,13 @@ class ProductTest {
 
     @Test
     void 상품_가격이_0보다_크면_검증을_성공() {
-        assertThatCode(() -> Product.validatePrice(1))
+        assertThatCode(() -> product.validatePrice(1))
                 .doesNotThrowAnyException();
     }
 
     @Test
     void 상품_가격이_0이하면_예외가_발생() {
-        product = Product.builder()
-                .id(2L)
-                .name("Invalid Price Product")
-                .price(0)
-                .stockQuantity(10)
-                .category(Category.TOP)
-                .build();
-
-        assertThatThrownBy(() -> Product.validatePrice(0))
+        assertThatThrownBy(() -> product.validatePrice(0))
                 .isInstanceOf(ApiException.class)
                 .hasMessage(ApiErrorCode.INVALID_PRODUCT_PRICE.getMessage());
     }

@@ -42,7 +42,7 @@ class UserCouponTest {
                 .couponStatus(CouponStatus.ACTIVE)
                 .build();
 
-        user = new User(1L, "이다은");
+        user = User.create("이다은");
     }
 
     @Test

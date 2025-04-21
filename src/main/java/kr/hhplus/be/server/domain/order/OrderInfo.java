@@ -15,7 +15,7 @@ public record OrderInfo(
                 order.getId(),
                 order.getOrderStatus().name(),
                 order.getTotalPrice(),
-                order.getDiscountAmount(),
+                order.getDiscountPrice(),
                 order.getFinalPrice(),
                 order.getCreatedAt()
         );

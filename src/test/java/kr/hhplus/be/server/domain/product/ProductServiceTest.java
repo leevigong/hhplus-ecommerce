@@ -29,7 +29,7 @@ class ProductServiceTest {
 
     @BeforeEach
     void setUp() {
-        product = new Product(1L, "상의", 10000, 10, Category.TOP);
+        product = Product.create("상의", 10000, 10, Category.TOP);
     }
 
     @Test
