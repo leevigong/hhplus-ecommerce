@@ -2,9 +2,9 @@ package kr.hhplus.be.server.domain.product;
 
 import jakarta.persistence.*;
 import kr.hhplus.be.server.domain.product.enums.Category;
-import kr.hhplus.be.server.global.entity.BaseEntity;
-import kr.hhplus.be.server.global.exception.ApiErrorCode;
-import kr.hhplus.be.server.global.exception.ApiException;
+import kr.hhplus.be.server.support.entity.BaseEntity;
+import kr.hhplus.be.server.support.exception.ApiErrorCode;
+import kr.hhplus.be.server.support.exception.ApiException;
 import lombok.*;
 
 @Entity

@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.global.exception;
+package kr.hhplus.be.server.support.exception;
 
 public class ApiException extends RuntimeException {
 

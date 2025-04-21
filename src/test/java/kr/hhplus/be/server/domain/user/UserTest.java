@@ -1,6 +1,6 @@
 package kr.hhplus.be.server.domain.user;
 
-import kr.hhplus.be.server.global.exception.ApiErrorCode;
+import kr.hhplus.be.server.support.exception.ApiErrorCode;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;

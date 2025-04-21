@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import kr.hhplus.be.server.global.exception.ErrorResponse;
+import kr.hhplus.be.server.support.exception.ErrorResponse;
 import kr.hhplus.be.server.interfaces.product.dto.ProductResponse;
 import kr.hhplus.be.server.interfaces.product.dto.ProductSalesRankResponse;
 import org.springframework.http.MediaType;

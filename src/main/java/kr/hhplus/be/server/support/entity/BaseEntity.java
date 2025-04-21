@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.global.entity;
+package kr.hhplus.be.server.support.entity;
 
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
