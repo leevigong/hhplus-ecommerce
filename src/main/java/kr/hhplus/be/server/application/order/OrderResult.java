@@ -8,7 +8,7 @@ public record OrderResult(
         Long orderId,
         String status,
         long totalPrice,
-        long discountAmount,
+        long discountPrice,
         long finalPrice,
         LocalDateTime createdAt
 ) {
@@ -18,7 +18,7 @@ public record OrderResult(
                 orderInfo.orderId(),
                 orderInfo.status(),
                 orderInfo.totalPrice(),
-                orderInfo.discountAmount(),
+                orderInfo.discountPrice(),
                 orderInfo.finalPrice(),
                 orderInfo.createdAt()
         );

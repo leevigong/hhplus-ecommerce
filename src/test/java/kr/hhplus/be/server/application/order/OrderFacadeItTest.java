@@ -16,7 +16,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -102,7 +101,7 @@ class OrderFacadeIntegrationTest {
         long expectedTotalPrice = product.getPrice() * quantity;
         assertThat(result.totalPrice()).isEqualTo(expectedTotalPrice);
         assertThat(result.finalPrice()).isEqualTo(expectedTotalPrice); // 쿠폰 없으므로 할인 없음
-        assertThat(result.discountAmount()).isEqualTo(0); // 할인 없음
+        assertThat(result.discountPrice()).isEqualTo(0); // 할인 없음
 
         // 3. 재고 변화 확인
         Product updatedProduct = productRepository.getById(product.getId());

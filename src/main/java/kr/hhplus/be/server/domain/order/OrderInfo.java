@@ -6,7 +6,7 @@ public record OrderInfo(
         Long orderId,
         String status,
         long totalPrice,
-        long discountAmount,
+        long discountPrice,
         long finalPrice,
         LocalDateTime createdAt
 ) {
