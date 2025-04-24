@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.domain.order.enums;
+package kr.hhplus.be.server.domain.order;
 
 import lombok.RequiredArgsConstructor;
 

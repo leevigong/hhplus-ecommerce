@@ -6,7 +6,7 @@ import kr.hhplus.be.server.domain.balance.UserBalanceRepository;
 import kr.hhplus.be.server.domain.balance.UserBalanceService;
 import kr.hhplus.be.server.domain.order.Order;
 import kr.hhplus.be.server.domain.order.OrderRepository;
-import kr.hhplus.be.server.domain.order.enums.OrderStatus;
+import kr.hhplus.be.server.domain.order.OrderStatus;
 import kr.hhplus.be.server.domain.product.Product;
 import kr.hhplus.be.server.domain.product.ProductRepository;
 import kr.hhplus.be.server.domain.product.ProductService;
@@ -22,7 +22,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
-class OrderFacadeIntegrationTest {
+class OrderFacadeItTest {
 
     @Autowired
     private OrderFacade orderFacade;
