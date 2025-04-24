@@ -44,4 +44,32 @@ public class ConcurrentTestExecutor {
 
         return ConcurrentTestResult.of(successCount, failureCount);
     }
+
+    public ConcurrentTestResult executeIgnoreErrors(int threads, int counter, List<Runnable> tasks) throws InterruptedException {
+        ExecutorService executorService = Executors.newFixedThreadPool(threads);
+        CountDownLatch latch = new CountDownLatch(counter);
+
+        AtomicInteger successCount = new AtomicInteger();
+        AtomicInteger failureCount = new AtomicInteger();
+
+        for (int i = 0; i < counter; i++) {
+            for (Runnable task : tasks) {
+                executorService.execute(() -> {
+                    try {
+                        task.run();
+                        successCount.incrementAndGet();
+                    } catch (Throwable t) {
+                        failureCount.incrementAndGet();
+                    } finally {
+                        latch.countDown();
+                    }
+                });
+            }
+        }
+
+        latch.await();
+        executorService.shutdown();
+
+        return ConcurrentTestResult.of(successCount, failureCount);
+    }
 }
