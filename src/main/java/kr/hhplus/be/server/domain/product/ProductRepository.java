@@ -1,9 +1,13 @@
 package kr.hhplus.be.server.domain.product;
 
+import java.util.Optional;
+
 public interface ProductRepository {
+
+    Product save(Product product);
 
     Product getById(Long id);
 
-    Product save(Product product);
+    Optional<Product> findByIdForUpdate(Long id);
 
 }

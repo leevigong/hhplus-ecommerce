@@ -1,6 +1,8 @@
 package kr.hhplus.be.server.domain.product;
 
 import kr.hhplus.be.server.domain.order.OrderCommand;
+import kr.hhplus.be.server.support.exception.ApiErrorCode;
+import kr.hhplus.be.server.support.exception.ApiException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,7 +32,8 @@ public class ProductService {
     public void validateAndSubStockProducts(List<OrderCommand.CreateOrderItem> createOrderItems) {
         for (OrderCommand.CreateOrderItem orderItem : createOrderItems) {
             // 상품을 조회
-            Product product = productRepository.getById(orderItem.getProductId());
+            Product product = productRepository.findByIdForUpdate(orderItem.getProductId())
+                    .orElseThrow(() -> new ApiException(ApiErrorCode.NOT_FOUND_PRODUCT));
 
             // 재고 차감
             product.subStock(orderItem.getQuantity());
