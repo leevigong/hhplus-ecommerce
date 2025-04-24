@@ -47,11 +47,11 @@ class UserBalanceConcurrencyTest {
         List<Runnable> tasks = List.of(() -> userBalanceService.charge(cmd));
 
         // when
-        ConcurrentTestResult context = executor.execute(2, 2, tasks);
+        ConcurrentTestResult executed = executor.execute(2, 2, tasks);
 
         // then
-        System.out.println("성공 카운트: " + context.getSuccessCount().get());
-        System.out.println("실패 카운트: " + context.getFailureCount().get());
+        System.out.println("성공 카운트: " + executed.getSuccessCount().get());
+        System.out.println("실패 카운트: " + executed.getFailureCount().get());
 
         UserBalance userBalance = userBalanceRepository.getByUserId(user.getId());
         System.out.println("최종 유저 잔액: " + userBalance.getBalance());
