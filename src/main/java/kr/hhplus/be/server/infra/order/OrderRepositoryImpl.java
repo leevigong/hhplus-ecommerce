@@ -25,4 +25,9 @@ public class OrderRepositoryImpl implements OrderRepository {
     public Order save(Order order) {
         return orderJpaRepository.save(order);
     }
+
+    @Override
+    public void deleteAll() {
+        orderJpaRepository.deleteAll();
+    }
 }

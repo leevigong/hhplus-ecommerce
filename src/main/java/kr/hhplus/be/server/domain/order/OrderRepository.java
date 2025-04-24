@@ -6,4 +6,5 @@ public interface OrderRepository {
 
     Order getById(Long id);
 
+    void deleteAll();
 }
