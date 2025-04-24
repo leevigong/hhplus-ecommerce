@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.domain.coupon;
+package kr.hhplus.be.server.domain.userCoupon;
 
 import java.util.List;
 

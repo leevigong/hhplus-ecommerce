@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.domain.coupon.enums;
+package kr.hhplus.be.server.domain.coupon;
 
 public enum DiscountType {
     PERCENTAGE, // 퍼센트 할인 (예: 10%)

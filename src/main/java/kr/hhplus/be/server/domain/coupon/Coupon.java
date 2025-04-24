@@ -1,8 +1,6 @@
 package kr.hhplus.be.server.domain.coupon;
 
 import jakarta.persistence.*;
-import kr.hhplus.be.server.domain.coupon.enums.CouponStatus;
-import kr.hhplus.be.server.domain.coupon.enums.DiscountType;
 import kr.hhplus.be.server.support.entity.BaseEntity;
 import kr.hhplus.be.server.support.exception.ApiErrorCode;
 import kr.hhplus.be.server.support.exception.ApiException;
@@ -56,7 +54,7 @@ public class Coupon extends BaseEntity {
                 this.issuedQuantity < this.maxIssuedQuantity;
     }
 
-    public void issue() {
+    public Coupon issue() {
         if (!isAvailableToIssue()) {
             throw new ApiException(ApiErrorCode.COUPON_NOT_AVAILABLE_TO_ISSUE);
         }
@@ -66,6 +64,8 @@ public class Coupon extends BaseEntity {
         if (this.issuedQuantity >= this.maxIssuedQuantity) {
             this.couponStatus = CouponStatus.SOLD_OUT;
         }
+
+        return this;
     }
 
     public void expire() {

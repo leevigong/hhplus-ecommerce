@@ -16,13 +16,13 @@ public class CouponRepositoryImpl implements CouponRepository {
     }
 
     @Override
-    public Coupon getById(Long couponId) {
-        return couponJpaRepository.findById(couponId)
-                .orElseThrow(() -> new ApiException(ApiErrorCode.NOT_FOUND_COUPON));
+    public Coupon save(Coupon coupon) {
+        return couponJpaRepository.save(coupon);
     }
 
     @Override
-    public Coupon save(Coupon coupon) {
-        return couponJpaRepository.save(coupon);
+    public Coupon getById(Long couponId) {
+        return couponJpaRepository.findById(couponId)
+                .orElseThrow(() -> new ApiException(ApiErrorCode.NOT_FOUND_COUPON));
     }
 }

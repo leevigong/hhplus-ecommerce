@@ -1,9 +1,9 @@
 package kr.hhplus.be.server.interfaces.coupon;
 
-import kr.hhplus.be.server.domain.coupon.CouponService;
-import kr.hhplus.be.server.domain.coupon.UserCouponCommand;
-import kr.hhplus.be.server.domain.coupon.UserCouponInfo;
-import kr.hhplus.be.server.interfaces.coupon.dto.CouponIssueResponse;
+import kr.hhplus.be.server.application.coupon.UserCouponCriteria;
+import kr.hhplus.be.server.application.coupon.UserCouponFacade;
+import kr.hhplus.be.server.domain.userCoupon.UserCouponInfo;
+import kr.hhplus.be.server.domain.userCoupon.UserCouponService;
 import kr.hhplus.be.server.interfaces.coupon.dto.UserCouponRequest;
 import kr.hhplus.be.server.interfaces.coupon.dto.UserCouponResponse;
 import org.springframework.http.ResponseEntity;
@@ -15,17 +15,20 @@ import java.util.List;
 @RequestMapping("/api/v1/coupons")
 public class CouponController implements CouponControllerDocs {
 
-    private final CouponService couponService;
+    private final UserCouponService userCouponService;
+    private final UserCouponFacade userCouponFacade;
 
-    public CouponController(CouponService couponService) {
-        this.couponService = couponService;
+    public CouponController(UserCouponService userCouponService,
+                            UserCouponFacade userCouponFacade) {
+        this.userCouponService = userCouponService;
+        this.userCouponFacade = userCouponFacade;
     }
 
     @GetMapping("/{userId}")
     public ResponseEntity<List<UserCouponResponse>> getUserCoupons(
             @PathVariable("userId") Long userId
     ) {
-        List<UserCouponInfo> infos = couponService.getUserCoupons(userId);
+        List<UserCouponInfo> infos = userCouponService.getUserCoupons(userId);
 
         return ResponseEntity.ok(infos.stream()
                 .map(UserCouponResponse::from)
@@ -33,13 +36,12 @@ public class CouponController implements CouponControllerDocs {
     }
 
     @PostMapping("/issue")
-    public ResponseEntity<CouponIssueResponse> issueCoupon(
+    public ResponseEntity<Void> issueCoupon(
             @RequestBody UserCouponRequest request
     ) {
-        UserCouponCommand command = UserCouponCommand.of(request.couponId(), request.userId());
-        UserCouponInfo info = couponService.issueCoupon(command);
+        UserCouponCriteria criteria = request.toCriteria();
+        userCouponFacade.issue(criteria);
 
-        return ResponseEntity.ok(CouponIssueResponse.from(info));
+        return ResponseEntity.ok().build();
     }
-
 }
