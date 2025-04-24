@@ -1,7 +1,5 @@
 package kr.hhplus.be.server.domain.product;
 
-import kr.hhplus.be.server.domain.product.enums.Category;
-
 public record ProductInfo(
         Long productId,
         String productName,

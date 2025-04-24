@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.domain.product.enums;
+package kr.hhplus.be.server.domain.product;
 
 public enum Category {
     OUTER,

@@ -1,7 +1,6 @@
 package kr.hhplus.be.server.domain.product;
 
 import jakarta.persistence.*;
-import kr.hhplus.be.server.domain.product.enums.RankingScope;
 import kr.hhplus.be.server.support.entity.BaseEntity;
 import lombok.*;
 

@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.domain.product.enums;
+package kr.hhplus.be.server.domain.product;
 
 import kr.hhplus.be.server.support.exception.ApiErrorCode;
 import kr.hhplus.be.server.support.exception.ApiException;

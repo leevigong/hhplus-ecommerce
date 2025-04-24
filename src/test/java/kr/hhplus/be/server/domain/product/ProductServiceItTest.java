@@ -1,7 +1,6 @@
 package kr.hhplus.be.server.domain.product;
 
 import kr.hhplus.be.server.domain.order.OrderCommand;
-import kr.hhplus.be.server.domain.product.enums.Category;
 import kr.hhplus.be.server.support.exception.ApiErrorCode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
