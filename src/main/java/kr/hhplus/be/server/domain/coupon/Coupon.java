@@ -86,4 +86,7 @@ public class Coupon extends BaseEntity {
         return Math.min(discount, totalPrice);
     }
 
+    public void soldOut() {
+        this.couponStatus = CouponStatus.SOLD_OUT;
+    }
 }

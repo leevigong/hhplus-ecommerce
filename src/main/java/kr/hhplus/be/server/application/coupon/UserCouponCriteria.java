@@ -10,4 +10,8 @@ public record UserCouponCriteria(
     public CouponCommand toCommand(Long couponId) {
         return new CouponCommand(couponId);
     }
+
+    public static UserCouponCriteria of(Long couponId, Long userId) {
+        return new UserCouponCriteria(couponId, userId);
+    }
 }

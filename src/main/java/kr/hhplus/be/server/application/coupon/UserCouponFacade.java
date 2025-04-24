@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
-@Transactional
 public class UserCouponFacade {
 
     private final CouponService couponService;
@@ -18,6 +17,7 @@ public class UserCouponFacade {
         this.userCouponService = userCouponService;
     }
 
+    @Transactional
     public void issue(UserCouponCriteria criteria) {
         CouponCommand command = criteria.toCommand(criteria.couponId());
 
