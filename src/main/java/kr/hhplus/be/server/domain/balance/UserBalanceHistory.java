@@ -1,7 +1,6 @@
 package kr.hhplus.be.server.domain.balance;
 
 import jakarta.persistence.*;
-import kr.hhplus.be.server.domain.balance.enums.TransactionType;
 import kr.hhplus.be.server.support.entity.BaseEntity;
 import kr.hhplus.be.server.support.exception.ApiErrorCode;
 import kr.hhplus.be.server.support.exception.ApiException;

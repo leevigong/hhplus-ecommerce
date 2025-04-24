@@ -13,9 +13,9 @@ import lombok.*;
 @Table(name = "user_balance")
 public class UserBalance extends BaseEntity {
 
-    public final static long USE_MIN_AMOUNT = 1;
-    public final static long CHARGE_MIN_AMOUNT = 100;
-    public final static long CHARGE_MAX_AMOUNT = 1_000_000;
+    public static final long USE_MIN_AMOUNT = 1;
+    public static final long CHARGE_MIN_AMOUNT = 100;
+    public static final long CHARGE_MAX_AMOUNT = 1_000_000;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
