@@ -1,8 +1,7 @@
 package kr.hhplus.be.server.domain.balance;
 
-import kr.hhplus.be.server.domain.balance.enums.TransactionType;
 import kr.hhplus.be.server.domain.user.User;
-import kr.hhplus.be.server.global.exception.ApiErrorCode;
+import kr.hhplus.be.server.support.exception.ApiErrorCode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,10 +34,9 @@ class UserBalanceServiceTest {
 
     @BeforeEach
     void setUp() {
-        userId = 1L;
         initialBalance = 100L;
-        user = new User(userId, "testUser");
-        userBalance = UserBalance.of(user, initialBalance);
+        user = User.create("testUser");
+        userBalance = UserBalance.create(user, initialBalance);
     }
 
     @Test
@@ -71,7 +69,6 @@ class UserBalanceServiceTest {
 
         verify(userBalanceHistoryRepository, times(1))
                 .save(argThat(history ->
-                        history.getUserId().equals(userId) &&
                                 history.getAmount() == chargeAmount &&
                                 history.getBeforeBalance() == initialBalance &&
                                 history.getAfterBalance() == expectedBalance &&
@@ -85,7 +82,7 @@ class UserBalanceServiceTest {
     void 잔액_충전_실패_최소_충전_금액_만족하지_않음() {
         // given
         long chargeAmount = 50L;
-        UserBalance userBalance = UserBalance.of(user, initialBalance);
+        UserBalance userBalance = UserBalance.create(user, initialBalance);
         when(userBalanceRepository.getByUserId(userId)).thenReturn(userBalance);
         UserBalanceCommand.Charge command = new UserBalanceCommand.Charge(userId, chargeAmount);
 
@@ -112,7 +109,6 @@ class UserBalanceServiceTest {
 
         verify(userBalanceHistoryRepository, times(1))
                 .save(argThat(history ->
-                        history.getUserId().equals(userId) &&
                                 history.getAmount() == useAmount &&
                                 history.getBeforeBalance() == initialBalance &&
                                 history.getAfterBalance() == expectedBalance &&
@@ -126,8 +122,8 @@ class UserBalanceServiceTest {
     @Test
     void 잔액_내역_저장_성공() {
         // given
-        UserBalanceHistory history1 = UserBalanceHistory.of(userId, TransactionType.CHARGE, 50L, 100L, 150L);
-        UserBalanceHistory history2 = UserBalanceHistory.of(userId, TransactionType.CHARGE, 30L, 150L, 180L);
+        UserBalanceHistory history1 = UserBalanceHistory.create(userId, TransactionType.CHARGE, 50L, 100L, 150L);
+        UserBalanceHistory history2 = UserBalanceHistory.create(userId, TransactionType.CHARGE, 30L, 150L, 180L);
         List<UserBalanceHistory> histories = Arrays.asList(history1, history2);
 
         when(userBalanceHistoryRepository.findAllByUserId(userId)).thenReturn(histories);

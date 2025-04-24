@@ -1,11 +1,9 @@
 package kr.hhplus.be.server.domain.coupon;
 
 import jakarta.persistence.*;
-import kr.hhplus.be.server.domain.coupon.enums.CouponStatus;
-import kr.hhplus.be.server.domain.coupon.enums.DiscountType;
-import kr.hhplus.be.server.global.entity.BaseEntity;
-import kr.hhplus.be.server.global.exception.ApiErrorCode;
-import kr.hhplus.be.server.global.exception.ApiException;
+import kr.hhplus.be.server.support.entity.BaseEntity;
+import kr.hhplus.be.server.support.exception.ApiErrorCode;
+import kr.hhplus.be.server.support.exception.ApiException;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -13,7 +11,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 @Table(name = "coupon")
 public class Coupon extends BaseEntity {
@@ -38,7 +36,7 @@ public class Coupon extends BaseEntity {
 
     private LocalDateTime expiredAt;
 
-    public static Coupon create(String couponCode, DiscountType discountType, long discountAmount, int maxIssuedQuantity, CouponStatus couponStatus,LocalDateTime expiredAt) {
+    public static Coupon create(String couponCode, DiscountType discountType, long discountAmount, int maxIssuedQuantity, CouponStatus couponStatus, LocalDateTime expiredAt) {
         return Coupon.builder()
                 .couponCode(couponCode)
                 .discountType(discountType)
@@ -56,7 +54,7 @@ public class Coupon extends BaseEntity {
                 this.issuedQuantity < this.maxIssuedQuantity;
     }
 
-    public void issue() {
+    public Coupon issue() {
         if (!isAvailableToIssue()) {
             throw new ApiException(ApiErrorCode.COUPON_NOT_AVAILABLE_TO_ISSUE);
         }
@@ -66,6 +64,8 @@ public class Coupon extends BaseEntity {
         if (this.issuedQuantity >= this.maxIssuedQuantity) {
             this.couponStatus = CouponStatus.SOLD_OUT;
         }
+
+        return this;
     }
 
     public void expire() {
@@ -86,4 +86,7 @@ public class Coupon extends BaseEntity {
         return Math.min(discount, totalPrice);
     }
 
+    public void soldOut() {
+        this.couponStatus = CouponStatus.SOLD_OUT;
+    }
 }

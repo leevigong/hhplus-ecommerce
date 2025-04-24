@@ -2,22 +2,20 @@ package kr.hhplus.be.server.domain.balance;
 
 import jakarta.persistence.*;
 import kr.hhplus.be.server.domain.user.User;
-import kr.hhplus.be.server.global.entity.BaseEntity;
-import kr.hhplus.be.server.global.exception.ApiErrorCode;
-import kr.hhplus.be.server.global.exception.ApiException;
+import kr.hhplus.be.server.support.entity.BaseEntity;
+import kr.hhplus.be.server.support.exception.ApiErrorCode;
+import kr.hhplus.be.server.support.exception.ApiException;
 import lombok.*;
 
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-@Builder
 @Table(name = "user_balance")
 public class UserBalance extends BaseEntity {
 
-    public final static long USE_MIN_AMOUNT = 1;
-    public final static long CHARGE_MIN_AMOUNT = 100;
-    public final static long CHARGE_MAX_AMOUNT = 1_000_000;
+    public static final long USE_MIN_AMOUNT = 1;
+    public static final long CHARGE_MIN_AMOUNT = 100;
+    public static final long CHARGE_MAX_AMOUNT = 1_000_000;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,14 +27,14 @@ public class UserBalance extends BaseEntity {
 
     private long balance;
 
-    public static UserBalance init(User user) {
-        return UserBalance.builder()
-                .user(user)
-                .balance(0)
-                .build();
+    @Builder
+    private UserBalance(Long id, User user, long balance) {
+        this.id = id;
+        this.user = user;
+        this.balance = balance;
     }
 
-    public static UserBalance of(User user, long balance) {
+    public static UserBalance create(User user, long balance) {
         if (balance < 0) {
             throw new ApiException(ApiErrorCode.NEGATIVE_BALANCE_NOT_ALLOWED);
         }

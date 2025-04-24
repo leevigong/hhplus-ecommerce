@@ -1,8 +1,7 @@
 package kr.hhplus.be.server.domain.product;
 
 import kr.hhplus.be.server.domain.order.OrderCommand;
-import kr.hhplus.be.server.domain.product.enums.Category;
-import kr.hhplus.be.server.global.exception.ApiErrorCode;
+import kr.hhplus.be.server.support.exception.ApiErrorCode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,7 +28,7 @@ class ProductServiceTest {
 
     @BeforeEach
     void setUp() {
-        product = new Product(1L, "상의", 10000, 10, Category.TOP);
+        product = Product.create("상의", 10000, 10, Category.TOP);
     }
 
     @Test

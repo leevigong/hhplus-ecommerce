@@ -1,7 +1,7 @@
 package kr.hhplus.be.server.interfaces.product.dto;
 
 import kr.hhplus.be.server.domain.product.ProductInfo;
-import kr.hhplus.be.server.domain.product.enums.Category;
+import kr.hhplus.be.server.domain.product.Category;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

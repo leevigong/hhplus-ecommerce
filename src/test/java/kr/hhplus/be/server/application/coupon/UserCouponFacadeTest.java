@@ -1,0 +1,96 @@
+package kr.hhplus.be.server.application.coupon;
+
+import static org.assertj.core.api.Assertions.*;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.testcontainers.junit.jupiter.Testcontainers;
+
+import kr.hhplus.be.server.domain.coupon.Coupon;
+import kr.hhplus.be.server.domain.coupon.CouponRepository;
+import kr.hhplus.be.server.domain.coupon.CouponStatus;
+import kr.hhplus.be.server.domain.coupon.DiscountType;
+import kr.hhplus.be.server.domain.userCoupon.UserCoupon;
+import kr.hhplus.be.server.domain.userCoupon.UserCouponRepository;
+import kr.hhplus.be.server.support.exception.ApiErrorCode;
+import kr.hhplus.be.server.support.exception.ApiException;
+
+@SpringBootTest
+@Testcontainers
+class UserCouponFacadeIntegrationTest {
+
+    @Autowired
+    private UserCouponFacade userCouponFacade;
+
+    @Autowired
+    private CouponRepository couponRepository;
+
+    @Autowired
+    private UserCouponRepository userCouponRepository;
+
+    private Long userId;
+    private Coupon coupon;
+
+    @BeforeEach
+    void setUp() {
+        userId = 1L;
+        coupon = Coupon.create(
+                "TEST123",
+                DiscountType.FIXED,
+                10,
+                100,
+                CouponStatus.ACTIVE,
+                LocalDateTime.now().plusDays(5)
+        );
+        couponRepository.save(coupon);
+    }
+
+    @Test
+    void 쿠폰_발급_성공() {
+        // given
+        UserCouponCriteria criteria = UserCouponCriteria.of(coupon.getId(), userId);
+
+        // when
+        userCouponFacade.issue(criteria);
+
+        // then
+        Coupon updated = couponRepository.getById(coupon.getId());
+        assertThat(updated.getIssuedQuantity()).isEqualTo(1);
+
+        List<UserCoupon> issued = userCouponRepository.findByUserId(userId);
+        assertThat(issued).hasSize(1);
+        assertThat(issued.get(0).getCoupon().getId())
+                .isEqualTo(coupon.getId());
+    }
+
+    @Test
+    void 만료된_쿠폰_발급_실패() {
+        // given
+        coupon.expire();
+        couponRepository.save(coupon);
+        UserCouponCriteria criteria = UserCouponCriteria.of(coupon.getId(), userId);
+
+        // then
+        assertThatThrownBy(() -> userCouponFacade.issue(criteria))
+                .isInstanceOf(ApiException.class)
+                .hasMessageContaining(ApiErrorCode.COUPON_NOT_AVAILABLE_TO_ISSUE.getMessage());
+    }
+
+    @Test
+    void 매진된_쿠폰_발급_실패() {
+        // given
+        coupon.soldOut();
+        couponRepository.save(coupon);
+        UserCouponCriteria criteria = UserCouponCriteria.of(coupon.getId(), userId);
+
+        // then
+        assertThatThrownBy(() -> userCouponFacade.issue(criteria))
+                .isInstanceOf(ApiException.class)
+                .hasMessageContaining(ApiErrorCode.COUPON_NOT_AVAILABLE_TO_ISSUE.getMessage());
+    }
+}

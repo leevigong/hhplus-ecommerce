@@ -1,12 +1,14 @@
 package kr.hhplus.be.server.domain.order;
 
 import jakarta.persistence.*;
-import kr.hhplus.be.server.domain.coupon.UserCoupon;
-import kr.hhplus.be.server.domain.order.enums.OrderStatus;
-import kr.hhplus.be.server.global.entity.BaseEntity;
-import kr.hhplus.be.server.global.exception.ApiErrorCode;
-import kr.hhplus.be.server.global.exception.ApiException;
-import lombok.*;
+import kr.hhplus.be.server.domain.userCoupon.UserCoupon;
+import kr.hhplus.be.server.support.entity.BaseEntity;
+import kr.hhplus.be.server.support.exception.ApiErrorCode;
+import kr.hhplus.be.server.support.exception.ApiException;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,8 +16,6 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-@Builder
 @Table(name = "`order`")
 public class Order extends BaseEntity {
 
@@ -31,7 +31,7 @@ public class Order extends BaseEntity {
 
     private long totalPrice;
 
-    private long discountAmount; // 쿠폰 사용시 할인
+    private long discountPrice;
 
     private long finalPrice;
 
@@ -39,53 +39,52 @@ public class Order extends BaseEntity {
     private OrderStatus orderStatus;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
     private List<OrderItem> orderItems = new ArrayList<>();
 
-    public static Order createOrder(Long userId, List<OrderItem> items) {
-        Order order = new Order();
-        order.userId = userId;
-        order.orderStatus = OrderStatus.PENDING;
+    @Builder
+    private Order(Long userId, List<OrderItem> orderItems) {
+        validateUserId(userId);
+        validateOrderItems(orderItems);
 
-        items.forEach(order::addItem);
-        order.calculateTotalPrice();
+        this.userId = userId;
+        this.orderStatus = OrderStatus.PENDING;
+        this.orderItems = new ArrayList<>();
 
-        order.finalPrice = order.totalPrice;
+        orderItems.forEach(this::addItem);
+        calculatePrice();
+    }
+
+    public static Order create(Long userId, List<OrderItem> items) {
+        return Order.builder()
+                .userId(userId)
+                .orderItems(items)
+                .build();
+    }
+
+    public static Order createWithCoupon(Long userId, List<OrderItem> items, UserCoupon coupon) {
+        Order order = create(userId, items);
+        order.applyCoupon(coupon);
         return order;
     }
 
     public void addItem(OrderItem item) {
-        this.orderItems.add(item);
         item.setOrder(this);
+        this.orderItems.add(item);
+        calculatePrice();
     }
 
-    private void calculateTotalPrice() {
-        this.totalPrice = orderItems.stream()
-                .mapToLong(item -> item.getTotalPrice())
-                .sum();
-    }
-
-    public void applyCoupon(UserCoupon userCoupon) {
-        if (userCoupon == null) {
-            throw new ApiException(ApiErrorCode.NOT_FOUND_USER_COUPON);
-        }
-        if (this.userCoupon != null) { // 주문에 이미 쿠폰이 붙어 있으면
+    public void applyCoupon(UserCoupon coupon) {
+        if (this.userCoupon != null) {
             throw new ApiException(ApiErrorCode.ALREADY_COUPON_APPLIED);
         }
+        coupon.validateAvailable();
 
-        userCoupon.validateAvailable();
+        long discount = coupon.getCoupon().calculateDiscount(this.totalPrice);
+        coupon.use();
 
-        this.finalPrice = calculateFinalPrice(userCoupon, this.totalPrice);
-        this.userCoupon = userCoupon;
-    }
-
-    private long calculateFinalPrice(UserCoupon userCoupon, long totalPrice) {
-        userCoupon.use();
-
-        long discount = userCoupon.getCoupon().calculateDiscount(totalPrice);
-        this.discountAmount = discount;
-
-        return totalPrice - discount;
+        this.userCoupon = coupon;
+        this.discountPrice = discount;
+        this.finalPrice = this.totalPrice - discount;
     }
 
     public void cancelCoupon() {
@@ -93,9 +92,9 @@ public class Order extends BaseEntity {
             throw new ApiException(ApiErrorCode.INVALID_COUPON_STATUS);
         }
 
-        this.userCoupon.cancel();
+        userCoupon.cancel();
         this.userCoupon = null;
-        this.discountAmount = 0;
+        this.discountPrice = 0;
         this.finalPrice = this.totalPrice;
     }
 
@@ -108,13 +107,42 @@ public class Order extends BaseEntity {
     }
 
     public void cancelOrder() {
-        if (this.orderStatus == OrderStatus.PENDING || this.orderStatus == OrderStatus.CANCELED) {
+        if (this.orderStatus == OrderStatus.CANCELED) {
             throw new ApiException(ApiErrorCode.INVALID_ORDER_STATUS);
         }
+
         this.orderStatus = OrderStatus.CANCELED;
+
         if (this.userCoupon != null) {
-            this.userCoupon.cancel();
+            userCoupon.cancel();
             this.userCoupon = null;
+        }
+    }
+
+    private void calculatePrice() {
+        this.totalPrice = orderItems.stream()
+                .mapToLong(OrderItem::getTotalPrice)
+                .sum();
+
+        if (this.userCoupon != null) {
+            long discount = userCoupon.getCoupon().calculateDiscount(totalPrice);
+            this.discountPrice = discount;
+            this.finalPrice = totalPrice - discount;
+        } else {
+            this.discountPrice = 0;
+            this.finalPrice = totalPrice;
+        }
+    }
+
+    private void validateUserId(Long userId) {
+        if (userId == null || userId <= 0) {
+            throw new ApiException(ApiErrorCode.INVALID_USER);
+        }
+    }
+
+    private void validateOrderItems(List<OrderItem> items) {
+        if (items == null || items.isEmpty()) {
+            throw new ApiException(ApiErrorCode.EMPTY_ORDER_ITEMS);
         }
     }
 }

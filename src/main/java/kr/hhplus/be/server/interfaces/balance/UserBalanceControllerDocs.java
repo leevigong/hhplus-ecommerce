@@ -10,7 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import kr.hhplus.be.server.global.exception.ErrorResponse;
+import kr.hhplus.be.server.support.exception.ErrorResponse;
 import kr.hhplus.be.server.interfaces.balance.dto.ChargeRequest;
 import kr.hhplus.be.server.interfaces.balance.dto.UserBalanceHistoryResponse;
 import kr.hhplus.be.server.interfaces.balance.dto.UserBalanceResponse;

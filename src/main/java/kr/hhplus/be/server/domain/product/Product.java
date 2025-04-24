@@ -1,17 +1,14 @@
 package kr.hhplus.be.server.domain.product;
 
 import jakarta.persistence.*;
-import kr.hhplus.be.server.domain.product.enums.Category;
-import kr.hhplus.be.server.global.entity.BaseEntity;
-import kr.hhplus.be.server.global.exception.ApiErrorCode;
-import kr.hhplus.be.server.global.exception.ApiException;
+import kr.hhplus.be.server.support.entity.BaseEntity;
+import kr.hhplus.be.server.support.exception.ApiErrorCode;
+import kr.hhplus.be.server.support.exception.ApiException;
 import lombok.*;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-@Builder
 @Table(name = "product")
 public class Product extends BaseEntity {
 
@@ -28,10 +25,19 @@ public class Product extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Category category;
 
-    public static Product create(String name, int price, int stockQuantity, Category category) {
+    @Builder
+    private Product(String name, int price, int stockQuantity, Category category) {
         validateName(name);
         validatePrice(price);
 
+        this.name = name;
+        this.price = price;
+        this.stockQuantity = stockQuantity;
+        this.category = category;
+    }
+
+
+    public static Product create(String name, int price, int stockQuantity, Category category) {
         return Product.builder()
                 .name(name)
                 .price(price)
@@ -40,13 +46,13 @@ public class Product extends BaseEntity {
                 .build();
     }
 
-    private static void validateName(String name) {
+    private void validateName(String name) {
         if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("상품 이름은 필수입니다.");
+            throw new ApiException(ApiErrorCode.INVALID_PRODUCT_NAME);
         }
     }
 
-    public static void validatePrice(int price) {
+    public void validatePrice(int price) {
         if (price <= 0) {
             throw new ApiException(ApiErrorCode.INVALID_PRODUCT_PRICE);
         }

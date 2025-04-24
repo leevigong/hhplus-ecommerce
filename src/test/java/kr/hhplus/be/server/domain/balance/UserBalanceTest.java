@@ -1,8 +1,8 @@
 package kr.hhplus.be.server.domain.balance;
 
 import kr.hhplus.be.server.domain.user.User;
-import kr.hhplus.be.server.global.exception.ApiErrorCode;
-import kr.hhplus.be.server.global.exception.ApiException;
+import kr.hhplus.be.server.support.exception.ApiErrorCode;
+import kr.hhplus.be.server.support.exception.ApiException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -19,12 +19,12 @@ class UserBalanceTest {
 
     @BeforeEach
     void setUp() {
-        user = new User(1L, "testUser");
+        user = User.create("testUser");
     }
 
     @Test
     void 잔액이_음수면_예외가_발생한다() {
-        assertThatThrownBy(() -> UserBalance.of(user, -1))
+        assertThatThrownBy(() -> UserBalance.create(user, -1))
                 .isInstanceOf(ApiException.class)
                 .hasMessage(ApiErrorCode.NEGATIVE_BALANCE_NOT_ALLOWED.getMessage());
     }
@@ -34,7 +34,7 @@ class UserBalanceTest {
 
         @BeforeEach
         void setUp() {
-            userBalance = UserBalance.of(user, 0);
+            userBalance = UserBalance.create(user, 0);
         }
 
         @ParameterizedTest
@@ -68,7 +68,7 @@ class UserBalanceTest {
 
         @BeforeEach
         void setUp() {
-            userBalance = UserBalance.of(user, 100);
+            userBalance = UserBalance.create(user, 100);
         }
 
         @ParameterizedTest

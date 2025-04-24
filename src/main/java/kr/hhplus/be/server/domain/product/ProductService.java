@@ -1,7 +1,6 @@
 package kr.hhplus.be.server.domain.product;
 
 import kr.hhplus.be.server.domain.order.OrderCommand;
-import kr.hhplus.be.server.domain.product.enums.RankingScope;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

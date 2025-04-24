@@ -1,16 +1,15 @@
 package kr.hhplus.be.server.domain.balance;
 
 import jakarta.persistence.*;
-import kr.hhplus.be.server.domain.balance.enums.TransactionType;
-import kr.hhplus.be.server.global.entity.BaseEntity;
-import kr.hhplus.be.server.global.exception.ApiErrorCode;
-import kr.hhplus.be.server.global.exception.ApiException;
+import kr.hhplus.be.server.support.entity.BaseEntity;
+import kr.hhplus.be.server.support.exception.ApiErrorCode;
+import kr.hhplus.be.server.support.exception.ApiException;
 import lombok.*;
 
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 @Table(name = "user_balance_history")
 public class UserBalanceHistory extends BaseEntity {
@@ -30,7 +29,7 @@ public class UserBalanceHistory extends BaseEntity {
 
     private long afterBalance;
 
-    public static UserBalanceHistory of(Long userId, TransactionType transactionType, long amount, long beforeBalance, long afterBalance) {
+    public static UserBalanceHistory create(Long userId, TransactionType transactionType, long amount, long beforeBalance, long afterBalance) {
         if (amount < 0) {
             throw new ApiException(ApiErrorCode.NEGATIVE_BALANCE_HISTORY_NOT_ALLOWED);
         }

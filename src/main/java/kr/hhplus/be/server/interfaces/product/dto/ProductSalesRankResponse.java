@@ -1,7 +1,7 @@
 package kr.hhplus.be.server.interfaces.product.dto;
 
 import kr.hhplus.be.server.domain.product.ProductSalesRankInfo;
-import kr.hhplus.be.server.domain.product.enums.RankingScope;
+import kr.hhplus.be.server.domain.product.RankingScope;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -8,8 +8,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import kr.hhplus.be.server.global.exception.ErrorResponse;
-import kr.hhplus.be.server.interfaces.coupon.dto.CouponIssueResponse;
+import kr.hhplus.be.server.support.exception.ErrorResponse;
 import kr.hhplus.be.server.interfaces.coupon.dto.UserCouponRequest;
 import kr.hhplus.be.server.interfaces.coupon.dto.UserCouponResponse;
 import org.springframework.http.MediaType;
@@ -74,22 +73,7 @@ public interface CouponControllerDocs {
     @Operation(summary = "(선착순) 쿠폰 발급",
             description = "(선착순) 쿠폰을 발급합니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "쿠폰 발급 성공",
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = CouponIssueResponse.class),
-                            examples = @ExampleObject(value = """
-                                {
-                                    "couponId": 1,
-                                    "couponCode": "HANGHAE8888",
-                                    "couponStatus": "AVAILABLE",
-                                    "discountType": "FIXED",
-                                    "discountAmount": 1000.00,
-                                    "expiredAt": "2024-06-30T23:59:59",
-                                    "createdAt": "2024-04-01T10:00:00"
-                                }
-                                """)
-                    )),
+            @ApiResponse(responseCode = "200", description = "쿠폰 발급 성공"),
             @ApiResponse(responseCode = "404", description = "사용자를 찾을 수 없음",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
@@ -124,7 +108,7 @@ public interface CouponControllerDocs {
                                 """)
                     ))
     })
-    ResponseEntity<CouponIssueResponse> issueCoupon(
+    ResponseEntity<Void> issueCoupon(
             @RequestBody UserCouponRequest request
     );
 

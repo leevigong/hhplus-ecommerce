@@ -6,7 +6,7 @@ public record OrderInfo(
         Long orderId,
         String status,
         long totalPrice,
-        long discountAmount,
+        long discountPrice,
         long finalPrice,
         LocalDateTime createdAt
 ) {
@@ -15,7 +15,7 @@ public record OrderInfo(
                 order.getId(),
                 order.getOrderStatus().name(),
                 order.getTotalPrice(),
-                order.getDiscountAmount(),
+                order.getDiscountPrice(),
                 order.getFinalPrice(),
                 order.getCreatedAt()
         );

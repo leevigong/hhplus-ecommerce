@@ -2,7 +2,7 @@ package kr.hhplus.be.server.domain.balance;
 
 import kr.hhplus.be.server.domain.user.User;
 import kr.hhplus.be.server.domain.user.UserRepository;
-import kr.hhplus.be.server.global.exception.ApiErrorCode;
+import kr.hhplus.be.server.support.exception.ApiErrorCode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -37,8 +37,8 @@ class UserBalanceServiceItTest {
 
     @BeforeEach
     void setUp() {
-        User user = userRepository.save(User.of("닉네임1"));
-        userBalanceRepository.save(UserBalance.of(user, 1000L));
+        User user = userRepository.save(User.create("닉네임1"));
+        userBalanceRepository.save(UserBalance.create(user, 1000L));
         userId = user.getId();
     }
 

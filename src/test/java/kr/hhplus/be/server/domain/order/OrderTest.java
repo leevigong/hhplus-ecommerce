@@ -1,18 +1,19 @@
 package kr.hhplus.be.server.domain.order;
 
-import kr.hhplus.be.server.domain.coupon.*;
-import kr.hhplus.be.server.domain.coupon.enums.CouponStatus;
-import kr.hhplus.be.server.domain.coupon.enums.DiscountType;
-import kr.hhplus.be.server.domain.coupon.enums.UserCouponStatus;
-import kr.hhplus.be.server.domain.order.enums.OrderStatus;
+import kr.hhplus.be.server.domain.coupon.Coupon;
+import kr.hhplus.be.server.domain.coupon.CouponStatus;
+import kr.hhplus.be.server.domain.coupon.DiscountType;
+import kr.hhplus.be.server.domain.userCoupon.UserCoupon;
 import kr.hhplus.be.server.domain.user.User;
-import kr.hhplus.be.server.global.exception.ApiErrorCode;
+import kr.hhplus.be.server.domain.userCoupon.UserCouponStatus;
+import kr.hhplus.be.server.support.exception.ApiErrorCode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -27,6 +28,7 @@ class OrderTest {
 
     @BeforeEach
     void setUp() {
+        // 쿠폰 생성
         coupon = Coupon.builder()
                 .couponCode("DISCOUNT1000")
                 .discountType(DiscountType.FIXED)
@@ -37,37 +39,41 @@ class OrderTest {
                 .couponStatus(CouponStatus.ACTIVE)
                 .build();
 
-        user = new User(1L, "홍길동");
+        // 사용자 생성
+        user = User.builder()
+                .id(1L)
+                .nickname("홍길동")
+                .build();
 
+        // 사용 가능한 유저쿠폰
         userCoupon = UserCoupon.builder()
                 .coupon(coupon)
                 .userId(user.getId())
                 .userCouponStatus(UserCouponStatus.AVAILABLE)
                 .build();
 
+        // 만료된 유저쿠폰
         expiredUserCoupon = UserCoupon.builder()
                 .coupon(coupon)
                 .userId(user.getId())
                 .userCouponStatus(UserCouponStatus.EXPIRED)
                 .build();
 
-        order = Order.builder()
-                .userId(user.getId())
-                .totalPrice(5000)
-                .discountAmount(0)
-                .finalPrice(5000)
-                .orderStatus(OrderStatus.PAID)
-                .build();
+        // 주문 생성 및 결제 완료 상태로 세팅
+        List<OrderItem> items = List.of(OrderItem.create(1L, 5000, 1));
+        order = Order.create(user.getId(), items);
+        order.confirmOrder();
     }
 
     @Test
     void 쿠폰을_적용하면_최종금액이_할인된다() {
         order.applyCoupon(userCoupon);
 
-        assertThat(order.getDiscountAmount()).isEqualTo(1000);
+        assertThat(order.getDiscountPrice()).isEqualTo(1000);
         assertThat(order.getFinalPrice()).isEqualTo(4000);
         assertThat(order.getUserCoupon()).isNotNull();
-        assertThat(order.getUserCoupon().getUserCouponStatus()).isEqualTo(UserCouponStatus.USED);
+        assertThat(order.getUserCoupon().getUserCouponStatus())
+                .isEqualTo(UserCouponStatus.USED);
     }
 
     @Test
@@ -82,19 +88,21 @@ class OrderTest {
         order.cancelOrder();
 
         assertThat(order.getOrderStatus()).isEqualTo(OrderStatus.CANCELED);
-        assertThat(userCoupon.getUserCouponStatus()).isEqualTo(UserCouponStatus.AVAILABLE);
+        assertThat(userCoupon.getUserCouponStatus())
+                .isEqualTo(UserCouponStatus.AVAILABLE);
     }
 
     @ParameterizedTest
-    @EnumSource(value = OrderStatus.class, names = {"PENDING", "CANCELED"})
-    void 결제_되지_않은_주문와_취소된_주문_취소시_예외(OrderStatus orderStatus) {
-        order = Order.builder()
-                .userId(user.getId())
-                .totalPrice(5000)
-                .discountAmount(0)
-                .finalPrice(5000)
-                .orderStatus(orderStatus)
-                .build();
+    @EnumSource(value = OrderStatus.class, names = {"CANCELED"})
+    void 결제_되지_않은_주문와_취소된_주문_취소시_예외(OrderStatus status) {
+        // 새로운 주문 생성
+        List<OrderItem> items = List.of(OrderItem.create(1L, 5000, 1));
+        order = Order.create(user.getId(), items);
+
+        // 상태 강제 변경
+        if (status == OrderStatus.CANCELED) {
+            order.cancelOrder();
+        }
 
         assertThatThrownBy(order::cancelOrder)
                 .hasMessage(ApiErrorCode.INVALID_ORDER_STATUS.getMessage());

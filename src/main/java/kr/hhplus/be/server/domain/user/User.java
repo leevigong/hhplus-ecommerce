@@ -1,9 +1,9 @@
 package kr.hhplus.be.server.domain.user;
 
 import jakarta.persistence.*;
-import kr.hhplus.be.server.global.entity.BaseEntity;
-import kr.hhplus.be.server.global.exception.ApiErrorCode;
-import kr.hhplus.be.server.global.exception.ApiException;
+import kr.hhplus.be.server.support.entity.BaseEntity;
+import kr.hhplus.be.server.support.exception.ApiErrorCode;
+import kr.hhplus.be.server.support.exception.ApiException;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,13 +22,14 @@ public class User extends BaseEntity {
     private String nickname;
 
     @Builder
-    public User(Long id, String nickname) {
+    private User(Long id, String nickname) {
         validateNickname(nickname);
+
         this.id = id;
         this.nickname = nickname;
     }
 
-    public static User of(String nickname) {
+    public static User create(String nickname) {
         return User.builder()
                 .nickname(nickname)
                 .build();

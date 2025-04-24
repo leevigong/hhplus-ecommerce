@@ -1,6 +1,6 @@
 package kr.hhplus.be.server.interfaces.balance.dto;
 
-import kr.hhplus.be.server.domain.balance.enums.TransactionType;
+import kr.hhplus.be.server.domain.balance.TransactionType;
 import kr.hhplus.be.server.domain.balance.UserBalanceHistoryInfo;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

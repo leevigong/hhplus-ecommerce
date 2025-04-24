@@ -1,28 +1,35 @@
 package kr.hhplus.be.server.domain.order;
 
+import kr.hhplus.be.server.domain.userCoupon.UserCoupon;
+import kr.hhplus.be.server.domain.userCoupon.UserCouponRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
-@Transactional
 public class OrderService {
 
     private final OrderRepository orderRepository;
+    private final UserCouponRepository userCouponRepository;
 
-    public OrderService(OrderRepository orderRepository) {
+    public OrderService(OrderRepository orderRepository,
+                        UserCouponRepository userCouponRepository) {
         this.orderRepository = orderRepository;
+        this.userCouponRepository = userCouponRepository;
     }
 
     public OrderInfo create(OrderCommand.Create createCommand) {
-        List<OrderItem> orderItems = createCommand.toOrderItems();
+        List<OrderItem> items = createCommand.toOrderItems();
+        UserCoupon coupon = null;
+        if (createCommand.getUserCouponId() != null) {
+            coupon = userCouponRepository.getById(createCommand.getUserCouponId());
+        }
 
-        // 주문 생성(가격 계산까지)
-        Order order = Order.createOrder(createCommand.getUserId(), orderItems);
+        Order order = (coupon != null)
+                ? Order.createWithCoupon(createCommand.getUserId(), items, coupon)
+                : Order.create(createCommand.getUserId(), items);
 
         orderRepository.save(order);
-
         return OrderInfo.from(order);
     }
 

@@ -1,11 +1,10 @@
 package kr.hhplus.be.server.domain.order;
 
-import kr.hhplus.be.server.domain.coupon.UserCouponRepository;
+import kr.hhplus.be.server.domain.userCoupon.UserCouponRepository;
 import kr.hhplus.be.server.domain.order.OrderCommand.Confirm;
-import kr.hhplus.be.server.domain.order.enums.OrderStatus;
 import kr.hhplus.be.server.domain.product.Product;
 import kr.hhplus.be.server.domain.product.ProductRepository;
-import kr.hhplus.be.server.domain.product.enums.Category;
+import kr.hhplus.be.server.domain.product.Category;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,22 +36,15 @@ public class OrderServiceTest {
 
     @BeforeEach
     void setUp() {
-        product = Product.builder()
-                .id(100L)
-                .name("Test Product")
-                .price(50)
-                .stockQuantity(10)
-                .category(Category.TOP)
-                .build();
+        product = Product.create("Test Product", 50, 10, Category.TOP);
 
-        order = Order.builder()
-                .id(1L)
-                .userId(1L)
-                .totalPrice(100)
-                .discountAmount(0)
-                .finalPrice(100)
-                .orderStatus(OrderStatus.PENDING)
-                .build();
+        OrderCommand.Create createCommand = new OrderCommand.Create(
+            1L,
+            null,
+            List.of(new OrderCommand.CreateOrderItem(product.getId(), 2, product.getPrice()))
+        );
+        List<OrderItem> items = createCommand.toOrderItems();
+        order = Order.create(createCommand.getUserId(), items);
     }
 
     @Test

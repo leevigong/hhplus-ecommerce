@@ -2,8 +2,8 @@ package kr.hhplus.be.server.infra.balance;
 
 import kr.hhplus.be.server.domain.balance.UserBalance;
 import kr.hhplus.be.server.domain.balance.UserBalanceRepository;
-import kr.hhplus.be.server.global.exception.ApiErrorCode;
-import kr.hhplus.be.server.global.exception.ApiException;
+import kr.hhplus.be.server.support.exception.ApiErrorCode;
+import kr.hhplus.be.server.support.exception.ApiException;
 import org.springframework.stereotype.Repository;
 
 @Repository
