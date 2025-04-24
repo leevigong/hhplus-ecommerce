@@ -1,5 +1,7 @@
 package kr.hhplus.be.server.domain.coupon;
 
+import kr.hhplus.be.server.support.exception.ApiErrorCode;
+import kr.hhplus.be.server.support.exception.ApiException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,7 +16,8 @@ public class CouponService {
 
     @Transactional
     public CouponInfo issueCoupon(CouponCommand command) {
-        Coupon coupon = couponRepository.getById(command.couponId());
+        Coupon coupon = couponRepository.findByIdForUpdate(command.couponId())
+                .orElseThrow(() -> new ApiException(ApiErrorCode.NOT_FOUND_COUPON));
 
         Coupon issuedCoupon = coupon.issue();
         couponRepository.save(issuedCoupon);

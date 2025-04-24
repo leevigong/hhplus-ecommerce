@@ -89,4 +89,8 @@ public class Coupon extends BaseEntity {
     public void soldOut() {
         this.couponStatus = CouponStatus.SOLD_OUT;
     }
+
+    public void updateIssuedQuantity(int quantity) {
+        this.issuedQuantity += quantity;
+    }
 }

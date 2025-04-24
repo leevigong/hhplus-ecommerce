@@ -6,6 +6,8 @@ import kr.hhplus.be.server.support.exception.ApiErrorCode;
 import kr.hhplus.be.server.support.exception.ApiException;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public class CouponRepositoryImpl implements CouponRepository {
 
@@ -24,5 +26,10 @@ public class CouponRepositoryImpl implements CouponRepository {
     public Coupon getById(Long couponId) {
         return couponJpaRepository.findById(couponId)
                 .orElseThrow(() -> new ApiException(ApiErrorCode.NOT_FOUND_COUPON));
+    }
+
+    @Override
+    public Optional<Coupon> findByIdForUpdate(Long id) {
+        return couponJpaRepository.findByIdForUpdate(id);
     }
 }
