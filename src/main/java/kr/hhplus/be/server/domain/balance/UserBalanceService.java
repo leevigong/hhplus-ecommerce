@@ -30,6 +30,11 @@ public class UserBalanceService {
         return UserBalanceInfo.from(userBalance);
     }
 
+    @Retryable(
+            value = ObjectOptimisticLockingFailureException.class, // 재시도 대상
+            maxAttempts = 2,                          // 최대 재시도 횟수 (기본값 3)
+            backoff = @Backoff(delay = 1000)        // 재시도 간격 0.5초 (기본값 1초)
+    )
     @Transactional
     public UserBalanceInfo charge(UserBalanceCommand.Charge command) {
         UserBalance userBalance = userBalanceRepository.getByUserId(command.getUserId());

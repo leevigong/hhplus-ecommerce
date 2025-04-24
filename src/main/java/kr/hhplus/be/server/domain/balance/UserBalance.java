@@ -27,6 +27,9 @@ public class UserBalance extends BaseEntity {
 
     private long balance;
 
+    @Version
+    private Integer version;
+
     @Builder
     private UserBalance(Long id, User user, long balance) {
         this.id = id;
