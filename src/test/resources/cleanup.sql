@@ -1,0 +1,10 @@
+DELETE FROM user_coupon;
+DELETE FROM user_balance_history;
+DELETE FROM user_balance;
+DELETE FROM product_sales_rank;
+DELETE FROM order_item;
+DELETE FROM payment;
+DELETE FROM `order`;
+DELETE FROM product;
+DELETE FROM coupon;
+DELETE FROM `user`;
