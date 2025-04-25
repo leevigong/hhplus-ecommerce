@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import kr.hhplus.be.server.application.payment.PaymentCriteria;
 
 public record PaymentRequest(
-        @Schema(description = "주문 ID", example = "123")
+        @Schema(description = "주문 ID", example = "1")
         Long orderId,
 
         @Schema(description = "사용자 ID", example = "1")

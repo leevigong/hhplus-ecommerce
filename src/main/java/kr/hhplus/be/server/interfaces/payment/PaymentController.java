@@ -19,7 +19,7 @@ public class PaymentController implements PaymentControllerDocs {
         this.paymentFacade = paymentFacade;
     }
 
-
+    // 주문/결제 에러로 결제만 따로 해야하는 경우를 위한 API
     @PostMapping
     public ResponseEntity<Void> processPayment(
             @RequestBody PaymentRequest request
