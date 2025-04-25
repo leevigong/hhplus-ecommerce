@@ -48,10 +48,5 @@ public class ProductService {
                 .map(rank -> ProductSalesRankInfo.from(rank))
                 .collect(Collectors.toList());
     }
-
-    @Transactional
-    public int saveThreeDaysProductSalesRank() {
-        return productSalesRankRepository.saveThreeDaysProductSalesRank();
-    }
 }
 

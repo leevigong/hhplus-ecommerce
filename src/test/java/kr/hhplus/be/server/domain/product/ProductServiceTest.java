@@ -40,13 +40,4 @@ class ProductServiceTest {
         assertEquals(10000, response.price());
     }
 
-    @Test
-    void 최근_3일_인기_상품_저장_성공() {
-        // when
-        productService.saveThreeDaysProductSalesRank();
-
-        // then
-        verify(productSalesRankRepository, times(1))
-                .saveThreeDaysProductSalesRank();
-    }
 }
