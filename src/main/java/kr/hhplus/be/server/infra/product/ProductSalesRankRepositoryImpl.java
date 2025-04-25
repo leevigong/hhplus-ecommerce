@@ -5,9 +5,7 @@ import kr.hhplus.be.server.domain.product.ProductSalesRankRepository;
 import kr.hhplus.be.server.domain.product.RankingScope;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.List;
 
 @Repository
@@ -30,19 +28,10 @@ public class ProductSalesRankRepositoryImpl implements ProductSalesRankRepositor
     }
 
     @Override
-    public int saveThreeDaysProductSalesRank() {
-        ZoneId seoul = ZoneId.of("Asia/Seoul");
-        LocalDateTime end = LocalDate.now(ZoneId.of("Asia/Seoul")).plusDays(1).atStartOfDay();
-        LocalDateTime start = end.minusDays(3);
+    public List<ProductSalesDto> saveThreeDaysProductSalesRank() {
+        LocalDateTime threeDaysAgo = LocalDateTime.now().minusDays(3);
 
-        productSalesRankJpaRepository.deleteAll();
-
-        return productSalesRankJpaRepository.savePopularProduct(
-                RankingScope.THREE_DAYS,
-                start,
-                end,
-                5   // 상위 5개 상품만
-        );
+        return productSalesRankJpaRepository.findTopSellingProducts(threeDaysAgo);
     }
 
     @Override

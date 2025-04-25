@@ -1,5 +1,7 @@
 package kr.hhplus.be.server.domain.product;
 
+import kr.hhplus.be.server.infra.product.ProductSalesDto;
+
 import java.util.List;
 
 public interface ProductSalesRankRepository {
@@ -8,7 +10,7 @@ public interface ProductSalesRankRepository {
 
     List<ProductSalesRank> findByRankingScope(RankingScope rankingScope);
 
-    int saveThreeDaysProductSalesRank();
+    List<ProductSalesDto> saveThreeDaysProductSalesRank();
 
     void deleteAll();
 }
