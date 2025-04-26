@@ -51,11 +51,11 @@ public class OrderFacade {
         userBalanceService.use(UserBalanceCommand.Use.of(paymentCriteria.userId(), paymentCriteria.finalPrice()));
 
         // 주문 확정
-        orderInfo = orderService.confirmOrder(OrderCommand.Confirm.from(paymentCriteria.orderId()));
+        OrderInfo confirmOrderInfo = orderService.confirmOrder(OrderCommand.Confirm.from(paymentCriteria.orderId()));
 
         // 데이터 플랫폼에 전송
-        orderDataPlatformClient.sendOrderData(orderInfo);
+        orderDataPlatformClient.sendOrderData(confirmOrderInfo);
 
-        return OrderResult.from(orderInfo);
+        return OrderResult.from(confirmOrderInfo);
     }
 }
