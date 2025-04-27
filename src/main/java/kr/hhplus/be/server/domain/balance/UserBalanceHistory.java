@@ -43,4 +43,31 @@ public class UserBalanceHistory extends BaseEntity {
                 .build();
     }
 
+    public static UserBalanceHistory createCharge(UserBalance beforeBalance, long amount) {
+        if (amount < 0) {
+            throw new ApiException(ApiErrorCode.NEGATIVE_BALANCE_HISTORY_NOT_ALLOWED);
+        }
+
+        return UserBalanceHistory.builder()
+                .userId(beforeBalance.getUser().getId())
+                .transactionType(TransactionType.CHARGE)
+                .amount(amount)
+                .beforeBalance(beforeBalance.getBalance())
+                .afterBalance(beforeBalance.getBalance() + amount)
+                .build();
+    }
+
+    public static UserBalanceHistory createUse(UserBalance beforeBalance, long amount) {
+        if (amount < 0) {
+            throw new ApiException(ApiErrorCode.NEGATIVE_BALANCE_HISTORY_NOT_ALLOWED);
+        }
+
+        return UserBalanceHistory.builder()
+                .userId(beforeBalance.getUser().getId())
+                .transactionType(TransactionType.USE)
+                .amount(amount)
+                .beforeBalance(beforeBalance.getBalance())
+                .afterBalance(beforeBalance.getBalance() - amount) // NOTE: 생성자에서 계산
+                .build();
+    }
 }
