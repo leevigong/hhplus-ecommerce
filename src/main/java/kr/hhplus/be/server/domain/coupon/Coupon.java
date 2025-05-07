@@ -48,6 +48,30 @@ public class Coupon extends BaseEntity {
                 .build();
     }
 
+    public static Coupon createFixed(String couponCode, long discountAmount, int maxIssuedQuantity, LocalDateTime expiredAt) {
+        return Coupon.builder()
+                .couponCode(couponCode)
+                .discountType(DiscountType.FIXED)
+                .discountAmount(discountAmount)
+                .maxIssuedQuantity(maxIssuedQuantity)
+                .issuedQuantity(0)
+                .couponStatus(CouponStatus.ACTIVE)
+                .expiredAt(expiredAt)
+                .build();
+    }
+
+    public static Coupon createPercentage(String couponCode, long discountAmount, int maxIssuedQuantity, LocalDateTime expiredAt) {
+        return Coupon.builder()
+                .couponCode(couponCode)
+                .discountType(DiscountType.PERCENTAGE)
+                .discountAmount(discountAmount)
+                .maxIssuedQuantity(maxIssuedQuantity)
+                .issuedQuantity(0)
+                .couponStatus(CouponStatus.ACTIVE)
+                .expiredAt(expiredAt)
+                .build();
+    }
+
     public boolean isAvailableToIssue() {
         return this.couponStatus == CouponStatus.ACTIVE &&
                 this.expiredAt != null && this.expiredAt.isAfter(LocalDateTime.now()) &&
