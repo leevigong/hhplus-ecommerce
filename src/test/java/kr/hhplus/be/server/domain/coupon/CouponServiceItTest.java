@@ -1,11 +1,9 @@
 package kr.hhplus.be.server.domain.coupon;
 
-import kr.hhplus.be.server.domain.userCoupon.UserCouponRepository;
 import kr.hhplus.be.server.support.exception.ApiErrorCode;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.LocalDateTime;
 
@@ -13,7 +11,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
-@Testcontainers
 class CouponServiceItTest {
 
     @Autowired
@@ -22,20 +19,13 @@ class CouponServiceItTest {
     @Autowired
     private CouponRepository couponRepository;
 
-    @Autowired
-    private UserCouponRepository userCouponRepository;
-
-    private final Long userId = 1L;
-
     @Test
     void 쿠폰_발급_성공() {
         // given
-        Coupon activeCoupon = Coupon.create(
+        Coupon activeCoupon = Coupon.createFixed(
                 "TEST123",
-                DiscountType.FIXED,
                 10,
                 100,
-                CouponStatus.ACTIVE,
                 LocalDateTime.now().plusDays(5)
         );
         couponRepository.save(activeCoupon);
