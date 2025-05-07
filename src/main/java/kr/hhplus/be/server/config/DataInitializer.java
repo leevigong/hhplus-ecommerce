@@ -61,7 +61,7 @@ public class DataInitializer {
         productSalesRanks.forEach(productSalesRankRepository::save);
 
         Coupon coupon = couponRepository.save(Coupon.create("TEST123", DiscountType.PERCENTAGE, 10, 100, CouponStatus.ACTIVE, LocalDateTime.now().plusDays(1)));
-        UserCoupon userCoupon = userCouponRepository.save(UserCoupon.create(coupon, user.getId(), UserCouponStatus.AVAILABLE));
+        UserCoupon userCoupon = userCouponRepository.save(UserCoupon.create(coupon, user.getId()));
 
         OrderItem orderItem = OrderItem.create(products.get(0).getId(), 1, userCoupon.getId());
         Order order = orderRepository.save(Order.create(user.getId(), List.of(orderItem)));

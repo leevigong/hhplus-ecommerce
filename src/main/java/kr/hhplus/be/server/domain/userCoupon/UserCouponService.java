@@ -26,9 +26,7 @@ public class UserCouponService {
 
     @Transactional
     public void createUserCoupon(UserCouponCommand command) {
-        UserCoupon userCoupon = UserCoupon.create(command.coupon(), command.userId(), UserCouponStatus.AVAILABLE);
-
+        UserCoupon userCoupon = UserCoupon.create(command.coupon(), command.userId());
         userCouponRepository.save(userCoupon);
     }
-
 }
