@@ -1,12 +1,17 @@
 package kr.hhplus.be.server.application.coupon;
 
-import kr.hhplus.be.server.domain.coupon.*;
+import kr.hhplus.be.server.domain.coupon.CouponInfo;
+import kr.hhplus.be.server.domain.coupon.CouponService;
 import kr.hhplus.be.server.domain.userCoupon.UserCouponCommand;
+import kr.hhplus.be.server.domain.userCoupon.UserCouponInfo;
 import kr.hhplus.be.server.domain.userCoupon.UserCouponService;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Component
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
 public class UserCouponFacade {
 
     private final CouponService couponService;
@@ -15,6 +20,15 @@ public class UserCouponFacade {
     public UserCouponFacade(CouponService couponService, UserCouponService userCouponService) {
         this.couponService = couponService;
         this.userCouponService = userCouponService;
+    }
+
+    @Transactional(readOnly = true)
+    public UserCouponResult.Coupons getUserCoupons(Long userId) {
+        List<UserCouponInfo> userCouponInfos = userCouponService.getUserCoupons(userId);
+        List<Long> userCouponIds = userCouponInfos.stream()
+                .map(UserCouponInfo::userCouponId)
+                .collect(Collectors.toList());
+        return UserCouponResult.Coupons.of(userCouponIds);
     }
 
     @Transactional

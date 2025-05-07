@@ -2,37 +2,26 @@ package kr.hhplus.be.server.interfaces.coupon;
 
 import kr.hhplus.be.server.application.coupon.UserCouponCriteria;
 import kr.hhplus.be.server.application.coupon.UserCouponFacade;
-import kr.hhplus.be.server.domain.userCoupon.UserCouponInfo;
-import kr.hhplus.be.server.domain.userCoupon.UserCouponService;
+import kr.hhplus.be.server.application.coupon.UserCouponResult;
 import kr.hhplus.be.server.interfaces.coupon.dto.UserCouponRequest;
-import kr.hhplus.be.server.interfaces.coupon.dto.UserCouponResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/coupons")
 public class CouponController implements CouponControllerDocs {
 
-    private final UserCouponService userCouponService;
     private final UserCouponFacade userCouponFacade;
 
-    public CouponController(UserCouponService userCouponService,
-                            UserCouponFacade userCouponFacade) {
-        this.userCouponService = userCouponService;
+    public CouponController(UserCouponFacade userCouponFacade) {
         this.userCouponFacade = userCouponFacade;
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<List<UserCouponResponse>> getUserCoupons(
+    public ResponseEntity<UserCouponResult.Coupons> getUserCoupons(
             @PathVariable("userId") Long userId
     ) {
-        List<UserCouponInfo> infos = userCouponService.getUserCoupons(userId);
-
-        return ResponseEntity.ok(infos.stream()
-                .map(UserCouponResponse::from)
-                .toList());
+        return ResponseEntity.ok(userCouponFacade.getUserCoupons(userId));
     }
 
     @PostMapping("/issue")

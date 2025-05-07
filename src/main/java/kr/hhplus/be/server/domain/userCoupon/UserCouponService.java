@@ -15,7 +15,6 @@ public class UserCouponService {
         this.userCouponRepository = userCouponRepository;
     }
 
-    @Transactional(readOnly = true)
     public List<UserCouponInfo> getUserCoupons(Long userId) {
         List<UserCoupon> userCoupons = userCouponRepository.findByUserId(userId);
 
@@ -24,7 +23,6 @@ public class UserCouponService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional
     public void createUserCoupon(UserCouponCommand command) {
         UserCoupon userCoupon = UserCoupon.create(command.coupon(), command.userId());
         userCouponRepository.save(userCoupon);
