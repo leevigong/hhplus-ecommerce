@@ -7,7 +7,7 @@ public record UserCouponCriteria(
         Long userId
 ) {
 
-    public CouponCommand toCommand(Long couponId) {
+    public CouponCommand toCommand() {
         return new CouponCommand(couponId);
     }
 

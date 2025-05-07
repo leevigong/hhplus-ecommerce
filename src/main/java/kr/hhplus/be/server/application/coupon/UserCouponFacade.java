@@ -19,11 +19,10 @@ public class UserCouponFacade {
 
     @Transactional
     public void issue(UserCouponCriteria criteria) {
-        CouponCommand command = criteria.toCommand(criteria.couponId());
+        // 쿠폰 발급
+        CouponInfo couponInfo = couponService.issueCoupon(criteria.toCommand());
 
-        CouponInfo couponInfo = couponService.issueCoupon(command);
-
-        UserCouponCommand userCouponCommand = UserCouponCommand.of(couponInfo.coupon(), criteria.userId());
-        userCouponService.createUserCoupon(userCouponCommand);
+        // 사용자 쿠폰 생성
+        userCouponService.createUserCoupon(UserCouponCommand.of(couponInfo.coupon(), criteria.userId()));
     }
 }
