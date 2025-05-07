@@ -16,8 +16,7 @@ public class CouponService {
 
     @Transactional
     public CouponInfo issueCoupon(CouponCommand command) {
-        Coupon coupon = couponRepository.findByIdForUpdate(command.couponId())
-                .orElseThrow(() -> new ApiException(ApiErrorCode.NOT_FOUND_COUPON));
+        Coupon coupon = couponRepository.getById(command.couponId());
 
         Coupon issuedCoupon = coupon.issue();
         couponRepository.save(issuedCoupon);
