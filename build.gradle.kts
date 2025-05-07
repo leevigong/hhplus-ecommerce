@@ -53,6 +53,9 @@ dependencies {
 	// Lombok
 	compileOnly("org.projectlombok:lombok")
 	annotationProcessor("org.projectlombok:lombok")
+
+	// Redisson
+	implementation("org.redisson:redisson-spring-boot-starter:3.46.0")
 }
 
 tasks.withType<Test> {
