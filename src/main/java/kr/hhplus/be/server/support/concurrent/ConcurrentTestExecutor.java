@@ -40,4 +40,35 @@ public class ConcurrentTestExecutor {
 
         return ConcurrentTestResult.of(successCount, failureCount, errors);
     }
+
+    public ConcurrentTestResult execute(int threads, List<Runnable> tasks) throws Throwable {
+        ExecutorService executorService = Executors.newFixedThreadPool(threads);
+        int totalTasks = tasks.size();
+        CountDownLatch latch = new CountDownLatch(totalTasks);
+
+        AtomicInteger successCount = new AtomicInteger();
+        AtomicInteger failureCount = new AtomicInteger();
+
+        // 예외를 보관할 리스트
+        CopyOnWriteArrayList<Throwable> errors = new CopyOnWriteArrayList<>();
+
+        for (Runnable task : tasks) {
+            executorService.execute(() -> {
+                try {
+                    task.run();
+                    successCount.incrementAndGet();
+                } catch (Throwable t) {
+                    failureCount.incrementAndGet();
+                    errors.add(t);
+                } finally {
+                    latch.countDown();
+                }
+            });
+        }
+
+        latch.await();
+        executorService.shutdown();
+
+        return ConcurrentTestResult.of(successCount, failureCount, errors);
+    }
 }
