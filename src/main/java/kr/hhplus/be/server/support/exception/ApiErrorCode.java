@@ -40,6 +40,8 @@ public enum ApiErrorCode {
     ALREADY_COUPON_APPLIED(HttpStatus.BAD_REQUEST, "이미 쿠폰이 적용된 주문입니다."),
     INVALID_DISCOUNT_AMOUNT(HttpStatus.BAD_REQUEST, "할인 금액이 주문 금액을 초과할 수 없습니다."),
     USER_COUPON_EXPIRED(HttpStatus.BAD_REQUEST, "쿠폰이 만료되어 사용할 수 없습니다."),
+    ALREADY_USER_COUPON(HttpStatus.BAD_REQUEST, "이미 존재하는 쿠폰입니다."),
+    COUPON_ISSUE_IN_PROGRESS(HttpStatus.BAD_REQUEST, "쿠폰 발급 중..."),
 
     // Order
     INVALID_USER(HttpStatus.BAD_REQUEST, "유효하지 않은 유저입니다."),
