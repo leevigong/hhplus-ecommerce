@@ -1,7 +1,8 @@
-package kr.hhplus.be.server.concurrency;
+package kr.hhplus.be.server.application.coupon;
 
-import kr.hhplus.be.server.domain.coupon.*;
-import kr.hhplus.be.server.domain.user.User;
+import kr.hhplus.be.server.domain.coupon.Coupon;
+import kr.hhplus.be.server.domain.coupon.CouponRepository;
+import kr.hhplus.be.server.domain.coupon.CouponStatus;
 import kr.hhplus.be.server.domain.user.UserRepository;
 import kr.hhplus.be.server.support.concurrent.ConcurrentTestExecutor;
 import kr.hhplus.be.server.support.concurrent.ConcurrentTestResult;
@@ -14,14 +15,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.LongStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
-class CouponConcurrencyTest {
+class UserCouponFacadeLockTest {
 
     @Autowired
-    private CouponService couponService;
+    private UserCouponFacade userCouponFacade;
 
     @Autowired
     private UserRepository userRepository;
@@ -31,12 +33,10 @@ class CouponConcurrencyTest {
 
     private ConcurrentTestExecutor executor;
 
-    private User user;
     private Coupon coupon;
 
     @BeforeEach
     void setUp() {
-        user = userRepository.save(User.create("닉네임1"));
         coupon = couponRepository.save(Coupon.createPercentage("test123", 10, 300, LocalDateTime.now().plusDays(1)));
         executor = new ConcurrentTestExecutor();
     }
@@ -44,12 +44,15 @@ class CouponConcurrencyTest {
     @Test
     void 선착순_쿠폰_발급_성공_동시성_300명_테스트() throws Throwable {
         // given
-        CouponCommand command = CouponCommand.of(coupon.getId());
-
-        List<Runnable> tasks = List.of(() -> couponService.issueCoupon(command));
+        List<Runnable> tasks = LongStream.rangeClosed(1, 300)
+                .mapToObj(userId -> (Runnable) () -> {
+                    UserCouponCriteria criteria = UserCouponCriteria.of(coupon.getId(), userId);
+                    userCouponFacade.issue(criteria);
+                })
+                .toList();
 
         // when
-        ConcurrentTestResult result = executor.execute(300, 300, tasks);
+        ConcurrentTestResult result = executor.execute(300, tasks);
 
         // then
         System.out.println("성공 카운트: " + result.getSuccessCount().get());
@@ -65,11 +68,16 @@ class CouponConcurrencyTest {
         // given: 이미 280개 발급된 쿠폰
         coupon.updateIssuedQuantity(280);
         couponRepository.save(coupon);
-        CouponCommand command = CouponCommand.of(coupon.getId());
-        List<Runnable> tasks = List.of(() -> couponService.issueCoupon(command));
+
+        List<Runnable> tasks = LongStream.rangeClosed(1, 300)
+                .mapToObj(userId -> (Runnable) () -> {
+                    UserCouponCriteria criteria = UserCouponCriteria.of(coupon.getId(), userId);
+                    userCouponFacade.issue(criteria);
+                })
+                .toList();
 
         // when
-        ConcurrentTestResult result = executor.execute(300, 300, tasks);
+        ConcurrentTestResult result = executor.execute(300, tasks);
 
         // then
         System.out.println("성공 카운트: " + result.getSuccessCount().get());
