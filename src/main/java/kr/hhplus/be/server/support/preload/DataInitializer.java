@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.config;
+package kr.hhplus.be.server.support.preload;
 
 import jakarta.annotation.PostConstruct;
 import kr.hhplus.be.server.domain.balance.*;
@@ -17,7 +17,6 @@ import kr.hhplus.be.server.domain.user.User;
 import kr.hhplus.be.server.domain.user.UserRepository;
 import kr.hhplus.be.server.domain.userCoupon.UserCoupon;
 import kr.hhplus.be.server.domain.userCoupon.UserCouponRepository;
-import kr.hhplus.be.server.domain.userCoupon.UserCouponStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;

@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.support;
+package kr.hhplus.be.server.support.exception;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 

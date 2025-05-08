@@ -1,6 +1,5 @@
 package kr.hhplus.be.server.support.exception;
 
-import kr.hhplus.be.server.support.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
