@@ -38,38 +38,37 @@ public class ConcurrentTestExecutor {
         latch.await();
         executorService.shutdown();
 
-        if (!errors.isEmpty()) {
-            throw errors.get(0);
-        }
-
-        return ConcurrentTestResult.of(successCount, failureCount);
+        return ConcurrentTestResult.of(successCount, failureCount, errors);
     }
 
-    public ConcurrentTestResult executeIgnoreErrors(int threads, int counter, List<Runnable> tasks) throws InterruptedException {
+    public ConcurrentTestResult execute(int threads, List<Runnable> tasks) throws Throwable {
         ExecutorService executorService = Executors.newFixedThreadPool(threads);
-        CountDownLatch latch = new CountDownLatch(counter);
+        int totalTasks = tasks.size();
+        CountDownLatch latch = new CountDownLatch(totalTasks);
 
         AtomicInteger successCount = new AtomicInteger();
         AtomicInteger failureCount = new AtomicInteger();
 
-        for (int i = 0; i < counter; i++) {
-            for (Runnable task : tasks) {
-                executorService.execute(() -> {
-                    try {
-                        task.run();
-                        successCount.incrementAndGet();
-                    } catch (Throwable t) {
-                        failureCount.incrementAndGet();
-                    } finally {
-                        latch.countDown();
-                    }
-                });
-            }
+        // 예외를 보관할 리스트
+        CopyOnWriteArrayList<Throwable> errors = new CopyOnWriteArrayList<>();
+
+        for (Runnable task : tasks) {
+            executorService.execute(() -> {
+                try {
+                    task.run();
+                    successCount.incrementAndGet();
+                } catch (Throwable t) {
+                    failureCount.incrementAndGet();
+                    errors.add(t);
+                } finally {
+                    latch.countDown();
+                }
+            });
         }
 
         latch.await();
         executorService.shutdown();
 
-        return ConcurrentTestResult.of(successCount, failureCount);
+        return ConcurrentTestResult.of(successCount, failureCount, errors);
     }
 }

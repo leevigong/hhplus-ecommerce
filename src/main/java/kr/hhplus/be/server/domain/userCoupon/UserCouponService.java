@@ -1,7 +1,8 @@
 package kr.hhplus.be.server.domain.userCoupon;
 
+import kr.hhplus.be.server.support.exception.ApiErrorCode;
+import kr.hhplus.be.server.support.exception.ApiException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,6 +25,11 @@ public class UserCouponService {
     }
 
     public void createUserCoupon(UserCouponCommand command) {
+        userCouponRepository.findByCouponIdAndUserId(command.coupon().getId(), command.userId())
+                .ifPresent(uc -> {
+                    throw new ApiException(ApiErrorCode.ALREADY_USER_COUPON);
+                });
+
         UserCoupon userCoupon = UserCoupon.create(command.coupon(), command.userId());
         userCouponRepository.save(userCoupon);
     }

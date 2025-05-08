@@ -5,6 +5,8 @@ import kr.hhplus.be.server.domain.coupon.CouponService;
 import kr.hhplus.be.server.domain.userCoupon.UserCouponCommand;
 import kr.hhplus.be.server.domain.userCoupon.UserCouponInfo;
 import kr.hhplus.be.server.domain.userCoupon.UserCouponService;
+import kr.hhplus.be.server.support.lock.DistributedLock;
+import kr.hhplus.be.server.support.lock.LockResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +33,7 @@ public class UserCouponFacade {
         return UserCouponResult.Coupons.of(userCouponIds);
     }
 
+    @DistributedLock(resource = LockResource.USER_COUPON, key = "#criteria.couponId")
     @Transactional
     public void issue(UserCouponCriteria criteria) {
         // 쿠폰 발급
@@ -39,4 +42,5 @@ public class UserCouponFacade {
         // 사용자 쿠폰 생성
         userCouponService.createUserCoupon(UserCouponCommand.of(couponInfo.coupon(), criteria.userId()));
     }
+
 }

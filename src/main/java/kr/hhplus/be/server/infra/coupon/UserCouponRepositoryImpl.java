@@ -7,6 +7,7 @@ import kr.hhplus.be.server.support.exception.ApiException;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class UserCouponRepositoryImpl implements UserCouponRepository {
@@ -31,5 +32,10 @@ public class UserCouponRepositoryImpl implements UserCouponRepository {
     @Override
     public UserCoupon save(UserCoupon userCoupon) {
         return userCouponJpaRepository.save(userCoupon);
+    }
+
+    @Override
+    public Optional<UserCoupon> findByCouponIdAndUserId(Long couponId, Long userId) {
+        return userCouponJpaRepository.findByCouponIdAndUserId(couponId, userId);
     }
 }

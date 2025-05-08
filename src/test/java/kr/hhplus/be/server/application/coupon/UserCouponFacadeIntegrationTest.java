@@ -1,10 +1,11 @@
 package kr.hhplus.be.server.application.coupon;
 
-import static org.assertj.core.api.Assertions.*;
-
-import java.time.LocalDateTime;
-import java.util.List;
-
+import kr.hhplus.be.server.domain.coupon.Coupon;
+import kr.hhplus.be.server.domain.coupon.CouponRepository;
+import kr.hhplus.be.server.domain.userCoupon.UserCoupon;
+import kr.hhplus.be.server.domain.userCoupon.UserCouponRepository;
+import kr.hhplus.be.server.support.exception.ApiErrorCode;
+import kr.hhplus.be.server.support.exception.ApiException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,14 +13,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import kr.hhplus.be.server.domain.coupon.Coupon;
-import kr.hhplus.be.server.domain.coupon.CouponRepository;
-import kr.hhplus.be.server.domain.coupon.CouponStatus;
-import kr.hhplus.be.server.domain.coupon.DiscountType;
-import kr.hhplus.be.server.domain.userCoupon.UserCoupon;
-import kr.hhplus.be.server.domain.userCoupon.UserCouponRepository;
-import kr.hhplus.be.server.support.exception.ApiErrorCode;
-import kr.hhplus.be.server.support.exception.ApiException;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 @Testcontainers
@@ -35,20 +33,12 @@ class UserCouponFacadeIntegrationTest {
     @Autowired
     private UserCouponRepository userCouponRepository;
 
-    private Long userId;
+    private final Long userId = 1L;
     private Coupon coupon;
 
     @BeforeEach
     void setUp() {
-        userId = 1L;
-        coupon = Coupon.create(
-                "TEST123",
-                DiscountType.FIXED,
-                10,
-                100,
-                CouponStatus.ACTIVE,
-                LocalDateTime.now().plusDays(5)
-        );
+        coupon = Coupon.createFixed("TEST123", 10, 100, LocalDateTime.now().plusDays(5));
         couponRepository.save(coupon);
     }
 

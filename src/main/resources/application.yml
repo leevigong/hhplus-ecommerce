@@ -21,6 +21,15 @@ spring:
       hibernate.timezone.default_storage: NORMALIZE_UTC
       hibernate.jdbc.time_zone: UTC
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+logging:
+  level:
+    kr.hhplus.be.server.support.lock: debug
+
 ---
 spring.config.activate.on-profile: local, test
 
