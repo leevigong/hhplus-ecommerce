@@ -1,9 +1,6 @@
 package kr.hhplus.be.server.domain.coupon;
 
-import kr.hhplus.be.server.support.exception.ApiErrorCode;
-import kr.hhplus.be.server.support.exception.ApiException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class CouponService {
@@ -14,7 +11,6 @@ public class CouponService {
         this.couponRepository = couponRepository;
     }
 
-    @Transactional
     public CouponInfo issueCoupon(CouponCommand command) {
         Coupon coupon = couponRepository.getById(command.couponId());
 
