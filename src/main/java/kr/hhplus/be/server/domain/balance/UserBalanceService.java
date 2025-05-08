@@ -38,19 +38,11 @@ public class UserBalanceService {
     @Transactional
     public UserBalanceInfo charge(UserBalanceCommand.Charge command) {
         UserBalance userBalance = userBalanceRepository.getByUserId(command.getUserId());
+        UserBalanceHistory history = UserBalanceHistory.createCharge(userBalance, command.getAmount());
 
-        long beforePoint = userBalance.getBalance();
         UserBalance chargedUserBalance = userBalance.charge(command.getAmount());
-        long afterPoint = chargedUserBalance.getBalance();
         userBalanceRepository.save(chargedUserBalance);
 
-        UserBalanceHistory history = UserBalanceHistory.create(
-                command.getUserId(),
-                TransactionType.CHARGE,
-                command.getAmount(),
-                beforePoint,
-                afterPoint
-        );
         userBalanceHistoryRepository.save(history);
 
         return UserBalanceInfo.from(chargedUserBalance);
@@ -59,19 +51,11 @@ public class UserBalanceService {
     @Transactional
     public UserBalanceInfo use(UserBalanceCommand.Use command) {
         UserBalance userBalance = userBalanceRepository.getByUserId(command.getUserId());
+        UserBalanceHistory history = UserBalanceHistory.createUse(userBalance, command.getAmount());
 
-        long beforePoint = userBalance.getBalance();
         UserBalance usedUserBalance = userBalance.use(command.getAmount());
-        long afterPoint = usedUserBalance.getBalance();
-        userBalanceRepository.save(userBalance);
+        userBalanceRepository.save(usedUserBalance);
 
-        UserBalanceHistory history = UserBalanceHistory.create(
-                command.getUserId(),
-                TransactionType.USE,
-                command.getAmount(),
-                beforePoint,
-                afterPoint
-        );
         userBalanceHistoryRepository.save(history);
 
         return UserBalanceInfo.from(userBalance);

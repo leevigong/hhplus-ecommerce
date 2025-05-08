@@ -73,16 +73,16 @@ public class Order extends BaseEntity {
         calculatePrice();
     }
 
-    public void applyCoupon(UserCoupon coupon) {
+    public void applyCoupon(UserCoupon userCoupon) {
         if (this.userCoupon != null) {
             throw new ApiException(ApiErrorCode.ALREADY_COUPON_APPLIED);
         }
-        coupon.validateAvailable();
+        userCoupon.validateAvailable();
 
-        long discount = coupon.getCoupon().calculateDiscount(this.totalPrice);
-        coupon.use();
+        long discount = userCoupon.getCoupon().calculateDiscount(this.totalPrice);
+        userCoupon.use();
 
-        this.userCoupon = coupon;
+        this.userCoupon = userCoupon;
         this.discountPrice = discount;
         this.finalPrice = this.totalPrice - discount;
     }

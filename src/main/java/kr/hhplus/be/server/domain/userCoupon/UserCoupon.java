@@ -29,11 +29,11 @@ public class UserCoupon extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private UserCouponStatus userCouponStatus;
 
-    public static UserCoupon create(Coupon coupon, Long userId, UserCouponStatus userCouponStatus) {
+    public static UserCoupon create(Coupon coupon, Long userId) {
         return UserCoupon.builder()
                 .coupon(coupon)
                 .userId(userId)
-                .userCouponStatus(userCouponStatus)
+                .userCouponStatus(UserCouponStatus.AVAILABLE)
                 .build();
     }
 

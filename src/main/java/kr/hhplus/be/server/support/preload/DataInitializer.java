@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.config;
+package kr.hhplus.be.server.support.preload;
 
 import jakarta.annotation.PostConstruct;
 import kr.hhplus.be.server.domain.balance.*;
@@ -17,7 +17,6 @@ import kr.hhplus.be.server.domain.user.User;
 import kr.hhplus.be.server.domain.user.UserRepository;
 import kr.hhplus.be.server.domain.userCoupon.UserCoupon;
 import kr.hhplus.be.server.domain.userCoupon.UserCouponRepository;
-import kr.hhplus.be.server.domain.userCoupon.UserCouponStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,7 +60,7 @@ public class DataInitializer {
         productSalesRanks.forEach(productSalesRankRepository::save);
 
         Coupon coupon = couponRepository.save(Coupon.create("TEST123", DiscountType.PERCENTAGE, 10, 100, CouponStatus.ACTIVE, LocalDateTime.now().plusDays(1)));
-        UserCoupon userCoupon = userCouponRepository.save(UserCoupon.create(coupon, user.getId(), UserCouponStatus.AVAILABLE));
+        UserCoupon userCoupon = userCouponRepository.save(UserCoupon.create(coupon, user.getId()));
 
         OrderItem orderItem = OrderItem.create(products.get(0).getId(), 1, userCoupon.getId());
         Order order = orderRepository.save(Order.create(user.getId(), List.of(orderItem)));
