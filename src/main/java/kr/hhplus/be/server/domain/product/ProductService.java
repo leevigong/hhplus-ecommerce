@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
 public class ProductService {
 
     private final ProductRepository productRepository;
@@ -29,6 +28,16 @@ public class ProductService {
         return ProductInfo.from(product);
     }
 
+    @Transactional(readOnly = true)
+    public List<ProductSalesRankInfo> getProductSalesRank(String rankingScope) {
+        List<ProductSalesRank> productSalesRanks = productSalesRankRepository.findByRankingScope(RankingScope.from(rankingScope));
+
+        return productSalesRanks.stream()
+                .map(rank -> ProductSalesRankInfo.from(rank))
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
     public void validateAndSubStockProducts(List<OrderCommand.CreateOrderItem> createOrderItems) {
         for (OrderCommand.CreateOrderItem orderItem : createOrderItems) {
             // 상품을 조회
@@ -39,14 +48,4 @@ public class ProductService {
             product.subStock(orderItem.getQuantity());
         }
     }
-
-    @Transactional(readOnly = true)
-    public List<ProductSalesRankInfo> getProductSalesRank(String rankingScope) {
-        List<ProductSalesRank> productSalesRanks = productSalesRankRepository.findByRankingScope(RankingScope.from(rankingScope));
-
-        return productSalesRanks.stream()
-                .map(rank -> ProductSalesRankInfo.from(rank))
-                .collect(Collectors.toList());
-    }
 }
-
