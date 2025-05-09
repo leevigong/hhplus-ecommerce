@@ -88,9 +88,11 @@ void 캐시적용하면_레포지토리_호출은_1번만_된다() {
 }
 ```
 캐시 적용 전 테스트 실패: DB 4번 호출에 따라 DB에 4번 접근
-![img.png](img.png)
+<img width="1147" alt="image" src="https://github.com/user-attachments/assets/6e3e4236-e8b8-4d55-8a0c-463131487f65" />
+
 캐시 적용 후 테스트 성공: DB 4번 호출하지만 DB에는 1번 접근
-![img_1.png](img_1.png)
+<img width="1148" alt="image" src="https://github.com/user-attachments/assets/0e5b9dc5-665f-4801-99d3-27de5d4d8dbf" />
+
 
 ### 캐싱 성능 비교
 캐시 성능을 검증하기 위해 K6을 사용하였다. [k6 부하 스크립트](https://github.com/leevigong/hhplus-ecommerce/blob/a55e872dc56605083d71085c560becf3e20df411/k6/popularProducts.js)
