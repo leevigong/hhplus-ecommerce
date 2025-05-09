@@ -3,6 +3,8 @@ package kr.hhplus.be.server.interfaces.product;
 import kr.hhplus.be.server.domain.order.OrderItemRepository;
 import kr.hhplus.be.server.domain.product.*;
 import kr.hhplus.be.server.infra.product.ProductSalesDto;
+import kr.hhplus.be.server.support.cache.CacheNames;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +27,7 @@ public class ProductSalesRankScheduler {
 
     @Transactional
     @Scheduled(cron = "0 0 0 * * *")
+    @CachePut(cacheNames = CacheNames.POPULAR_PRODUCTS, key = "#rankingScope")
     public void generate3DaySalesRank() {
         productSalesRankRepository.deleteAll();
 

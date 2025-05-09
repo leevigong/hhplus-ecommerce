@@ -42,29 +42,34 @@ public class DataInitializer {
     @PostConstruct
     @Transactional
     public void init() {
-        User user = userRepository.save(User.create("닉네임"));
+        // 유저 및 잔고 생성
+        User user = userRepository.save(User.create("테스트유저"));
         userBalanceRepository.save(UserBalance.create(user, 100_000));
-        List<Product> products = List.of(
-                Product.create("상의", 10_000, 10, Category.TOP),
-                Product.create("바지", 20_000, 5, Category.BOTTOM),
-                Product.create("신발", 30_000, 3, Category.SHOES)
-        );
         userBalanceHistoryRepository.save(UserBalanceHistory.create(user.getId(), TransactionType.CHARGE, 100_000, 0, 100_000));
 
-        products.forEach(productRepository::save);
+        // 상품 등록
+        Product top = Product.create("상의", 19_800, 100, Category.TOP);
+        Product bottom = Product.create("하의", 39_000, 80, Category.BOTTOM);
+        Product shoes = Product.create("신발", 89_000, 50, Category.SHOES);
+        List.of(top, bottom, shoes).forEach(productRepository::save);
+
+        // 상품 판매 랭킹 등록
         List<ProductSalesRank> productSalesRanks = List.of(
-                ProductSalesRank.create(products.get(0), 10000, 500_000, RankingScope.THREE_DAYS, 1),
-                ProductSalesRank.create(products.get(1), 500, 300_000, RankingScope.THREE_DAYS, 2),
-                ProductSalesRank.create(products.get(2), 10, 100_000, RankingScope.THREE_DAYS, 3)
-                );
+                ProductSalesRank.create(top, 350, 6_930_000, RankingScope.THREE_DAYS, 1),
+                ProductSalesRank.create(bottom, 120, 4_680_000, RankingScope.THREE_DAYS, 2),
+                ProductSalesRank.create(shoes, 70, 6_230_000, RankingScope.THREE_DAYS, 3),
+                ProductSalesRank.create(shoes, 150, 13_350_000, RankingScope.WEEKLY, 1),
+                ProductSalesRank.create(top, 140, 2_772_000, RankingScope.WEEKLY, 2)
+        );
         productSalesRanks.forEach(productSalesRankRepository::save);
 
-        Coupon coupon = couponRepository.save(Coupon.create("TEST123", DiscountType.PERCENTAGE, 10, 100, CouponStatus.ACTIVE, LocalDateTime.now().plusDays(1)));
+        // 쿠폰 및 사용자 쿠폰 등록
+        Coupon coupon = couponRepository.save(Coupon.createPercentage("TEST123", 10, 100, LocalDateTime.now().plusDays(1)));
         UserCoupon userCoupon = userCouponRepository.save(UserCoupon.create(coupon, user.getId()));
 
-        OrderItem orderItem = OrderItem.create(products.get(0).getId(), 1, userCoupon.getId());
+        // 주문 및 결제 등록
+        OrderItem orderItem = OrderItem.create(top.getId(), 1, 1000);
         Order order = orderRepository.save(Order.create(user.getId(), List.of(orderItem)));
-
         paymentRepository.save(Payment.create(order.getId(), 10_000));
     }
 }

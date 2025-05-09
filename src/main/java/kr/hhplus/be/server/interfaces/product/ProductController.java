@@ -3,8 +3,6 @@ package kr.hhplus.be.server.interfaces.product;
 import kr.hhplus.be.server.domain.product.ProductInfo;
 import kr.hhplus.be.server.domain.product.ProductSalesRankInfo;
 import kr.hhplus.be.server.domain.product.ProductService;
-import kr.hhplus.be.server.interfaces.product.dto.ProductResponse;
-import kr.hhplus.be.server.interfaces.product.dto.ProductSalesRankResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,13 +28,15 @@ public class ProductController implements ProductControllerDocs {
     }
 
     @GetMapping("/popular")
-    public ResponseEntity<List<ProductSalesRankResponse.ProductSalesRankV1>> getProductSalesRank(
+    public ResponseEntity<List<ProductResponse.PopularV1>> getProductSalesRank(
             @RequestParam(value = "rankingScope", required = false, defaultValue = "THREE_DAYS") String rankingScope
     ) {
         List<ProductSalesRankInfo> infos = productService.getProductSalesRank(rankingScope);
 
-        return ResponseEntity.ok(infos.stream()
-                .map(ProductSalesRankResponse.ProductSalesRankV1::from)
-                .toList());
+        List<ProductResponse.PopularV1> response = infos.stream()
+                .map(ProductResponse.PopularV1::from)
+                .toList();
+
+        return ResponseEntity.ok(response);
     }
 }

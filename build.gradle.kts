@@ -56,6 +56,9 @@ dependencies {
 
 	// Redisson
 	implementation("org.redisson:redisson-spring-boot-starter:3.46.0")
+
+	// Cache
+	implementation("org.springframework.boot:spring-boot-starter-data-redis")   // Lettuce 기본
 }
 
 tasks.withType<Test> {

@@ -16,7 +16,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 @SpringBootTest
 public class ProductConcurrencyTest {
@@ -63,11 +62,11 @@ public class ProductConcurrencyTest {
         List<Runnable> tasks = List.of(() -> productService.validateAndSubStockProducts(cmds));
 
         // when & then
-        assertThatThrownBy(() -> executor.execute(4, 4, tasks))
-                .hasMessage(ApiErrorCode.INSUFFICIENT_STOCK.getMessage());
+        ConcurrentTestResult result = executor.execute(4, 4, tasks);
+        assertThat(result.getErrors().get(0).getMessage()).isEqualTo(ApiErrorCode.INSUFFICIENT_STOCK.getMessage());
 
-        Product result = productRepository.getById(product.getId());
-        System.out.println("남은 재고: " + result.getStockQuantity());
-        assertThat(result.getStockQuantity()).isEqualTo(1);
+        Product updatedProduct = productRepository.getById(product.getId());
+        System.out.println("남은 재고: " + updatedProduct.getStockQuantity());
+        assertThat(updatedProduct.getStockQuantity()).isEqualTo(1);
     }
 }

@@ -8,11 +8,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kr.hhplus.be.server.support.exception.ErrorResponse;
-import kr.hhplus.be.server.interfaces.product.dto.ProductResponse;
-import kr.hhplus.be.server.interfaces.product.dto.ProductSalesRankResponse;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -70,7 +70,7 @@ public interface ProductControllerDocs {
             @ApiResponse(responseCode = "200", description = "인기 상품 조회 성공",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = ProductSalesRankResponse.class),
+                            schema = @Schema(implementation = ProductResponse.PopularV1.class),
                             examples = @ExampleObject(value = """
                                     [
                                         {
@@ -117,7 +117,7 @@ public interface ProductControllerDocs {
             )
     })
     @GetMapping("/api/products/sales-rank")
-    public ResponseEntity<List<ProductSalesRankResponse.ProductSalesRankV1>> getProductSalesRank(
+    public ResponseEntity<List<ProductResponse.PopularV1>> getProductSalesRank(
             @RequestParam(value = "sortBy", required = false, defaultValue = "THREE_DAYS") String sortBy
     );
 
