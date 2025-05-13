@@ -1,8 +1,10 @@
 package kr.hhplus.be.server.domain.product;
 
 import kr.hhplus.be.server.domain.order.OrderCommand;
+import kr.hhplus.be.server.support.cache.CacheNames;
 import kr.hhplus.be.server.support.exception.ApiErrorCode;
 import kr.hhplus.be.server.support.exception.ApiException;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -10,7 +12,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
 public class ProductService {
 
     private final ProductRepository productRepository;
@@ -23,12 +24,24 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
+    @Cacheable(cacheNames = CacheNames.PRODUCT, key = "#productId")
     public ProductInfo getProductById(Long productId) {
         Product product = productRepository.getById(productId);
 
         return ProductInfo.from(product);
     }
 
+    @Transactional(readOnly = true)
+    @Cacheable(cacheNames = CacheNames.POPULAR_PRODUCTS, key = "#rankingScope")
+    public List<ProductSalesRankInfo> getProductSalesRank(String rankingScope) {
+        List<ProductSalesRank> productSalesRanks = productSalesRankRepository.findByRankingScope(RankingScope.from(rankingScope));
+
+        return productSalesRanks.stream()
+                .map(rank -> ProductSalesRankInfo.from(rank))
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
     public void validateAndSubStockProducts(List<OrderCommand.CreateOrderItem> createOrderItems) {
         for (OrderCommand.CreateOrderItem orderItem : createOrderItems) {
             // 상품을 조회
@@ -39,14 +52,4 @@ public class ProductService {
             product.subStock(orderItem.getQuantity());
         }
     }
-
-    @Transactional(readOnly = true)
-    public List<ProductSalesRankInfo> getProductSalesRank(String rankingScope) {
-        List<ProductSalesRank> productSalesRanks = productSalesRankRepository.findByRankingScope(RankingScope.from(rankingScope));
-
-        return productSalesRanks.stream()
-                .map(rank -> ProductSalesRankInfo.from(rank))
-                .collect(Collectors.toList());
-    }
 }
-
