@@ -45,7 +45,7 @@ class UserCouponFacadeIntegrationTest {
     @Test
     void 쿠폰_발급_성공() {
         // given
-        UserCouponCriteria criteria = UserCouponCriteria.of(coupon.getId(), userId);
+        UserCouponCriteria.Issue criteria = UserCouponCriteria.Issue.of(coupon.getId(), userId);
 
         // when
         userCouponFacade.issue(criteria);
@@ -65,7 +65,7 @@ class UserCouponFacadeIntegrationTest {
         // given
         coupon.expire();
         couponRepository.save(coupon);
-        UserCouponCriteria criteria = UserCouponCriteria.of(coupon.getId(), userId);
+        UserCouponCriteria.Issue criteria = UserCouponCriteria.Issue.of(coupon.getId(), userId);
 
         // then
         assertThatThrownBy(() -> userCouponFacade.issue(criteria))
@@ -78,7 +78,7 @@ class UserCouponFacadeIntegrationTest {
         // given
         coupon.soldOut();
         couponRepository.save(coupon);
-        UserCouponCriteria criteria = UserCouponCriteria.of(coupon.getId(), userId);
+        UserCouponCriteria.Issue criteria = UserCouponCriteria.Issue.of(coupon.getId(), userId);
 
         // then
         assertThatThrownBy(() -> userCouponFacade.issue(criteria))

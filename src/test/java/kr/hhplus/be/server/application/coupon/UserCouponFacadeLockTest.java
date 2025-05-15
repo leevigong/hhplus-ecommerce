@@ -46,7 +46,7 @@ class UserCouponFacadeLockTest {
         // given
         List<Runnable> tasks = LongStream.rangeClosed(1, 300)
                 .mapToObj(userId -> (Runnable) () -> {
-                    UserCouponCriteria criteria = UserCouponCriteria.of(coupon.getId(), userId);
+                    UserCouponCriteria.Issue criteria = UserCouponCriteria.Issue.of(coupon.getId(), userId);
                     userCouponFacade.issue(criteria);
                 })
                 .toList();
@@ -71,7 +71,7 @@ class UserCouponFacadeLockTest {
 
         List<Runnable> tasks = LongStream.rangeClosed(1, 300)
                 .mapToObj(userId -> (Runnable) () -> {
-                    UserCouponCriteria criteria = UserCouponCriteria.of(coupon.getId(), userId);
+                    UserCouponCriteria.Issue criteria = UserCouponCriteria.Issue.of(coupon.getId(), userId);
                     userCouponFacade.issue(criteria);
                 })
                 .toList();
