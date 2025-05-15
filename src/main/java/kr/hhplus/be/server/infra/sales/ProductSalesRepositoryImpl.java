@@ -1,19 +1,25 @@
 package kr.hhplus.be.server.infra.sales;
 
+import kr.hhplus.be.server.domain.order.OrderItem;
 import kr.hhplus.be.server.domain.sales.ProductSales;
 import kr.hhplus.be.server.domain.sales.ProductSalesCommand;
+import kr.hhplus.be.server.domain.sales.ProductSalesInfo;
 import kr.hhplus.be.server.domain.sales.ProductSalesRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
 public class ProductSalesRepositoryImpl implements ProductSalesRepository {
 
     private final ProductSalesJpaRepository productSalesJpaRepository;
+    private final RedisProductSalesCache redisProductSalesCache;
 
-    public ProductSalesRepositoryImpl(ProductSalesJpaRepository productSalesJpaRepository) {
+    public ProductSalesRepositoryImpl(ProductSalesJpaRepository productSalesJpaRepository,
+                                      RedisProductSalesCache redisProductSalesCache) {
         this.productSalesJpaRepository = productSalesJpaRepository;
+        this.redisProductSalesCache = redisProductSalesCache;
     }
 
     @Override
@@ -24,5 +30,15 @@ public class ProductSalesRepositoryImpl implements ProductSalesRepository {
     @Override
     public List<ProductSales> findPopulars(ProductSalesCommand.Popular command) {
         return productSalesJpaRepository.findRankBetweenDates(command.getStartDate(), command.getEndDate());
+    }
+
+    @Override
+    public void add(List<OrderItem> items) {
+        redisProductSalesCache.add(items);
+    }
+
+    @Override
+    public List<ProductSalesInfo.Popular> getTopSalesRange(LocalDate startDate, LocalDate endDate, int top) {
+        return redisProductSalesCache.getTopSalesRange(startDate, endDate, top);
     }
 }
