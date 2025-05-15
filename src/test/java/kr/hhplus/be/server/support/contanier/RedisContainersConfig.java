@@ -1,12 +1,13 @@
 package kr.hhplus.be.server.support.contanier;
 
-import jakarta.annotation.PreDestroy;
+import org.junit.jupiter.api.extension.BeforeAllCallback;
+import org.junit.jupiter.api.extension.ExtensionContext;
 import org.springframework.context.annotation.Configuration;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.utility.DockerImageName;
 
 @Configuration
-class RedisContainersConfig {
+public class RedisContainersConfig implements BeforeAllCallback {
 
     public static final GenericContainer<?> REDIS_CONTAINER;
 
@@ -19,8 +20,14 @@ class RedisContainersConfig {
         System.setProperty("spring.redis.port", REDIS_CONTAINER.getFirstMappedPort().toString());
     }
 
-    @PreDestroy
-    public void preDestroy() {
-        if (REDIS_CONTAINER.isRunning()) REDIS_CONTAINER.stop();
+    @Override
+    public void beforeAll(ExtensionContext context) throws Exception {
+        if (REDIS_CONTAINER.isRunning()) return;
+
+        REDIS_CONTAINER.start();
+    }
+
+    public static GenericContainer<?> getContainer() {
+        return REDIS_CONTAINER;
     }
 }
