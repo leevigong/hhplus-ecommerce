@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.domain.sales;
 
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -9,10 +10,11 @@ public class ProductSalesInfo {
 
     @Getter
     @NoArgsConstructor
+    @EqualsAndHashCode
     public static class Popular {
+
         private Long productId;
         private Long score;
-
 
         private Popular(Long productId, Long score) {
             this.productId = productId;
