@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.support.config.redis;
+package kr.hhplus.be.server.support.config.cache;
 
 import kr.hhplus.be.server.support.cache.CacheType;
 import org.springframework.cache.annotation.EnableCaching;
@@ -27,6 +27,7 @@ public class RedisCacheConfig {
 
         // 직렬화
         RedisCacheConfiguration defaultConfig = RedisCacheConfiguration.defaultCacheConfig()
+                .computePrefixWith(name -> name + ":")
                 .serializeKeysWith(RedisSerializationContext.SerializationPair
                         .fromSerializer(RedisSerializer.string()))
                 .serializeValuesWith(RedisSerializationContext.SerializationPair
