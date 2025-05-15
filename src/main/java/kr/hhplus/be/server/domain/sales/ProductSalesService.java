@@ -19,11 +19,7 @@ public class ProductSalesService {
     @Transactional(readOnly = true)
     @Cacheable(cacheNames = CacheNames.POPULAR_PRODUCT_SALES, keyGenerator = "popularProductsKeyGenerator")
     public List<ProductSalesInfo.Popular> getProductSales(ProductSalesCommand.Popular command) {
-        List<ProductSales> populars = productSalesRepository.findPopulars(command);
-
-        return populars.stream()
-                .map(ProductSalesInfo.Popular::from)
-                .toList();
+        return productSalesRepository.getTopSalesRange(command.getStartDate(), command.getEndDate(), command.getTop());
     }
 
 }
