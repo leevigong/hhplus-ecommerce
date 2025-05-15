@@ -6,16 +6,21 @@ import kr.hhplus.be.server.support.exception.ApiErrorCode;
 import kr.hhplus.be.server.support.exception.ApiException;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public class UserCouponRepositoryImpl implements UserCouponRepository {
 
     private final UserCouponJpaRepository userCouponJpaRepository;
+    private final UserCouponRedisRepository userCouponRedisRepository;
 
-    public UserCouponRepositoryImpl(UserCouponJpaRepository userCouponJpaRepository) {
+    public UserCouponRepositoryImpl(UserCouponJpaRepository userCouponJpaRepository,
+                                    UserCouponRedisRepository userCouponRedisRepository) {
         this.userCouponJpaRepository = userCouponJpaRepository;
+        this.userCouponRedisRepository = userCouponRedisRepository;
     }
 
     @Override
@@ -37,5 +42,28 @@ public class UserCouponRepositoryImpl implements UserCouponRepository {
     @Override
     public Optional<UserCoupon> findByCouponIdAndUserId(Long couponId, Long userId) {
         return userCouponJpaRepository.findByCouponIdAndUserId(couponId, userId);
+    }
+
+    @Override
+    public boolean existsByCouponIdAndUserId(long couponId, Long userId) {
+        return userCouponJpaRepository.existsByCouponIdAndUserId(couponId, userId);
+    }
+
+    /**
+     * Redis 사용
+     **/
+    @Override
+    public boolean enqueueCouponCandidate(long couponId, long userId) {
+        return userCouponRedisRepository.enqueueCouponCandidate(couponId, userId);
+    }
+
+    @Override
+    public Set<Long> fetchCouponCandidates(long couponId, int limit) {
+        return userCouponRedisRepository.fetchCouponCandidates(couponId, limit);
+    }
+
+    @Override
+    public void removeCouponCandidates(long couponId, Collection<Long> userIds) {
+        userCouponRedisRepository.removeCouponCandidates(couponId, userIds);
     }
 }
