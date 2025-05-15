@@ -31,4 +31,13 @@ public class CouponController implements CouponControllerDocs {
 
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/publish")
+    public ResponseEntity<Void> publishCoupon(
+            @RequestBody UserCouponRequest.PublishRequest request
+    ) {
+        userCouponFacade.requestPublishWithRedis(request.toCriteria());
+
+        return ResponseEntity.ok().build();
+    }
 }

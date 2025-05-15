@@ -42,4 +42,9 @@ public class UserCouponFacade {
         // 사용자 쿠폰 생성
         userCouponService.createUserCoupon(UserCouponCommand.of(couponInfo.getCoupon(), criteria.getUserId()));
     }
+
+    @Transactional
+    public void requestPublishWithRedis(UserCouponCriteria.PublishRequest criteria) {
+        userCouponService.requestPublishCoupon(criteria.toCommand());
+    }
 }
