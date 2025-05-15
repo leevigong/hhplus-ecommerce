@@ -4,8 +4,6 @@ import jakarta.annotation.PostConstruct;
 import kr.hhplus.be.server.domain.balance.*;
 import kr.hhplus.be.server.domain.coupon.Coupon;
 import kr.hhplus.be.server.domain.coupon.CouponRepository;
-import kr.hhplus.be.server.domain.coupon.CouponStatus;
-import kr.hhplus.be.server.domain.coupon.DiscountType;
 import kr.hhplus.be.server.domain.order.Order;
 import kr.hhplus.be.server.domain.order.OrderItem;
 import kr.hhplus.be.server.domain.order.OrderItemRepository;
@@ -13,6 +11,8 @@ import kr.hhplus.be.server.domain.order.OrderRepository;
 import kr.hhplus.be.server.domain.payment.Payment;
 import kr.hhplus.be.server.domain.payment.PaymentRepository;
 import kr.hhplus.be.server.domain.product.*;
+import kr.hhplus.be.server.domain.sales.ProductSales;
+import kr.hhplus.be.server.domain.sales.ProductSalesRepository;
 import kr.hhplus.be.server.domain.user.User;
 import kr.hhplus.be.server.domain.user.UserRepository;
 import kr.hhplus.be.server.domain.userCoupon.UserCoupon;
@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -38,6 +39,7 @@ public class DataInitializer {
     private final OrderItemRepository orderItemRepository;
     private final OrderRepository orderRepository;
     private final PaymentRepository paymentRepository;
+    private final ProductSalesRepository productSalesRepository;
 
     @PostConstruct
     @Transactional
@@ -62,6 +64,14 @@ public class DataInitializer {
                 ProductSalesRank.create(top, 140, 2_772_000, RankingScope.WEEKLY, 2)
         );
         productSalesRanks.forEach(productSalesRankRepository::save);
+
+        // 상품 판매
+        List<ProductSales> productSalesList = List.of(
+                ProductSales.createWithDate(1L, 999, LocalDate.now().minusDays(1)),
+                ProductSales.createWithDate(2L, 500, LocalDate.now().minusDays(2)),
+                ProductSales.createWithDate(3L, 1, LocalDate.now().minusDays(3))
+        );
+        productSalesList.forEach(productSalesRepository::save);
 
         // 쿠폰 및 사용자 쿠폰 등록
         Coupon coupon = couponRepository.save(Coupon.createPercentage("TEST123", 10, 100, LocalDateTime.now().plusDays(1)));
