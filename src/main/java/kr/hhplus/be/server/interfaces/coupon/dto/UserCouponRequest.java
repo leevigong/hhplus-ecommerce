@@ -2,16 +2,41 @@ package kr.hhplus.be.server.interfaces.coupon.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import kr.hhplus.be.server.application.coupon.UserCouponCriteria;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-public record UserCouponRequest(
+@NoArgsConstructor
+public class UserCouponRequest {
+
+    @Getter
+    @NoArgsConstructor
+    public static class Issue {
         @Schema(description = "쿠폰 ID", example = "123")
-        Long couponId,
+        private Long couponId;
 
         @Schema(description = "사용자 ID", example = "1")
-        Long userId
-) {
+        private Long userId;
 
-    public UserCouponCriteria toCriteria() {
-        return new UserCouponCriteria(couponId, userId);
+        public UserCouponCriteria.Issue toCriteria() {
+            return new UserCouponCriteria.Issue(couponId, userId);
+        }
+
+    }
+
+    @Getter
+    @NoArgsConstructor
+    public static class PublishRequest {
+
+        private Long couponId;
+        private Long userId;
+
+        public PublishRequest(Long couponId, Long userId) {
+            this.couponId = couponId;
+            this.userId = userId;
+        }
+
+        public UserCouponCriteria.PublishRequest toCriteria() {
+            return new UserCouponCriteria.PublishRequest(couponId, userId);
+        }
     }
 }

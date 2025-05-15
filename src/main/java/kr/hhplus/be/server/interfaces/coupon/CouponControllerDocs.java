@@ -108,7 +108,7 @@ public interface CouponControllerDocs {
                     ))
     })
     ResponseEntity<Void> issueCoupon(
-            @RequestBody UserCouponRequest request
+            @RequestBody UserCouponRequest.Issue request
     );
 
 }

@@ -1,17 +1,47 @@
 package kr.hhplus.be.server.application.coupon;
 
 import kr.hhplus.be.server.domain.coupon.CouponCommand;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-public record UserCouponCriteria(
-        Long couponId,
-        Long userId
-) {
+@NoArgsConstructor
+public class UserCouponCriteria {
 
-    public CouponCommand toCommand() {
-        return new CouponCommand(couponId);
+    @Getter
+    @NoArgsConstructor
+    public static class Issue {
+
+        private Long couponId;
+        private Long userId;
+
+        public Issue(Long couponId, Long userId) {
+            this.couponId = couponId;
+            this.userId = userId;
+        }
+
+        public CouponCommand.Issue toCommand() {
+            return new CouponCommand.Issue(couponId, userId);
+        }
+
+        public static Issue of(Long couponId, Long userId) {
+            return new Issue(couponId, userId);
+        }
     }
 
-    public static UserCouponCriteria of(Long couponId, Long userId) {
-        return new UserCouponCriteria(couponId, userId);
+    @Getter
+    @NoArgsConstructor
+    public static class PublishRequest {
+
+        private Long couponId;
+        private Long userId;
+
+        public PublishRequest(Long couponId, Long userId) {
+            this.couponId = couponId;
+            this.userId = userId;
+        }
+
+        public CouponCommand.PublishRequest toCommand() {
+            return new CouponCommand.PublishRequest(couponId, userId);
+        }
     }
 }

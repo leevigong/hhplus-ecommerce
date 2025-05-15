@@ -1,6 +1,5 @@
 package kr.hhplus.be.server.interfaces.coupon;
 
-import kr.hhplus.be.server.application.coupon.UserCouponCriteria;
 import kr.hhplus.be.server.application.coupon.UserCouponFacade;
 import kr.hhplus.be.server.application.coupon.UserCouponResult;
 import kr.hhplus.be.server.interfaces.coupon.dto.UserCouponRequest;
@@ -26,10 +25,9 @@ public class CouponController implements CouponControllerDocs {
 
     @PostMapping("/issue")
     public ResponseEntity<Void> issueCoupon(
-            @RequestBody UserCouponRequest request
+            @RequestBody UserCouponRequest.Issue request
     ) {
-        UserCouponCriteria criteria = request.toCriteria();
-        userCouponFacade.issue(criteria);
+        userCouponFacade.issue(request.toCriteria());
 
         return ResponseEntity.ok().build();
     }

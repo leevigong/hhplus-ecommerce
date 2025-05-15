@@ -11,12 +11,12 @@ public class CouponService {
         this.couponRepository = couponRepository;
     }
 
-    public CouponInfo issueCoupon(CouponCommand command) {
-        Coupon coupon = couponRepository.getById(command.couponId());
+    public CouponInfo.Issue issueCoupon(CouponCommand.Issue command) {
+        Coupon coupon = couponRepository.getById(command.getCouponId());
 
         Coupon issuedCoupon = coupon.issue();
         couponRepository.save(issuedCoupon);
 
-        return CouponInfo.from(issuedCoupon);
+        return CouponInfo.Issue.from(issuedCoupon);
     }
 }

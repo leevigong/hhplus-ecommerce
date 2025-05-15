@@ -35,12 +35,11 @@ public class UserCouponFacade {
 
     @DistributedLock(resource = LockResource.USER_COUPON, key = "#criteria.couponId")
     @Transactional
-    public void issue(UserCouponCriteria criteria) {
+    public void issue(UserCouponCriteria.Issue criteria) {
         // 쿠폰 발급
-        CouponInfo couponInfo = couponService.issueCoupon(criteria.toCommand());
+        CouponInfo.Issue couponInfo = couponService.issueCoupon(criteria.toCommand());
 
         // 사용자 쿠폰 생성
-        userCouponService.createUserCoupon(UserCouponCommand.of(couponInfo.coupon(), criteria.userId()));
+        userCouponService.createUserCoupon(UserCouponCommand.of(couponInfo.getCoupon(), criteria.getUserId()));
     }
-
 }
