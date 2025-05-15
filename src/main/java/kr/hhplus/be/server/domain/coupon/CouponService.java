@@ -2,6 +2,9 @@ package kr.hhplus.be.server.domain.coupon;
 
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class CouponService {
 
@@ -18,5 +21,11 @@ public class CouponService {
         couponRepository.save(issuedCoupon);
 
         return CouponInfo.Issue.from(issuedCoupon);
+    }
+
+    public List<CouponInfo.PublishableCoupon> getPublishableCoupons() {
+        return couponRepository.findByCouponStatus(CouponStatus.ACTIVE).stream()
+                .map(coupon -> CouponInfo.PublishableCoupon.of(coupon, coupon.getPublishableQuantity()))
+                .collect(Collectors.toList());
     }
 }

@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.application.coupon;
 
+import kr.hhplus.be.server.domain.coupon.CouponCommand;
 import kr.hhplus.be.server.domain.coupon.CouponInfo;
 import kr.hhplus.be.server.domain.coupon.CouponService;
 import kr.hhplus.be.server.domain.userCoupon.UserCouponCommand;
@@ -46,5 +47,14 @@ public class UserCouponFacade {
     @Transactional
     public void requestPublishWithRedis(UserCouponCriteria.PublishRequest criteria) {
         userCouponService.requestPublishCoupon(criteria.toCommand());
+    }
+
+    @Transactional
+    public void publishCouponCandidate() {
+        List<CouponInfo.PublishableCoupon> publishableCoupons = couponService.getPublishableCoupons();
+        publishableCoupons.forEach(
+                pc ->
+                        userCouponService.publishCouponCandidate(CouponCommand.Publish.of(pc.getCoupon(), pc.getQuantity()))
+        );
     }
 }

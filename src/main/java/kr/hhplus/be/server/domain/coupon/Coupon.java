@@ -117,4 +117,8 @@ public class Coupon extends BaseEntity {
     public void updateIssuedQuantity(int quantity) {
         this.issuedQuantity += quantity;
     }
+
+    public int getPublishableQuantity() {
+        return maxIssuedQuantity - issuedQuantity;
+    }
 }
