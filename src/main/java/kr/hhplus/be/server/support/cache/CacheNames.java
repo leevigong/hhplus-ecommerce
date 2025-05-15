@@ -6,7 +6,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CacheNames {
 
-    public static final String POPULAR_PRODUCTS = "cache:popularProducts";
-    public static final String PRODUCT = "cache:product";
+    public static final String POPULAR_PRODUCTS = "popularProducts";
+    public static final String PRODUCT = "product";
+    public static final String POPULAR_PRODUCT_SALES = "product_sales:popular";
 
 }
