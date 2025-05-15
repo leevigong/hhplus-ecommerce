@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.domain.sales;
 
+import kr.hhplus.be.server.domain.order.OrderItem;
 import kr.hhplus.be.server.support.cache.CacheNames;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -22,4 +23,7 @@ public class ProductSalesService {
         return productSalesRepository.getTopSalesRange(command.getStartDate(), command.getEndDate(), command.getTop());
     }
 
+    public void add(List<OrderItem> items) {
+        productSalesRepository.add(items);
+    }
 }
