@@ -85,4 +85,25 @@ class UserCouponFacadeIntegrationTest {
                 .isInstanceOf(ApiException.class)
                 .hasMessageContaining(ApiErrorCode.COUPON_NOT_AVAILABLE_TO_ISSUE.getMessage());
     }
+
+    @Test
+    void 동일_사용자_쿠폰_중복_발급_실패() {
+        // given
+        UserCouponCriteria.Issue criteria = UserCouponCriteria.Issue.of(coupon.getId(), userId);
+
+        // 1차 발급
+        userCouponFacade.issue(criteria);
+
+        // when & then
+        assertThatThrownBy(() -> userCouponFacade.issue(criteria))
+                .isInstanceOf(ApiException.class)
+                .hasMessageContaining(ApiErrorCode.ALREADY_USER_COUPON.getMessage());
+
+        // DB 상태 확인
+        Coupon updatedCoupon = couponRepository.getById(coupon.getId());
+        assertThat(updatedCoupon.getIssuedQuantity()).isEqualTo(1);
+
+        List<UserCoupon> issued = userCouponRepository.findByUserId(userId);
+        assertThat(issued).hasSize(1);
+    }
 }
