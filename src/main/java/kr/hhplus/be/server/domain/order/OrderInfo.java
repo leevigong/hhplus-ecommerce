@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.domain.order;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public record OrderInfo(
         Long orderId,
@@ -8,7 +9,8 @@ public record OrderInfo(
         long totalPrice,
         long discountPrice,
         long finalPrice,
-        LocalDateTime createdAt
+        LocalDateTime createdAt,
+        List<OrderItem> orderItems
 ) {
     public static OrderInfo from(Order order) {
         return new OrderInfo(
@@ -17,7 +19,8 @@ public record OrderInfo(
                 order.getTotalPrice(),
                 order.getDiscountPrice(),
                 order.getFinalPrice(),
-                order.getCreatedAt()
+                order.getCreatedAt(),
+                order.getOrderItems()
         );
     }
 }
