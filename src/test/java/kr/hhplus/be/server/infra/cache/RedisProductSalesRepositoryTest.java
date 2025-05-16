@@ -9,7 +9,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -42,10 +44,10 @@ class RedisProductSalesRepositoryTest {
         cache.add(List.of(item));
 
         // then
-        String expectedKey = CacheNames.POPULAR_PRODUCT_SALES +
-                             LocalDate.now().minusDays(2).format(java.time.format.DateTimeFormatter.BASIC_ISO_DATE);
+        String expectedKey = CacheNames.POPULAR_PRODUCT_SALES + ":" + LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE);
 
         verify(zsetOps).incrementScore(expectedKey, "product:1", 10);
+        verify(redisTemplate).expire(eq(expectedKey), eq(java.time.Duration.ofDays(31)));
         verifyNoMoreInteractions(zsetOps); // 다른 호출 x
     }
 
@@ -72,6 +74,36 @@ class RedisProductSalesRepositoryTest {
                 .thenReturn(Collections.emptySet());
 
         assertThat(cache.getTopSales(LocalDate.now(), 3)).isEmpty();
+    }
+
+    @Test
+    void 기간합산_캐시없으면_ZUNIONSTORE후_TTL5분설정() {
+        // given
+        LocalDate start = LocalDate.now().minusDays(3);
+        LocalDate end   = LocalDate.now();
+        int top = 3;
+
+        String rangeKey = CacheNames.POPULAR_PRODUCT_SALES + ":"
+                + start.format(DateTimeFormatter.BASIC_ISO_DATE) + "-"
+                + end.format(DateTimeFormatter.BASIC_ISO_DATE) + ":top" + top;
+
+        // rangeKey 는 존재하지 않음
+        when(redisTemplate.hasKey(eq(rangeKey))).thenReturn(false);
+
+        // start~end 각 일자 키는 존재한다고 가정
+        start.datesUntil(end.plusDays(1))
+             .forEach(d -> when(redisTemplate.hasKey(
+                     eq(CacheNames.POPULAR_PRODUCT_SALES + ":" + d.format(DateTimeFormatter.BASIC_ISO_DATE))))
+                     .thenReturn(true));
+
+        when(zsetOps.reverseRangeWithScores(eq(rangeKey), eq(0L), eq((long) top - 1)))
+                .thenReturn(Set.of(typedTuple("product:1", 5d)));
+
+        // when
+        cache.getTopSalesRange(start, end, top);
+
+        // then
+        verify(redisTemplate).expire(eq(rangeKey), eq(Duration.ofMinutes(5)));
     }
 
     /* 헬퍼: Mockito가 쉽게 만들 수 있도록 TypedTuple 구현체 제공 */
