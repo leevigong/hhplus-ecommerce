@@ -23,6 +23,10 @@ public class CouponService {
         return CouponInfo.Issue.from(issuedCoupon);
     }
 
+    public void updateIssuedCount(CouponCommand.Publish command) {
+        command.getCoupon().updateIssuedQuantity(command.getLimit());
+    }
+
     public List<CouponInfo.PublishableCoupon> getPublishableCoupons() {
         return couponRepository.findByCouponStatus(CouponStatus.ACTIVE).stream()
                 .map(coupon -> CouponInfo.PublishableCoupon.of(coupon, coupon.getPublishableQuantity()))

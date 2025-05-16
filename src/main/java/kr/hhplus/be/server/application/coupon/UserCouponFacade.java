@@ -52,9 +52,16 @@ public class UserCouponFacade {
     @Transactional
     public void publishCouponCandidate() {
         List<CouponInfo.PublishableCoupon> publishableCoupons = couponService.getPublishableCoupons();
-        publishableCoupons.forEach(
-                pc ->
-                        userCouponService.publishCouponCandidate(CouponCommand.Publish.of(pc.getCoupon(), pc.getQuantity()))
-        );
+
+        for (CouponInfo.PublishableCoupon pc : publishableCoupons) {
+            // 유저 쿠폰 등록
+            userCouponService.publishCouponCandidate(
+                    CouponCommand.Publish.of(pc.getCoupon(), pc.getQuantity())
+            );
+
+            // 쿠폰 발행 처리
+            couponService.updateIssuedCount(CouponCommand.Publish.of(pc.getCoupon(), pc.getQuantity()));
+        }
     }
+
 }
