@@ -11,7 +11,11 @@ public interface ProductSalesRepository {
 
     List<ProductSales> findPopulars(ProductSalesCommand.Popular command);
 
+    void saveAll(List<ProductSales> productSales);
+
     void add(List<OrderItem> items);
 
     List<ProductSalesInfo.Popular> getTopSalesRange(LocalDate startDate, LocalDate endDate, int top);
+
+    List<ProductSalesInfo.Popular> getDailySales(LocalDate date);
 }

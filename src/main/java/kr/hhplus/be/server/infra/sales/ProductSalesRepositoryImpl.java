@@ -14,12 +14,12 @@ import java.util.List;
 public class ProductSalesRepositoryImpl implements ProductSalesRepository {
 
     private final ProductSalesJpaRepository productSalesJpaRepository;
-    private final RedisProductSalesCache redisProductSalesCache;
+    private final RedisProductSalesRepository redisProductSalesRepository;
 
     public ProductSalesRepositoryImpl(ProductSalesJpaRepository productSalesJpaRepository,
-                                      RedisProductSalesCache redisProductSalesCache) {
+                                      RedisProductSalesRepository redisProductSalesRepository) {
         this.productSalesJpaRepository = productSalesJpaRepository;
-        this.redisProductSalesCache = redisProductSalesCache;
+        this.redisProductSalesRepository = redisProductSalesRepository;
     }
 
     @Override
@@ -33,12 +33,23 @@ public class ProductSalesRepositoryImpl implements ProductSalesRepository {
     }
 
     @Override
+    public void saveAll(List<ProductSales> productSales) {
+        productSalesJpaRepository.saveAll(productSales);
+    }
+
+    @Override
     public void add(List<OrderItem> items) {
-        redisProductSalesCache.add(items);
+        redisProductSalesRepository.add(items);
     }
 
     @Override
     public List<ProductSalesInfo.Popular> getTopSalesRange(LocalDate startDate, LocalDate endDate, int top) {
-        return redisProductSalesCache.getTopSalesRange(startDate, endDate, top);
+        return redisProductSalesRepository.getTopSalesRange(startDate, endDate, top);
+    }
+
+    @Override
+    public List<ProductSalesInfo.Popular> getDailySales(LocalDate date) {
+        redisProductSalesRepository.getAllSales(date);
+        return null;
     }
 }

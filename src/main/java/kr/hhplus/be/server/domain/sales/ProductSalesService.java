@@ -6,6 +6,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -25,5 +26,18 @@ public class ProductSalesService {
 
     public void add(List<OrderItem> items) {
         productSalesRepository.add(items);
+    }
+
+    public void saveYesterdaySales() {
+        LocalDate date = LocalDate.now().minusDays(1);
+        List<ProductSalesInfo.Popular> dailySales = productSalesRepository.getDailySales(date);
+        if (dailySales.isEmpty()) {
+            return;
+        }
+
+        List<ProductSales> entities = dailySales.stream()
+                .map(sale -> ProductSales.create(sale.getProductId(), sale.getScore()))
+                .toList();
+        productSalesRepository.saveAll(entities);
     }
 }
