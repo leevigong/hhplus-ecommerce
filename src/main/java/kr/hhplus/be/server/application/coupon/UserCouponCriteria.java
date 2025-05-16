@@ -43,5 +43,9 @@ public class UserCouponCriteria {
         public CouponCommand.PublishRequest toCommand() {
             return new CouponCommand.PublishRequest(couponId, userId);
         }
+
+        public static PublishRequest of(Long couponId, Long userId) {
+            return new PublishRequest(couponId, userId);
+        }
     }
 }
