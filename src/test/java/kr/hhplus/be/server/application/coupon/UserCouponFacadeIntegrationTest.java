@@ -45,7 +45,7 @@ class UserCouponFacadeIntegrationTest {
     @Test
     void 쿠폰_발급_성공() {
         // given
-        UserCouponCriteria criteria = UserCouponCriteria.of(coupon.getId(), userId);
+        UserCouponCriteria.Issue criteria = UserCouponCriteria.Issue.of(coupon.getId(), userId);
 
         // when
         userCouponFacade.issue(criteria);
@@ -65,7 +65,7 @@ class UserCouponFacadeIntegrationTest {
         // given
         coupon.expire();
         couponRepository.save(coupon);
-        UserCouponCriteria criteria = UserCouponCriteria.of(coupon.getId(), userId);
+        UserCouponCriteria.Issue criteria = UserCouponCriteria.Issue.of(coupon.getId(), userId);
 
         // then
         assertThatThrownBy(() -> userCouponFacade.issue(criteria))
@@ -78,11 +78,32 @@ class UserCouponFacadeIntegrationTest {
         // given
         coupon.soldOut();
         couponRepository.save(coupon);
-        UserCouponCriteria criteria = UserCouponCriteria.of(coupon.getId(), userId);
+        UserCouponCriteria.Issue criteria = UserCouponCriteria.Issue.of(coupon.getId(), userId);
 
         // then
         assertThatThrownBy(() -> userCouponFacade.issue(criteria))
                 .isInstanceOf(ApiException.class)
                 .hasMessageContaining(ApiErrorCode.COUPON_NOT_AVAILABLE_TO_ISSUE.getMessage());
+    }
+
+    @Test
+    void 동일_사용자_쿠폰_중복_발급_실패() {
+        // given
+        UserCouponCriteria.Issue criteria = UserCouponCriteria.Issue.of(coupon.getId(), userId);
+
+        // 1차 발급
+        userCouponFacade.issue(criteria);
+
+        // when & then
+        assertThatThrownBy(() -> userCouponFacade.issue(criteria))
+                .isInstanceOf(ApiException.class)
+                .hasMessageContaining(ApiErrorCode.ALREADY_USER_COUPON.getMessage());
+
+        // DB 상태 확인
+        Coupon updatedCoupon = couponRepository.getById(coupon.getId());
+        assertThat(updatedCoupon.getIssuedQuantity()).isEqualTo(1);
+
+        List<UserCoupon> issued = userCouponRepository.findByUserId(userId);
+        assertThat(issued).hasSize(1);
     }
 }

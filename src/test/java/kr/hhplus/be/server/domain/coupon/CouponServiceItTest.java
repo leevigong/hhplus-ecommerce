@@ -31,13 +31,13 @@ class CouponServiceItTest {
                 LocalDateTime.now().plusDays(5)
         );
         couponRepository.save(activeCoupon);
-        CouponCommand command = new CouponCommand(activeCoupon.getId());
+        CouponCommand.Issue command = CouponCommand.Issue.of(activeCoupon.getId(), 1L);
 
         // when
-        CouponInfo couponInfo = couponService.issueCoupon(command);
+        CouponInfo.Issue couponInfo = couponService.issueCoupon(command);
 
         // then
-        Coupon coupon = couponRepository.getById(couponInfo.coupon().getId());
+        Coupon coupon = couponRepository.getById(couponInfo.getCoupon().getId());
         assertThat(coupon.getIssuedQuantity()).isEqualTo(1);
     }
 
@@ -53,7 +53,7 @@ class CouponServiceItTest {
                 LocalDateTime.now().minusDays(1)
         );
         couponRepository.save(expiredCoupon);
-        CouponCommand command = new CouponCommand(expiredCoupon.getId());
+        CouponCommand.Issue command = CouponCommand.Issue.of(expiredCoupon.getId(), 1L);
 
         // when & then
         assertThatThrownBy(() -> couponService.issueCoupon(command))
@@ -73,7 +73,7 @@ class CouponServiceItTest {
                 .expiredAt(LocalDateTime.now().plusDays(5))
                 .build();
         couponRepository.save(soldOutCoupon);
-        CouponCommand command = new CouponCommand(soldOutCoupon.getId());
+        CouponCommand.Issue command = CouponCommand.Issue.of(soldOutCoupon.getId(), 1L);
 
         // when & then
         assertThatThrownBy(() -> couponService.issueCoupon(command))

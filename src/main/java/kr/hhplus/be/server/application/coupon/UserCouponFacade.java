@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.application.coupon;
 
+import kr.hhplus.be.server.domain.coupon.CouponCommand;
 import kr.hhplus.be.server.domain.coupon.CouponInfo;
 import kr.hhplus.be.server.domain.coupon.CouponService;
 import kr.hhplus.be.server.domain.userCoupon.UserCouponCommand;
@@ -35,12 +36,32 @@ public class UserCouponFacade {
 
     @DistributedLock(resource = LockResource.USER_COUPON, key = "#criteria.couponId")
     @Transactional
-    public void issue(UserCouponCriteria criteria) {
+    public void issue(UserCouponCriteria.Issue criteria) {
         // 쿠폰 발급
-        CouponInfo couponInfo = couponService.issueCoupon(criteria.toCommand());
+        CouponInfo.Issue couponInfo = couponService.issueCoupon(criteria.toCommand());
 
         // 사용자 쿠폰 생성
-        userCouponService.createUserCoupon(UserCouponCommand.of(couponInfo.coupon(), criteria.userId()));
+        userCouponService.createUserCoupon(UserCouponCommand.of(couponInfo.getCoupon(), criteria.getUserId()));
+    }
+
+    @Transactional
+    public void requestPublishWithRedis(UserCouponCriteria.PublishRequest criteria) {
+        userCouponService.requestPublishCoupon(criteria.toCommand());
+    }
+
+    @Transactional
+    public void publishCouponCandidate() {
+        List<CouponInfo.PublishableCoupon> publishableCoupons = couponService.getPublishableCoupons();
+
+        for (CouponInfo.PublishableCoupon pc : publishableCoupons) {
+            // 유저 쿠폰 등록
+            userCouponService.publishCouponCandidate(
+                    CouponCommand.Publish.of(pc.getCoupon(), pc.getQuantity())
+            );
+
+            // 쿠폰 발행 처리
+            couponService.updateIssuedCount(CouponCommand.Publish.of(pc.getCoupon(), pc.getQuantity()));
+        }
     }
 
 }
