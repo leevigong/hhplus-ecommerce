@@ -1,9 +1,11 @@
 package kr.hhplus.be.server.infra.coupon;
 
+import kr.hhplus.be.server.support.cache.CacheNames;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.Set;
@@ -12,32 +14,39 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class UserCouponRedisRepository {
 
-    private static final String KEY_FORMAT = "coupon:%d:candidates";
+    private static final Duration TTL = Duration.ofMinutes(10);
+    private static final String KEY_PREFIX = CacheNames.COUPON_CANDIDATES + ":";
 
     private final RedisTemplate<String, Long> redisTemplate;
 
     public boolean enqueueCouponCandidate(long couponId, long userId) {
-        String key = keyOf(couponId);
+        String key = KEY_PREFIX + couponId;
+        double score = Instant.now().getEpochSecond();
 
-        double score = (double) Instant.now().getEpochSecond();
-        return Boolean.TRUE.equals(redisTemplate.opsForZSet().addIfAbsent(key, userId, score));
+        Boolean added = redisTemplate.opsForZSet()
+                .addIfAbsent(key, userId, score);
+
+        if (Boolean.TRUE.equals(added)) {
+            redisTemplate.expire(key, TTL);
+        }
+        return Boolean.TRUE.equals(added);
     }
 
     public Set<Long> fetchCouponCandidates(long couponId, int limit) {
         if (limit <= 0) {
             return Set.of();
         }
-        String key = keyOf(couponId);
+
+        String key = KEY_PREFIX + couponId;
         return redisTemplate.opsForZSet().range(key, 0, limit - 1);
     }
 
     public void removeCouponCandidates(long couponId, Collection<? extends Long> userIds) {
-        String key = keyOf(couponId);
-        if (userIds == null || userIds.isEmpty()) return;
-        redisTemplate.opsForZSet().remove(key, userIds.toArray());
-    }
+        if (userIds == null || userIds.isEmpty()) {
+            return;
+        }
 
-    private static String keyOf(long couponId) {
-        return KEY_FORMAT.formatted(couponId);
+        String key = KEY_PREFIX + couponId;
+        redisTemplate.opsForZSet().remove(key, userIds.toArray());
     }
 }
