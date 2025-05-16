@@ -17,7 +17,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Repository
-public class RedisProductSalesCache {
+public class RedisProductSalesRepository {
 
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.BASIC_ISO_DATE;
     private static final String MEMBER_PREFIX = "product:";
@@ -25,12 +25,12 @@ public class RedisProductSalesCache {
 
     private final RedisTemplate<String, String> redisTemplate;
 
-    public RedisProductSalesCache(RedisTemplate<String, String> redisTemplate) {
+    public RedisProductSalesRepository(RedisTemplate<String, String> redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
 
     private String buildCacheKey(LocalDate date) {
-        return CacheNames.POPULAR_PRODUCT_SALES + date.format(DATE_FORMAT);
+        return CacheNames.POPULAR_PRODUCT_SALES + ":" + date.format(DATE_FORMAT);
     }
 
     public void add(List<OrderItem> items) {
@@ -127,4 +127,28 @@ public class RedisProductSalesCache {
                 })
                 .collect(Collectors.toList());
     }
+
+    public List<ProductSalesInfo.Popular> getAllSales(LocalDate date) {
+        String redisKey = buildCacheKey(date);
+
+        Set<ZSetOperations.TypedTuple<String>> tuples = redisTemplate.opsForZSet().reverseRangeWithScores(redisKey, 0, -1);
+
+        if (tuples == null || tuples.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return tuples.stream()
+                .filter(t -> t.getScore() != null)
+                .map(t -> {
+                    String member = t.getValue();
+                    if (member.startsWith(MEMBER_PREFIX)) {
+                        member = member.substring(MEMBER_PREFIX.length());
+                    }
+                    Long productId = Long.valueOf(member);
+                    Long score = t.getScore().longValue();
+                    return ProductSalesInfo.Popular.of(productId, score);
+                })
+                .collect(Collectors.toList());
+    }
+
 }
