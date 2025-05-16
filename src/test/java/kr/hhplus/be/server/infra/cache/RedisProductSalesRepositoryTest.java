@@ -2,7 +2,7 @@ package kr.hhplus.be.server.infra.cache;
 
 import kr.hhplus.be.server.domain.order.OrderItem;
 import kr.hhplus.be.server.domain.sales.ProductSalesInfo;
-import kr.hhplus.be.server.infra.sales.RedisProductSalesCache;
+import kr.hhplus.be.server.infra.sales.RedisProductSalesRepository;
 import kr.hhplus.be.server.support.cache.CacheNames;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,11 +18,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.Mockito.*;
 
-class RedisProductSalesCacheTest {
+class RedisProductSalesRepositoryTest {
 
     RedisTemplate<String, String> redisTemplate;
     ZSetOperations<String, String> zsetOps;
-    RedisProductSalesCache cache;
+    RedisProductSalesRepository cache;
 
     @BeforeEach
     void setUp() {
@@ -30,7 +30,7 @@ class RedisProductSalesCacheTest {
         zsetOps = mock(ZSetOperations.class);
         when(redisTemplate.opsForZSet()).thenReturn(zsetOps);
 
-        cache = new RedisProductSalesCache(redisTemplate);
+        cache = new RedisProductSalesRepository(redisTemplate);
     }
 
     @Test
