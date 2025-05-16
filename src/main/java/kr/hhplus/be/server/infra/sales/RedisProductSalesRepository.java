@@ -40,6 +40,10 @@ public class RedisProductSalesRepository {
                 redisTemplate.opsForZSet()
                         .incrementScore(redisKey, MEMBER_PREFIX + item.getProductId(), item.getQuantity())
         );
+
+        if (!redisTemplate.hasKey(redisKey)) {
+            redisTemplate.expire(redisKey, Duration.ofDays(31));
+        }
     }
 
     public List<ProductSalesInfo.Popular> getTopSales(LocalDate date, int limit) {
