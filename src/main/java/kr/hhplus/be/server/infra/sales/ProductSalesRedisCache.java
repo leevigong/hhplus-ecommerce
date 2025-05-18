@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.infra.sales;
 
 import kr.hhplus.be.server.domain.order.OrderItem;
+import kr.hhplus.be.server.domain.sales.ProductSalesCachePort;
 import kr.hhplus.be.server.domain.sales.ProductSalesInfo;
 import kr.hhplus.be.server.support.cache.CacheNames;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -17,7 +18,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Repository
-public class RedisProductSalesRepository {
+public class ProductSalesRedisCache implements ProductSalesCachePort {
 
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.BASIC_ISO_DATE;
     private static final String MEMBER_PREFIX = "product:";
@@ -25,7 +26,7 @@ public class RedisProductSalesRepository {
 
     private final RedisTemplate<String, String> redisTemplate;
 
-    public RedisProductSalesRepository(RedisTemplate<String, String> redisTemplate) {
+    public ProductSalesRedisCache(RedisTemplate<String, String> redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
 
