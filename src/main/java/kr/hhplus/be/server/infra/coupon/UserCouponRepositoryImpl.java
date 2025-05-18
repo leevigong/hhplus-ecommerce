@@ -15,12 +15,12 @@ import java.util.Set;
 public class UserCouponRepositoryImpl implements UserCouponRepository {
 
     private final UserCouponJpaRepository userCouponJpaRepository;
-    private final UserCouponRedisRepository userCouponRedisRepository;
+    private final UserCouponRedisCache userCouponRedisCache;
 
     public UserCouponRepositoryImpl(UserCouponJpaRepository userCouponJpaRepository,
-                                    UserCouponRedisRepository userCouponRedisRepository) {
+                                    UserCouponRedisCache userCouponRedisCache) {
         this.userCouponJpaRepository = userCouponJpaRepository;
-        this.userCouponRedisRepository = userCouponRedisRepository;
+        this.userCouponRedisCache = userCouponRedisCache;
     }
 
     @Override
@@ -54,16 +54,16 @@ public class UserCouponRepositoryImpl implements UserCouponRepository {
      **/
     @Override
     public boolean enqueueCouponCandidate(long couponId, long userId) {
-        return userCouponRedisRepository.enqueueCouponCandidate(couponId, userId);
+        return userCouponRedisCache.enqueueCouponCandidate(couponId, userId);
     }
 
     @Override
     public Set<Long> fetchCouponCandidates(long couponId, int limit) {
-        return userCouponRedisRepository.fetchCouponCandidates(couponId, limit);
+        return userCouponRedisCache.fetchCouponCandidates(couponId, limit);
     }
 
     @Override
     public void removeCouponCandidates(long couponId, Collection<Long> userIds) {
-        userCouponRedisRepository.removeCouponCandidates(couponId, userIds);
+        userCouponRedisCache.removeCouponCandidates(couponId, userIds);
     }
 }

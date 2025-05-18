@@ -1,7 +1,7 @@
 package kr.hhplus.be.server.infra.coupon;
 
+import kr.hhplus.be.server.domain.userCoupon.UserCouponCachePort;
 import kr.hhplus.be.server.support.cache.CacheNames;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -11,13 +11,16 @@ import java.util.Collection;
 import java.util.Set;
 
 @Repository
-@RequiredArgsConstructor
-public class UserCouponRedisRepository {
+public class UserCouponRedisCache implements UserCouponCachePort {
 
     private static final Duration TTL = Duration.ofMinutes(10);
     private static final String KEY_PREFIX = CacheNames.COUPON_CANDIDATES + ":";
 
     private final RedisTemplate<String, Long> redisTemplate;
+
+    public UserCouponRedisCache(RedisTemplate<String, Long> redisTemplate) {
+        this.redisTemplate = redisTemplate;
+    }
 
     public boolean enqueueCouponCandidate(long couponId, long userId) {
         String key = KEY_PREFIX + couponId;
