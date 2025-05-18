@@ -20,7 +20,7 @@ import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.lenient;
 
 @ExtendWith(MockitoExtension.class)
-class UserCouponRedisRepositoryTest {
+class UserCouponRedisCacheTest {
 
     private static final Duration TTL = Duration.ofMinutes(10);
     private static final long COUPON_ID = 1L;
@@ -32,12 +32,12 @@ class UserCouponRedisRepositoryTest {
     @Mock
     ZSetOperations<String, Long> zSetOps;
 
-    UserCouponRedisRepository repository;
+    UserCouponRedisCache repository;
 
     @BeforeEach
     void setUp() {
         lenient().when(redisTemplate.opsForZSet()).thenReturn(zSetOps);
-        repository = new UserCouponRedisRepository(redisTemplate);
+        repository = new UserCouponRedisCache(redisTemplate);
     }
 
     @Test
