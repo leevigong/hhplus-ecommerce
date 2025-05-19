@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.infra.coupon;
+package kr.hhplus.be.server.infra.userCoupon;
 
 import kr.hhplus.be.server.support.cache.CacheNames;
 import org.junit.jupiter.api.BeforeEach;
