@@ -1,9 +1,9 @@
-package kr.hhplus.be.server.domain.userCoupon;
+package kr.hhplus.be.server.domain.coupon;
 
 import java.util.Collection;
 import java.util.Set;
 
-public interface UserCouponCachePort {
+public interface CouponRequestRepository {
 
     boolean enqueueCouponCandidate(long couponId, long userId);
 

@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.domain.userCoupon;
 
 import kr.hhplus.be.server.domain.coupon.CouponCommand;
+import kr.hhplus.be.server.domain.coupon.CouponRequestRepository;
 import kr.hhplus.be.server.support.exception.ApiErrorCode;
 import kr.hhplus.be.server.support.exception.ApiException;
 import org.springframework.stereotype.Service;
@@ -14,16 +15,18 @@ import java.util.stream.Collectors;
 public class UserCouponService {
 
     private final UserCouponRepository userCouponRepository;
+    private final CouponRequestRepository couponRequestRepository;
 
-    public UserCouponService(UserCouponRepository userCouponRepository) {
+    public UserCouponService(UserCouponRepository userCouponRepository, CouponRequestRepository couponRequestRepository) {
         this.userCouponRepository = userCouponRepository;
+        this.couponRequestRepository = couponRequestRepository;
     }
 
     public List<UserCouponInfo> getUserCoupons(Long userId) {
         List<UserCoupon> userCoupons = userCouponRepository.findByUserId(userId);
 
         return userCoupons.stream()
-                .map(userCoupon -> UserCouponInfo.from(userCoupon))
+                .map(UserCouponInfo::from)
                 .collect(Collectors.toList());
     }
 
@@ -38,7 +41,7 @@ public class UserCouponService {
     }
 
     public void requestPublishCoupon(CouponCommand.PublishRequest command) {
-        boolean isSuccess = userCouponRepository.enqueueCouponCandidate(command.getCouponId(), command.getUserId());
+        boolean isSuccess = couponRequestRepository.enqueueCouponCandidate(command.getCouponId(), command.getUserId());
         if (!isSuccess) {
             throw new ApiException(ApiErrorCode.ALREADY_USER_COUPON);
         }
@@ -48,7 +51,7 @@ public class UserCouponService {
         long couponId = command.getCoupon().getId();
         int limit = command.getLimit();
 
-        Set<Long> candidates = userCouponRepository.fetchCouponCandidates(couponId, limit);
+        Set<Long> candidates = couponRequestRepository.fetchCouponCandidates(couponId, limit);
         if (candidates == null || candidates.isEmpty()) {
             return;
         }
@@ -77,6 +80,6 @@ public class UserCouponService {
         }
 
         // 발급 완료된 사용자들을 대기열(ZSET)에서 제거
-        userCouponRepository.removeCouponCandidates(couponId, issued);
+        couponRequestRepository.removeCouponCandidates(couponId, issued);
     }
 }
