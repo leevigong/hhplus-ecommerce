@@ -1,15 +1,14 @@
 package kr.hhplus.be.server.application.order;
 
-import kr.hhplus.be.server.application.order.port.OrderDataPlatformClient;
 import kr.hhplus.be.server.application.payment.PaymentCriteria;
 import kr.hhplus.be.server.domain.balance.UserBalanceCommand;
 import kr.hhplus.be.server.domain.balance.UserBalanceService;
 import kr.hhplus.be.server.domain.order.OrderCommand;
+import kr.hhplus.be.server.domain.order.event.OrderEventPublisher;
 import kr.hhplus.be.server.domain.order.OrderInfo;
 import kr.hhplus.be.server.domain.order.OrderService;
 import kr.hhplus.be.server.domain.payment.PaymentService;
 import kr.hhplus.be.server.domain.product.ProductService;
-import kr.hhplus.be.server.domain.sales.ProductSalesService;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,23 +17,20 @@ public class OrderFacade {
 
     private final OrderService orderService;
     private final ProductService productService;
-    private final ProductSalesService productSalesService;
     private final PaymentService paymentService;
     private final UserBalanceService userBalanceService;
-    private final OrderDataPlatformClient orderDataPlatformClient;
+    private final OrderEventPublisher orderEventPublisher;
 
     public OrderFacade(OrderService orderService,
                        ProductService productService,
-                       ProductSalesService productSalesService,
                        PaymentService paymentService,
                        UserBalanceService userBalanceService,
-                       OrderDataPlatformClient orderDataPlatformClient) {
+                       OrderEventPublisher orderEventPublisher) {
         this.orderService = orderService;
         this.productService = productService;
-        this.productSalesService = productSalesService;
         this.paymentService = paymentService;
         this.userBalanceService = userBalanceService;
-        this.orderDataPlatformClient = orderDataPlatformClient;
+        this.orderEventPublisher = orderEventPublisher;
     }
 
     @Transactional
@@ -48,7 +44,7 @@ public class OrderFacade {
         OrderInfo orderInfo = orderService.create(createCommand);
 
         // pay 결제 생성
-        PaymentCriteria paymentCriteria = PaymentCriteria.of(criteria.userId(), orderInfo.orderId(), orderInfo.finalPrice());
+        PaymentCriteria paymentCriteria = PaymentCriteria.of(criteria.getUserId(), orderInfo.orderId(), orderInfo.finalPrice());
         paymentService.create(paymentCriteria.toPaymentCommand());
 
         // 잔액 차감
@@ -57,11 +53,8 @@ public class OrderFacade {
         // 주문 확정
         OrderInfo confirmOrderInfo = orderService.confirmOrder(OrderCommand.Confirm.from(paymentCriteria.orderId()));
 
-        // 데이터 플랫폼에 전송
-        orderDataPlatformClient.sendOrderData(confirmOrderInfo);
-
-        // 상품 판매량 기록
-        productSalesService.add(confirmOrderInfo.orderItems());
+        // 주문 확정 이벤트
+        orderEventPublisher.publishOrderConfirmed(confirmOrderInfo);
 
         return OrderResult.from(confirmOrderInfo);
     }
