@@ -27,10 +27,10 @@ public record OrderCreateRequest(
 
     public OrderCriteria.Create toCriteria() {
         List<OrderCriteria.OrderItem> items = this.orderItems.stream()
-                .map(item -> new OrderCriteria.OrderItem(item.productId(), item.quantity(), item.price()))
+                .map(item -> OrderCriteria.OrderItem.of(item.productId(), item.quantity(), item.price()))
                 .collect(Collectors.toList());
 
-        return new OrderCriteria.Create(this.userId, items, this.userCouponId);
+        return OrderCriteria.Create.of(this.userId, items, this.userCouponId);
     }
 
     public record OrderItemRequest(

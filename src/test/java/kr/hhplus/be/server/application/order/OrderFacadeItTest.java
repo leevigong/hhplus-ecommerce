@@ -71,13 +71,13 @@ class OrderFacadeItTest {
     void 주문을_생성할_수_있다() {
         // given: 사용자와 상품 준비, 잔액 충전
         int quantity = 2;
-        OrderCriteria.OrderItem orderItem = new OrderCriteria.OrderItem(
+        OrderCriteria.OrderItem orderItem = OrderCriteria.OrderItem.of(
                 product.getId(),
                 quantity,
                 product.getPrice()
         );
 
-        OrderCriteria.Create 주문정보 = new OrderCriteria.Create(
+        OrderCriteria.Create criteria = OrderCriteria.Create.of(
                 user.getId(),
                 List.of(orderItem),
                 null // 쿠폰 미적용
@@ -88,7 +88,7 @@ class OrderFacadeItTest {
         long initialBalance = userBalanceRepository.getByUserId(user.getId()).getBalance();
 
         // when: 주문 생성
-        OrderResult result = orderFacade.order(주문정보);
+        OrderResult result = orderFacade.order(criteria);
 
         // then: 주문 상태, 재고 변화, 잔액 변화 검증
 
@@ -98,7 +98,7 @@ class OrderFacadeItTest {
         assertThat(result.status()).isEqualTo("PAID");
 
         // 2. 주문 금액 확인
-        long expectedTotalPrice = product.getPrice() * quantity;
+        long expectedTotalPrice = (long) product.getPrice() * quantity;
         assertThat(result.totalPrice()).isEqualTo(expectedTotalPrice);
         assertThat(result.finalPrice()).isEqualTo(expectedTotalPrice); // 쿠폰 없으므로 할인 없음
         assertThat(result.discountPrice()).isEqualTo(0); // 할인 없음
