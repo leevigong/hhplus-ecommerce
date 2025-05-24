@@ -21,8 +21,12 @@ public class OrderDataPlatformEventListener {
     public void sendToDataPlatform(OrderConfirmedEvent event) {
         log.info("OrderDataPlatformEventListener 실행");
 
-        orderDataPlatformClient.sendOrderData(event.getOrderInfo());
+        try {
+            orderDataPlatformClient.sendOrderData(event.getOrderInfo());
+            log.info("데이터 플랫폼에 주문 데이터 전송 완료");
 
-        log.info("데이터 플랫폼에 주문 데이터 전송 완료");
+        } catch (Exception e) {
+            log.info("데이터 플랫폼에 주문 데이터 전송 실패");
+        }
     }
 }
