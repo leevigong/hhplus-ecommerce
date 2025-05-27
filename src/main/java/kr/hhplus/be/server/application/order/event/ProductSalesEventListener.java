@@ -23,10 +23,13 @@ public class ProductSalesEventListener {
     public void handle(OrderConfirmedEvent event) {
         log.info("ProductSalesEventListener 실행");
 
-        OrderInfo order = event.getOrderInfo();
-        productSalesService.add(order.orderItems());
+        try {
+            productSalesService.add(event.getOrderInfo().orderItems());
+            log.info("상품 판매량 기록 완료");
 
-        log.info("상품 판매량 기록 완료");
+        } catch (Exception e) {
+            log.info("상품 판매량 기록 실패");
+        }
     }
 }
 
