@@ -6,6 +6,7 @@ import kr.hhplus.be.server.domain.balance.UserBalanceService;
 import kr.hhplus.be.server.domain.order.OrderCommand;
 import kr.hhplus.be.server.domain.order.OrderInfo;
 import kr.hhplus.be.server.domain.order.OrderService;
+import kr.hhplus.be.server.domain.order.event.OrderConfirmedEvent;
 import kr.hhplus.be.server.domain.payment.PaymentService;
 import kr.hhplus.be.server.domain.product.ProductService;
 import kr.hhplus.be.server.infra.order.OrderEventSpringPublisher;
@@ -54,7 +55,7 @@ public class OrderFacade {
         OrderInfo confirmOrderInfo = orderService.confirmOrder(OrderCommand.Confirm.from(paymentCriteria.orderId()));
 
         // 주문 확정 이벤트
-        orderEventPublisher.publishOrderConfirmed(confirmOrderInfo);
+        orderEventPublisher.publish(new OrderConfirmedEvent(confirmOrderInfo));
 
         return OrderResult.from(confirmOrderInfo);
     }

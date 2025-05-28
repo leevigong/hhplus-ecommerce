@@ -2,10 +2,11 @@ package kr.hhplus.be.server.application.order;
 
 import kr.hhplus.be.server.application.order.port.OrderDataPlatformClient;
 import kr.hhplus.be.server.domain.order.OrderInfo;
-import kr.hhplus.be.server.domain.order.event.OrderEventPublisher;
+import kr.hhplus.be.server.domain.order.event.OrderConfirmedEvent;
 import kr.hhplus.be.server.domain.product.Product;
 import kr.hhplus.be.server.domain.product.ProductRepository;
 import kr.hhplus.be.server.domain.sales.ProductSalesService;
+import kr.hhplus.be.server.infra.order.OrderEventSpringPublisher;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,10 +24,10 @@ import static org.mockito.Mockito.verify;
 
 @SpringBootTest
 @ActiveProfiles("test")
-class OrderFacadeIntegrationTest {
+class OrderEventIntegrationTest {
 
     @MockitoSpyBean
-    private OrderEventPublisher orderEventPublisher;
+    private OrderEventSpringPublisher publisher;
 
     @Autowired
     private OrderFacade orderFacade;
@@ -62,8 +63,8 @@ class OrderFacadeIntegrationTest {
 
         // then
         // 이벤트 발행 검증
-        verify(orderEventPublisher, times(1))
-                .publishOrderConfirmed(any(OrderInfo.class));
+        verify(publisher, times(1))
+                .publish(any(OrderConfirmedEvent.class));
 
         // 이벤트 리스너 검증
         await().atMost(5, SECONDS).untilAsserted(() -> {
