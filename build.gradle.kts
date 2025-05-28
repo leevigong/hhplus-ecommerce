@@ -59,6 +59,11 @@ dependencies {
 
 	// Cache
 	implementation("org.springframework.boot:spring-boot-starter-data-redis")   // Lettuce 기본
+
+	// Kafka
+	implementation("org.springframework.kafka:spring-kafka")
+	testImplementation("org.testcontainers:kafka:1.19.8")
+	testImplementation("org.springframework.kafka:spring-kafka-test:3.3.2")
 }
 
 tasks.withType<Test> {
