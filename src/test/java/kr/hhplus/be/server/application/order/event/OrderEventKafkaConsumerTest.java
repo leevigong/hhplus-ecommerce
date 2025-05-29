@@ -11,11 +11,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.kafka.support.Acknowledgment;
 
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.times;
 
 @ExtendWith(MockitoExtension.class)
 class OrderEventKafkaConsumerTest {
@@ -42,13 +43,15 @@ class OrderEventKafkaConsumerTest {
         List<OrderItem> items = List.of(mock(OrderItem.class));
         when(event.getOrderInfo()).thenReturn(orderInfo);
         when(orderInfo.orderItems()).thenReturn(items);
+        Acknowledgment ack = mock(Acknowledgment.class);
 
         // when
-        kafkaConsumer.listen(event);
+        kafkaConsumer.listen(event, ack);
 
         // then
         verify(orderDataPlatformClient, times(1)).sendOrderData(orderInfo);
         verify(productSalesService, times(1)).add(items);
+        verify(ack, times(1)).acknowledge();
         verifyNoMoreInteractions(orderDataPlatformClient, productSalesService);
     }
 
@@ -60,16 +63,14 @@ class OrderEventKafkaConsumerTest {
         when(event.getOrderInfo()).thenReturn(orderInfo);
         when(orderInfo.orderItems()).thenReturn(items);
         doThrow(new RuntimeException("DB error")).when(productSalesService).add(items);
+        Acknowledgment ack = mock(Acknowledgment.class);
 
-        // when
-        try {
-            kafkaConsumer.listen(event);
-        } catch (RuntimeException ignored) {
+        // when & then
+        assertThrows(RuntimeException.class, () -> kafkaConsumer.listen(event, ack));
 
-        }
-
-        // then
+        // verify
         verify(orderDataPlatformClient, times(1)).sendOrderData(orderInfo);
         verify(productSalesService, times(1)).add(items);
+        verifyNoInteractions(ack); // 예외로 인해 커밋되지 않아야 함
     }
 }

@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
@@ -23,8 +24,8 @@ import java.util.List;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -89,6 +90,7 @@ class OrderEventIntegrationTest extends TestContainerSupport {
         // given
         OrderCriteria.OrderItem orderItem = OrderCriteria.OrderItem.of(product.getId(), 2, product.getPrice());
         OrderCriteria.Create criteria = OrderCriteria.Create.of(1L, List.of(orderItem), null);
+        Acknowledgment ack = mock(Acknowledgment.class);
 
         // when
         orderFacade.order(criteria);
@@ -100,6 +102,6 @@ class OrderEventIntegrationTest extends TestContainerSupport {
 
         // 카프카 리스너(컨슈머) 검증
         await().atMost(5, SECONDS).untilAsserted(() ->
-                verify(kafkaConsumer, times(1)).listen(any(OrderConfirmedEvent.class)));
+                verify(kafkaConsumer, times(1)).listen(any(OrderConfirmedEvent.class), any(Acknowledgment.class)));
     }
 }
