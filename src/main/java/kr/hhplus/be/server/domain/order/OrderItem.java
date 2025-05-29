@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.domain.order;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import kr.hhplus.be.server.support.entity.BaseEntity;
 import lombok.*;
@@ -17,6 +18,7 @@ public class OrderItem extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", foreignKey = @ForeignKey(name = "fk_order_item_order"))
+    @JsonIgnore
     private Order order;
 
     private Long productId;

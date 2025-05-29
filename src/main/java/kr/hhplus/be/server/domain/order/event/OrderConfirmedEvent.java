@@ -14,4 +14,11 @@ public class OrderConfirmedEvent {
     public OrderConfirmedEvent(OrderInfo orderInfo) {
         this.orderInfo = orderInfo;
     }
+
+    @Override
+    public String toString() {
+        return "{" +
+               "orderInfo=" + orderInfo +
+               '}';
+    }
 }
