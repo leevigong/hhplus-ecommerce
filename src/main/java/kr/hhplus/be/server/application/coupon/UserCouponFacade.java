@@ -6,6 +6,7 @@ import kr.hhplus.be.server.domain.coupon.CouponService;
 import kr.hhplus.be.server.domain.userCoupon.UserCouponCommand;
 import kr.hhplus.be.server.domain.userCoupon.UserCouponInfo;
 import kr.hhplus.be.server.domain.userCoupon.UserCouponService;
+import kr.hhplus.be.server.domain.userCoupon.event.CouponIssueProducer;
 import kr.hhplus.be.server.support.lock.DistributedLock;
 import kr.hhplus.be.server.support.lock.LockResource;
 import org.springframework.stereotype.Service;
@@ -19,10 +20,12 @@ public class UserCouponFacade {
 
     private final CouponService couponService;
     private final UserCouponService userCouponService;
+    private final CouponIssueProducer couponIssueProducer;
 
-    public UserCouponFacade(CouponService couponService, UserCouponService userCouponService) {
+    public UserCouponFacade(CouponService couponService, UserCouponService userCouponService, CouponIssueProducer couponIssueProducer) {
         this.couponService = couponService;
         this.userCouponService = userCouponService;
+        this.couponIssueProducer = couponIssueProducer;
     }
 
     @Transactional(readOnly = true)
@@ -62,6 +65,10 @@ public class UserCouponFacade {
             // 쿠폰 발행 처리
             couponService.updateIssuedCount(CouponCommand.Publish.of(pc.getCoupon(), pc.getQuantity()));
         }
+    }
+
+    public void issueCouponWithKafka(UserCouponCriteria.PublishRequest criteria) {
+        couponIssueProducer.send(criteria.getCouponId(), criteria.getUserId());
     }
 
 }

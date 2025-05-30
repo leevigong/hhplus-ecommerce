@@ -6,4 +6,5 @@ public final class KafkaGroups {
     }
 
     public static final String ORDER_CONSUMER = "order-consumer";
+    public static final String COUPON_CONSUMER = "coupon-issue-consumer";
 }

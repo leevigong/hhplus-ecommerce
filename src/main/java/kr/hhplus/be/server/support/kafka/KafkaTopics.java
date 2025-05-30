@@ -5,5 +5,7 @@ public class KafkaTopics {
     private KafkaTopics() {
     }
 
-    public static final String ORDER_CONFIRMED = "order-confirmed-topic";
+    public static final String ORDER_CONFIRMED = "order-confirmed";
+    public static final String COUPON_ISSUE_REQUESTED = "coupon-issue-req";
+
 }
