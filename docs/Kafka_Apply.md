@@ -11,12 +11,14 @@ graph LR
 %% ---------- 실시간 단계 ----------
     subgraph "① 실시간 대기열"
         U[User] --> CAPI["쿠폰 발급 신청 API"]
-        CAPI -- "ZADD NX, EXPIRE 600" --> ZQ["Redis ZSET\n(candidates:coupon:{id})"]
+        CAPI -- "ZADD NX, EXPIRE 600" --> ZQ["Redis ZSET
+                                            (candidates:coupon:{id})"]
     end
 
 %% ---------- 자정 배치 ----------
     subgraph "② 자정 배치 확정 (00:00 KST)"
-        ZQ -- "ZRANGE N, ZREM" --> SCH["Scheduler\n(@Scheduled)"]
+        ZQ -- "ZRANGE N, ZREM" --> SCH["Scheduler
+                                        (@Scheduled)"]
         SCH -- "유저 쿠폰 저장" --> UC["MySQL user_coupon"]
         SCH -- "발급 가능 쿠폰 차감" --> CP["MySQL coupon"]
     end
@@ -32,12 +34,14 @@ graph LR
     %% ---------- 실시간 단계 ----------
     subgraph "① 실시간 요청"
         U[User] --> CAPI["쿠폰 발급 신청 API"]
-        CAPI -- "produce(key=couponId)" --> KQ["Kafka Topic\ncoupon-issue-req"]
+        CAPI -- "produce(key=couponId)" --> KQ["Kafka Topic
+                                                 coupon-issue-req"]
     end
 
     %% ---------- Consumer 처리 ----------
     subgraph "② Consumer 처리 (즉시)"
-        KQ --> CON["CouponIssueConsumer\n(@KafkaListener)"]
+        KQ --> CON["CouponIssueConsumer
+                    (@KafkaListener)"]
         CON -- "재고 차감 & UserCoupon 저장" --> DB["MySQL coupon / user_coupon"]
     end
 ```
