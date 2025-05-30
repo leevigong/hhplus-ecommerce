@@ -9,6 +9,7 @@ import kr.hhplus.be.server.domain.order.OrderService;
 import kr.hhplus.be.server.domain.order.event.OrderConfirmedEvent;
 import kr.hhplus.be.server.domain.payment.PaymentService;
 import kr.hhplus.be.server.domain.product.ProductService;
+import kr.hhplus.be.server.infra.order.OrderEventKafkaPublisher;
 import kr.hhplus.be.server.infra.order.OrderEventSpringPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,13 +21,13 @@ public class OrderFacade {
     private final ProductService productService;
     private final PaymentService paymentService;
     private final UserBalanceService userBalanceService;
-    private final OrderEventSpringPublisher orderEventPublisher;
+    private final OrderEventKafkaPublisher orderEventPublisher;
 
     public OrderFacade(OrderService orderService,
                        ProductService productService,
                        PaymentService paymentService,
                        UserBalanceService userBalanceService,
-                       OrderEventSpringPublisher orderEventPublisher) {
+                       OrderEventKafkaPublisher orderEventPublisher) {
         this.orderService = orderService;
         this.productService = productService;
         this.paymentService = paymentService;

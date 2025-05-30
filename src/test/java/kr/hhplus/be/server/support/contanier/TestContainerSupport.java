@@ -4,17 +4,18 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.containers.MySQLContainer;
 
 @ExtendWith({
         MySqlContainersConfig.class,
         RedisContainersConfig.class,
+        KafkaContainersConfig.class
 })
-public abstract class ContainerTestSupport {
+public abstract class TestContainerSupport {
 
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
-        // MySQL
         MySQLContainer<?> mySQLContainer = MySqlContainersConfig.getContainer();
         registry.add("spring.datasource.url", () -> mySQLContainer.getJdbcUrl() + "?characterEncoding=UTF-8&serverTimezone=UTC");
         registry.add("spring.datasource.username", mySQLContainer::getUsername);
@@ -23,5 +24,8 @@ public abstract class ContainerTestSupport {
         GenericContainer<?> redisContainer = RedisContainersConfig.getContainer();
         registry.add("spring.data.redis.host", redisContainer::getHost);
         registry.add("spring.data.redis.port", redisContainer::getFirstMappedPort);
+
+        KafkaContainer kafkaContainer = KafkaContainersConfig.getContainer();
+        registry.add("spring.kafka.bootstrap-servers", kafkaContainer::getBootstrapServers);
     }
 }

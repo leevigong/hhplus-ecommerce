@@ -1,6 +1,6 @@
 package kr.hhplus.be.server.domain.sales;
 
-import kr.hhplus.be.server.support.contanier.ContainerTestSupport;
+import kr.hhplus.be.server.support.contanier.TestContainerSupport;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ import static org.mockito.Mockito.when;
 
 @ActiveProfiles("test")
 @SpringBootTest
-class ProductSalesServiceCacheTest extends ContainerTestSupport {
+class ProductSalesServiceCacheTest extends TestContainerSupport {
 
     @MockitoBean
     ProductSalesRepository productSalesRepository;
