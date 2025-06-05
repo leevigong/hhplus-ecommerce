@@ -44,10 +44,14 @@ public class DataInitializer {
     @PostConstruct
     @Transactional
     public void init() {
-        // 유저 및 잔고 생성
-        User user = userRepository.save(User.create("테스트유저"));
-        userBalanceRepository.save(UserBalance.create(user, 100_000));
-        userBalanceHistoryRepository.save(UserBalanceHistory.create(user.getId(), TransactionType.CHARGE, 100_000, 0, 100_000));
+        for (int i = 1; i <= 100; i++) {
+            User user = userRepository.save(User.create("테스트유저" + i));
+            long initialBalance = 50_000; // 각 사용자 5만원 초기 잔액
+            userBalanceRepository.save(UserBalance.create(user, initialBalance));
+            userBalanceHistoryRepository.save(
+                UserBalanceHistory.create(user.getId(), TransactionType.CHARGE, initialBalance, 0, initialBalance)
+            );
+        }
 
         // 상품 등록
         Product top = Product.create("상의", 19_800, 100, Category.TOP);
@@ -73,13 +77,14 @@ public class DataInitializer {
         );
         productSalesList.forEach(productSalesRepository::save);
 
-        // 쿠폰 및 사용자 쿠폰 등록
-        Coupon coupon = couponRepository.save(Coupon.createPercentage("TEST123", 10, 100, LocalDateTime.now().plusDays(1)));
-        UserCoupon userCoupon = userCouponRepository.save(UserCoupon.create(coupon, user.getId()));
+        // 쿠폰 및 사용자 쿠폰 등록 (첫 번째 사용자 기준)
+        User firstUser = userRepository.findById(1L).orElseThrow();
+        Coupon coupon = couponRepository.save(Coupon.createPercentage("TEST123", 10, 2000, LocalDateTime.now().plusDays(1)));
+        UserCoupon userCoupon = userCouponRepository.save(UserCoupon.create(coupon, firstUser.getId()));
 
-        // 주문 및 결제 등록
+        // 주문 및 결제 등록 (첫 번째 사용자 기준)
         OrderItem orderItem = OrderItem.create(top.getId(), 1, 1000);
-        Order order = orderRepository.save(Order.create(user.getId(), List.of(orderItem)));
+        Order order = orderRepository.save(Order.create(firstUser.getId(), List.of(orderItem)));
         paymentRepository.save(Payment.create(order.getId(), 10_000));
     }
 }
