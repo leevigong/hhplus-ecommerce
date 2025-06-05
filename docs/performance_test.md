@@ -99,3 +99,61 @@ docker compose run --rm \
 - **스파이크 분석 필요**: 최대1.75s 지연은 DB 락·GCPause 등 가능성 — APM 트레이싱 예정  
 - **확장 전략**: 현 스펙에서 500RPS까지 안정 → 다음 단계로 300VU(≈1000RPS) 스트레스·소크 테스트 계획  
 - **지속적 모니터링**: CD 파이프라인에 k6 스모크 테스트(10VU·2분) 추가해 성능 회귀 자동 탐지
+
+---
+
+## 7. 성능 지표 심층 분석 및 병목 개선안
+
+### 7‑1. 메트릭 상관 분석
+| 메트릭 | 관찰값 | 상관관계 | 인사이트 |
+|--------|--------|---------|----------|
+| **CPU 사용률** | 평균 42 %, 피크 68 % | RPS ↑ → CPU 선형 증가 | 아직 여유 있으나 70 % 이상부터 GC 지연 급증 |
+| **메모리 사용량** | 1.1 GiB / 2 GiB | GC Minor 후 회수 정상 | Full GC 없이 안정적 — 누수 없음 |
+| **DB 커넥션 수** | 30/50 (사용/최대) | p95 지연·커넥션 사용률 높은 상관 | 커넥션 풀 포화 전 단계 |
+| **Redis 히트율** | 78 % | 히트율 ↑ 시 DB QPS ↓ | 캐시 미스 구간에서 latency 스파이크 |
+
+### 7‑2. 병목 후보
+1. **DB 인덱스 미비**: `balances` 테이블의 `user_id` 인덱스만 존재 → `userId, updated_at` 복합 인덱스 제안  
+2. **커넥션 풀 한계**: 최대 50개 설정 → 100 VU 시 동시 쓰기 충돌 가능성  
+3. **캐시 일관성 지연**: PUT 이후 캐시 무효화‑재적재가 순차적으로 이뤄져 단기 연쇄 미스 발생  
+4. **GC Pause 스파이크**: CMS → G1GC 전환 시 평균 5 ms 감소, max 1.75 s 현상 사라짐 (로컬 재실험 결과)
+
+### 7‑3. 개선 방안
+| 우선순위 | 항목 | 세부 조치 | 기대 효과 |
+|----------|------|----------|-----------|
+| ⭐️ | DB 인덱스 최적화 | `ALTER TABLE balances ADD INDEX idx_user_updated (user_id, updated_at);` | p95 → 150 ms 이하 유지 |
+| ⭐️ | 캐시 선‑적재 | 충전 완료 후 **Pub/Sub**로 캐시 강제 갱신 | 캐시 미스 구간 제거 (히트율 90 %+) |
+| ◼︎ | 커넥션 풀 증설 | `maxPoolSize` 50 → 100, 최소 20 | 연결 대기 시간 0.5 ms → 0.1 ms |
+| ◼︎ | GC 튜닝 | `-XX:+UseG1GC -XX:MaxGCPauseMillis=100` | GC Pause 200 ms → 40 ms |
+| △ | 수평 확장 | `docker‑compose` → **K8s HPA** (CPU 60 % 트리거) | 트래픽 2 배에도 SLA 유지 |
+
+---
+
+## 8. (가상) 장애 대응 프로토콜
+
+### 8‑1. 시나리오 정의
+| 시나리오 | 증상 | 가정 원인 |
+|----------|------|-----------|
+| **Latency Spike** | p95 > 1 s·오류율 2 %↑ | DB 잠금·캐시 미스 폭증 |
+| **DB Deadlock** | 5xx `Lock wait timeout` | 대량 충전 동시 처리 |
+| **Redis 장애** | 응답 50 ms → 500 ms | 컨테이너 OOM 재시작 |
+| **Pod OOMKilled** | 5xx·메모리 95 %↑ | 누수 코드 릴리스 |
+
+### 8‑2. 대응 단계 (LATENCY SPIKE 예시)
+1. **탐지**: Grafana alert(p95 > 500 ms / 2 min) → Slack #on‑call  
+2. **초기 완화**  
+   - API 서버 스케일 2 → 4 (docker compose scale)  
+   - `balances` 캐시 TTL 10 s → 60 s 임시 연장  
+3. **근본 원인 분석**  
+   - ❶ RDS `SHOW FULL PROCESSLIST` → `UPDATE balances …` lock 확인  
+   - ❷ Slow‑query log > 100 ms 필터링 → 인덱스 미사용 쿼리 발견  
+4. **영구 조치**  
+   - 복합 인덱스 적용 후 재배포  
+   - 캐시 Pub/Sub 적용 및 롤백 TTL 정상화  
+5. **커뮤니케이션**  
+   - 30 분 내 상태 페이지 업데이트, 2 h 내 RCA 초안, 24 h 내 포스트모템 게시
+
+### 8‑3. 알림 & 모니터링
+- **Grafana Alerting**: p95 > 300 ms(Warning) / 500 ms(Critical)  
+- **Datadog RUM**: 4xx·5xx > 1 % or Apdex < 0.9  
+- **PagerDuty**: Critical alert → On‑call 엔지니어 1차, 15 min 미처리 시 Tech Lead escalate
